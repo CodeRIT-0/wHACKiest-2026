@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: #efe9dd;
+  --color-ink: #1a1a1a;
+  --color-muted: #6b665c;
+  --color-accent: #e0662a;
+  --color-line: #cfc6b4;
+  --color-navy: #0f1520;
+  --font-sans: var(--font-space-grotesk);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* sections scroll to just below the fixed marquee + nav */
+section[id] {
+  scroll-margin-top: 110px;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
 }
