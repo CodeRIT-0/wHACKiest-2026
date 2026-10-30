@@ -1,0 +1,864 @@
+.timeline {
+  --paper: #050505;
+  --cream: #111111;
+  --ink: #f4f1eb;
+  --orange: #fd9c36;
+  --highlight: #6c97f1;
+  --complete: #4276d2;
+  --line: #38332d;
+  position: relative;
+  color: var(--ink);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.timeline[data-enhanced="true"] {
+  height: 650svh;
+}
+.pinnedScene {
+  position: relative;
+  background: var(--paper);
+}
+.timeline[data-enhanced="true"] .pinnedScene {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.sectionRule {
+  position: relative;
+  flex: 0 0 28px;
+  height: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.sectionRule > span {
+  position: absolute;
+  z-index: 6;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border: 1px solid #6d6252;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: 12px;
+}
+.headingBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex: 0 0 auto;
+  padding: 25px max(28px, calc((100vw - 1280px) / 2)) 20px;
+}
+.eyebrow {
+  margin: 0 0 8px;
+  color: #aaa49a;
+  font:
+    9px/1.4 "Courier New",
+    monospace;
+  letter-spacing: 0.08em;
+}
+.headingBar h2 {
+  margin: 0;
+  font-size: clamp(28px, 3.3vw, 48px);
+  font-weight: 700;
+  font-family: var(--display-font);
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+.headingBar h2 > span {
+  color: var(--orange);
+}
+.era {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 11px;
+}
+.era > span {
+  font-size: 15px;
+  font-weight: 600;
+}
+.era > strong {
+  font:
+    8px "Courier New",
+    monospace;
+  color: #c1baad;
+  letter-spacing: 0.08em;
+}
+.era > small {
+  margin-top: 5px;
+  font:
+    7px "Courier New",
+    monospace;
+  color: #8d877d;
+}
+.viewport {
+  position: relative;
+  flex: 1;
+  min-height: 520px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  isolation: isolate;
+  background: var(--paper);
+}
+.timeline[data-enhanced="true"] .viewport {
+  min-height: 0;
+  overflow: clip;
+}
+.artboard {
+  position: relative;
+  isolation: isolate;
+}
+.timeline[data-enhanced="true"] .artboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.circuit {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.interconnectBase {
+  stroke: #62635a;
+  stroke-width: 1.15;
+}
+.interconnectPowered {
+  stroke: var(--highlight);
+  stroke-width: 1.45;
+  opacity: 0.78;
+}
+.interconnectSignal {
+  stroke: var(--orange);
+  stroke-width: 2.8;
+  filter: drop-shadow(0 0 3px #fd9c36a0);
+}
+.interconnectPad {
+  fill: var(--paper);
+  stroke: #85908a;
+  stroke-width: 1.1;
+}
+.interconnectLabel {
+  fill: #a6a99d;
+  font:
+    7px "Courier New",
+    monospace;
+  letter-spacing: 0.06em;
+}
+.chipFanBase {
+  stroke: #707c76;
+  stroke-width: 1.1;
+}
+.axisBase {
+  fill: none;
+  stroke: #494943;
+  stroke-width: 3;
+}
+.axisPowered {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.clusterLead {
+  stroke: #747d73;
+  stroke-width: 1.6;
+}
+.baseTrace {
+  stroke: #69736d;
+  stroke-width: 1.2;
+}
+.poweredTrace {
+  stroke: var(--highlight);
+  stroke-width: 1.3;
+  opacity: 0.9;
+}
+.cluster[data-state="active"] .poweredTrace {
+  stroke: var(--orange);
+  filter: drop-shadow(0 0 2px #fd9c3660);
+}
+.poweredPad {
+  fill: var(--orange);
+  stroke: #ffdda9;
+  stroke-width: 1;
+}
+.cluster[data-state="complete"] .poweredPad {
+  fill: var(--highlight);
+  stroke: #aac8ff;
+}
+.testPoint {
+  fill: var(--paper);
+  stroke: #80877d;
+  stroke-width: 1.3;
+}
+.componentGlow {
+  opacity: 0;
+  transition: opacity 170ms ease-out;
+}
+.cluster[data-state="active"] .componentGlow {
+  opacity: 1;
+}
+.componentPhoto {
+  filter: drop-shadow(2px 3px 2px #00000080);
+  transition: filter 450ms ease;
+}
+.cluster[data-state="active"] .componentPhoto {
+  filter: drop-shadow(2px 3px 2px #00000080) drop-shadow(0 0 6px #ff8a2460);
+}
+.chipScreen {
+  fill: #20231d;
+  stroke: #b8a271;
+  stroke-width: 0.5;
+  opacity: 0.7;
+}
+.cluster[data-state="active"] .chipScreen {
+  fill: #ff8a24;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 7px #ff8a2470);
+}
+.cluster[data-state="complete"] .chipScreen {
+  fill: #bd641c;
+}
+.chipWords {
+  fill: #f4dfb6;
+  font:
+    bold 9px "Courier New",
+    monospace;
+  letter-spacing: 0.06em;
+}
+.componentLabel {
+  fill: #aaa49a;
+  font:
+    8px "Courier New",
+    monospace;
+  letter-spacing: 0.04em;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 3px;
+}
+.componentSpec {
+  fill: #777b72;
+  font:
+    6px "Courier New",
+    monospace;
+  letter-spacing: 0.12em;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 2px;
+}
+.cluster[data-state="active"] .componentLabel {
+  fill: var(--orange);
+}
+.cluster[data-state="complete"] .componentLabel {
+  fill: var(--highlight);
+}
+.stationHalo,
+.stationNode,
+.stationCore,
+.chipScreen,
+.componentLabel {
+  transition:
+    fill 400ms ease,
+    stroke 400ms ease,
+    opacity 400ms ease;
+}
+.stationHalo {
+  fill: var(--orange);
+  opacity: 0;
+}
+.stationNode {
+  fill: var(--paper);
+  stroke: #8c958a;
+  stroke-width: 2;
+}
+.stationCore {
+  fill: #8c958a;
+}
+.station[data-state="active"] .stationHalo {
+  opacity: 0.16;
+}
+.station[data-state="active"] .stationNode {
+  fill: var(--orange);
+  stroke: #ffb15e;
+}
+.station[data-state="active"] .stationCore {
+  fill: var(--ink);
+}
+.station[data-state="complete"] .stationNode {
+  fill: var(--complete);
+  stroke: var(--complete);
+}
+.station[data-state="complete"] .stationCore {
+  fill: var(--paper);
+}
+.signalGlow {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 14;
+  opacity: 0.3;
+  filter: blur(4px);
+}
+.currentTrail {
+  fill: none;
+  stroke: #ffd5a1;
+  stroke-width: 3;
+}
+.currentHead {
+  fill: #fff1db;
+  stroke: var(--orange);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px #ff8a24);
+}
+.checkpoints {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.checkpoint {
+  position: absolute;
+  z-index: 2;
+  left: var(--station-left);
+  width: min(360px, calc(100vw - 28px));
+  max-height: var(--card-room);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-50%);
+  border: 1px solid #48433a;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #1b1915, #111111 65%);
+  box-shadow: 4px 6px 0 #00000080;
+  opacity: 0.78;
+  transition:
+    border-color 450ms ease,
+    box-shadow 450ms ease,
+    opacity 450ms ease;
+}
+.checkpoint[data-placement="above"] {
+  bottom: calc(50% + var(--axis-gap));
+}
+.checkpoint[data-placement="below"] {
+  top: calc(50% + var(--axis-gap));
+}
+.checkpoint::after {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: var(--connector-height);
+  background: #66675f;
+  content: "";
+}
+.checkpoint[data-placement="above"]::after {
+  top: 100%;
+}
+.checkpoint[data-placement="below"]::after {
+  bottom: 100%;
+}
+.checkpoint[data-state="active"] {
+  border-color: var(--orange);
+  opacity: 1;
+  box-shadow:
+    4px 6px 0 #00000080,
+    0 0 0 1px #fd9c3614,
+    0 12px 45px #fd9c361a;
+}
+.checkpoint[data-state="active"]::after {
+  background: var(--orange);
+}
+.checkpoint[data-state="complete"] {
+  border-color: #3c506e;
+  opacity: 0.88;
+}
+.windowBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-bottom: 1px solid #38332d;
+  background: #1d1b18;
+  color: #b9b3a8;
+  font:
+    9px/1 "Courier New",
+    monospace;
+  letter-spacing: 0.05em;
+  border-radius: 2px 2px 0 0;
+  transition:
+    background-color 450ms ease,
+    color 450ms ease,
+    border-color 450ms ease;
+}
+.checkpoint[data-state="active"] .windowBar {
+  background: #fd9c36;
+  color: #17110a;
+  border-bottom-color: var(--orange);
+}
+.checkpoint[data-state="complete"] .windowBar {
+  background: #142138;
+  color: #abc7f8;
+}
+.windowState {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+}
+.windowState i {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.windowState i:first-of-type {
+  margin-left: 6px;
+}
+.windowBody {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 18px 12px;
+}
+.dateStamp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dateStamp > strong {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  color: #d8ccba;
+  background: #27231c;
+  border: 1px solid #4c4436;
+  font:
+    600 23px/1 "Courier New",
+    monospace;
+}
+.checkpoint[data-state="active"] .dateStamp > strong {
+  color: #050505;
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.dateStamp > span {
+  color: #e6ddd0;
+  font-size: 11px;
+  font-weight: 500;
+}
+.dateStamp small {
+  display: block;
+  margin-top: 3px;
+  color: #aaa49a;
+  font:
+    9px/1.2 "Courier New",
+    monospace;
+}
+.checkpoint h3 {
+  margin: 15px 0 9px;
+  color: #f4f1eb;
+  font-size: 26px;
+  font-family: var(--body-font);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.checkpoint p {
+  margin: 0;
+  color: #c0b9ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 9px;
+  border-top: 1px solid #38332d;
+  color: #a6aa9f;
+  font:
+    8px/1.4 "Courier New",
+    monospace;
+  letter-spacing: 0.025em;
+}
+.cardFooter > span:last-child {
+  color: var(--highlight);
+  font-size: 15px;
+}
+.placeholderNote {
+  display: block;
+  margin-top: 7px;
+  color: #aaa49a;
+  font:
+    8px/1.4 "Courier New",
+    monospace;
+}
+.cornerTL,
+.cornerBR {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #a99a80;
+  border-radius: 50%;
+  background: var(--paper);
+}
+.cornerTL {
+  top: -3px;
+  left: -3px;
+}
+.cornerBR {
+  right: -3px;
+  bottom: -3px;
+}
+.edgeLeft,
+.edgeRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 14px;
+  pointer-events: none;
+}
+.edgeLeft {
+  left: 0;
+  background: linear-gradient(90deg, var(--paper), #05050500);
+}
+.edgeRight {
+  right: 0;
+  background: linear-gradient(-90deg, var(--paper), #05050500);
+}
+.navigationBar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+  flex: 0 0 auto;
+  margin: 0 28px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.signalStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #aaa49a;
+  font:
+    8px/1.4 "Courier New",
+    monospace;
+}
+.signalStatus i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.signalStatus > span:last-child {
+  margin-left: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.stageNav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.stageNav > button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #5e584d;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 21px;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease;
+}
+.stageNav > button:hover:not(:disabled) {
+  background: var(--orange);
+  color: #050505;
+  border-color: var(--orange);
+}
+.stageNav > button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.stageDots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stageDot {
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 6px 1px;
+  background: none;
+  cursor: pointer;
+}
+.stageDot > span {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #6f675b;
+  border-radius: 50%;
+  background: none;
+  transition:
+    width 350ms ease,
+    background-color 350ms ease;
+}
+.stageDot[aria-current="step"] > span {
+  width: 26px;
+  border-radius: 6px;
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.stageNav button:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 4px;
+}
+.stageCount {
+  text-align: right;
+  font:
+    8px/1.4 "Courier New",
+    monospace;
+  color: #aaa49a;
+}
+.stageCount > strong {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 500;
+}
+.exit {
+  display: flex;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 15px;
+  padding: 7px 28px;
+  border-top: 1px solid var(--line);
+  color: #8d877d;
+  font:
+    7px/1.4 "Courier New",
+    monospace;
+  letter-spacing: 0.06em;
+}
+/* Density changes typography only. Card sides never change with viewport size. */
+.timeline[data-compact="true"] .windowBar {
+  padding: 6px 10px;
+  font-size: 8px;
+}
+.timeline[data-compact="true"] .windowState {
+  font-size: 7px;
+}
+.timeline[data-compact="true"] .windowState i {
+  display: none;
+}
+.timeline[data-compact="true"] .windowBody {
+  padding: 11px 14px 9px;
+}
+.timeline[data-compact="true"] .dateStamp {
+  gap: 8px;
+}
+.timeline[data-compact="true"] .dateStamp > strong {
+  min-width: 24px;
+  height: 24px;
+  font-size: 19px;
+}
+.timeline[data-compact="true"] .dateStamp > span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 9px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.timeline[data-compact="true"] .dateStamp small {
+  display: inline;
+  margin: 0;
+  font-size: 8px;
+}
+.timeline[data-compact="true"] .checkpoint h3 {
+  margin: 10px 0 7px;
+  font-size: 22px;
+}
+.timeline[data-compact="true"] .checkpoint p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.timeline[data-compact="true"] .cardFooter {
+  display: none;
+}
+.timeline[data-compact="true"] .placeholderNote {
+  margin-top: 6px;
+  font-size: 8px;
+}
+.timeline[data-tight="true"] .windowBar {
+  padding: 5px 9px;
+}
+.timeline[data-tight="true"] .windowBody {
+  padding: 8px 11px 7px;
+}
+.timeline[data-tight="true"] .dateStamp > strong {
+  min-width: 20px;
+  height: 20px;
+  font-size: 17px;
+}
+.timeline[data-tight="true"] .checkpoint h3 {
+  margin: 7px 0 5px;
+  font-size: 19px;
+}
+.timeline[data-tight="true"] .checkpoint p {
+  font-size: 11px;
+  line-height: 1.45;
+}
+.timeline[data-tight="true"] .placeholderNote {
+  margin-top: 4px;
+  font-size: 7px;
+}
+@media (max-height: 850px) {
+  .sectionRule {
+    flex-basis: 24px;
+    height: 24px;
+  }
+  .headingBar {
+    padding-top: 19px;
+    padding-bottom: 13px;
+  }
+  .headingBar h2 {
+    font-size: 28px;
+  }
+  .eyebrow {
+    font-size: 8px;
+    margin-bottom: 6px;
+  }
+  .navigationBar {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .exit {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}
+@media (max-width: 800px) {
+  .headingBar {
+    padding: 22px 16px 14px;
+  }
+  .headingBar h2 {
+    font-size: 28px;
+  }
+  .era {
+    display: none;
+  }
+  .eyebrow {
+    font-size: 7px;
+  }
+  .navigationBar {
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    margin: 0 16px;
+    padding: 10px 0;
+  }
+  .stageNav {
+    grid-column: 1/-1;
+    grid-row: 1;
+    justify-content: center;
+    gap: 20px;
+  }
+  .stageCount {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 7px;
+  }
+  .signalStatus {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 7px;
+  }
+  .signalStatus > span:last-child {
+    font-size: 12px;
+  }
+  .stageCount > strong {
+    font-size: 14px;
+  }
+  .stageNav > button {
+    width: 29px;
+    height: 29px;
+    font-size: 18px;
+  }
+  .exit {
+    padding: 6px 16px;
+    font-size: 6px;
+  }
+  .exit > span:last-child {
+    display: none;
+  }
+}
+@media (max-width: 800px) and (max-height: 740px) {
+  .headingBar {
+    padding-top: 18px;
+    padding-bottom: 10px;
+  }
+  .headingBar h2 {
+    font-size: 21px;
+  }
+  .eyebrow {
+    margin-bottom: 5px;
+  }
+  .stageNav {
+    gap: 15px;
+  }
+  .stageNav > button {
+    width: 26px;
+    height: 26px;
+  }
+  .navigationBar {
+    padding: 8px 0;
+    gap: 4px;
+  }
+  .exit {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .componentGlow,
+  .componentPhoto,
+  .checkpoint,
+  .windowBar,
+  .stageDot > span,
+  .stationHalo,
+  .stationNode,
+  .stationCore,
+  .chipScreen,
+  .componentLabel,
+  .stageNav > button {
+    transition: none;
+  }
+  .componentPhoto,
+  .chipScreen {
+    filter: none;
+  }
+}
