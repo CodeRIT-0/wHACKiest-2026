@@ -3,11 +3,10 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import Reveal from "../motion/Reveal";
 import LineClock from "../illustrations/LineClock";
 import Words from "../motion/Words";
-import Procedure from "./Procedure";
 import FindUs from "./join/FindUs";
 
 // 2026, the AI era, on deep navy. The clock comes back once, wired into the circuit, hands on 12.
-// Registration steps and contact details close out the page.
+// Socials and the venue close out the page (registration steps have their own section).
 export default function Join() {
   return (
     <section id="join" data-panel className="theme-dark dark-panel relative mb-4">
@@ -17,7 +16,7 @@ export default function Join() {
         </div>
         <Reveal>
           <p className="mt-16 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
-            <span className="text-accent">09</span> / Register
+            <span className="text-accent">10</span> / Register
           </p>
           <h2 data-words className="display-wide mx-auto mt-4 max-w-[14ch] text-[40px] uppercase leading-[0.95] sm:text-6xl md:text-7xl">
             <Words text="The next era starts with you" tail={<span className="text-accent">.</span>} />
@@ -33,11 +32,8 @@ export default function Join() {
         </Reveal>
       </div>
 
-      <div className="relative z-10 mx-auto grid max-w-[1100px] gap-12 px-6 pb-24 pt-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+      <div className="relative z-10 mx-auto max-w-[760px] px-6 pb-24 pt-8">
         <Reveal>
-          <Procedure />
-        </Reveal>
-        <Reveal delay={0.1}>
           <FindUs />
         </Reveal>
       </div>

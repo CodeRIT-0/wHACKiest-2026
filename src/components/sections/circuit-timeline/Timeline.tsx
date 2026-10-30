@@ -8,6 +8,7 @@ import {
   type MotionValue,
 } from "motion/react";
 import { TimelineCircuit } from "./TimelineCircuit";
+import CheckpointCountdown from "./CheckpointCountdown";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
 import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
 import {
@@ -189,16 +190,19 @@ export default function Timeline({
                       reducedMotion={reducedMotion}
                       hydrated={hydrated}
                     >
-                      <time
-                        dateTime={event.dateTime}
-                        className={styles.dateStamp}
-                      >
-                        <strong>{day}</strong>
-                        <span>
-                          {rest.join(" ")}
-                          <small>{event.time} IST</small>
-                        </span>
-                      </time>
+                      <div className={styles.dateRow}>
+                        <time
+                          dateTime={event.dateTime}
+                          className={styles.dateStamp}
+                        >
+                          <strong>{day}</strong>
+                          <span>
+                            {rest.join(" ")}
+                            <small>{event.time} IST</small>
+                          </span>
+                        </time>
+                        <CheckpointCountdown dateTime={event.dateTime} />
+                      </div>
                       <h3>{event.title}</h3>
                       <p>{event.description}</p>
                       <div className={styles.cardFooter}>

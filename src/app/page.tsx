@@ -4,6 +4,7 @@ import Timeline from "@/components/sections/circuit-timeline/Timeline";
 import TrackLab from "@/components/sections/TrackLab";
 import Prizes from "@/components/sections/Prizes";
 import Sponsors from "@/components/sections/Sponsors";
+import Procedure from "@/components/sections/Procedure";
 import Faqs from "@/components/sections/Faqs";
 import Team from "@/components/sections/Team";
 import Join from "@/components/sections/Join";
@@ -29,6 +30,8 @@ export default function Home() {
       <TrackLab />
       <Prizes />
       <Sponsors />
+      {/* how to register + FAQs (from the roopinwork branch) */}
+      <Procedure />
       <Faqs />
       <Team />
       <EraDivider era="join" direction="left" />
