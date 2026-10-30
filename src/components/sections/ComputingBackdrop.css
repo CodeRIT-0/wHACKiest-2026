@@ -1,0 +1,149 @@
+/* Section-only stacking contexts; clipping belongs to the decorative layers,
+   so the participation artwork can retain its existing sticky behavior. */
+.procedure-section, .faq-section { isolation: isolate; }
+.computing-backdrop {
+  --computing-boundary-x: calc(50% + 43px);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: clip;
+  contain: paint;
+  pointer-events: none;
+  user-select: none;
+}
+.computing-backdrop * { pointer-events: none; }
+.computing-backdrop-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(#05050509 1px, transparent 1px),
+    linear-gradient(90deg, #05050509 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 85% 62%, #000 8%, transparent 70%);
+}
+.computing-backdrop--faq .computing-backdrop-grid {
+  mask-image: radial-gradient(ellipse at 12% 65%, #000 8%, transparent 62%);
+}
+.computing-backdrop-schematic {
+  position: absolute;
+  top: 220px;
+  right: max(0px, calc((100% - 1100px) / 2 - 96px));
+  width: min(660px, 60%);
+  height: calc(100% - 284px);
+}
+.computing-backdrop--faq .computing-backdrop-schematic {
+  top: 200px;
+  right: auto;
+  left: max(0px, calc((100% - 1100px) / 2 - 80px));
+  width: min(580px, 48%);
+  height: calc(100% - 230px);
+}
+.computing-backdrop svg path,
+.computing-backdrop svg circle,
+.computing-backdrop svg rect { vector-effect: non-scaling-stroke; }
+.computing-backdrop-outline { stroke: #0357d61c; stroke-width: 1; }
+.computing-backdrop-traces { stroke: #0357d62e; stroke-width: 1; }
+.computing-backdrop-detail { stroke: #05050515; }
+.computing-backdrop-nodes { stroke: #05050535; stroke-width: .7; fill: #fd9c3659; }
+.computing-backdrop-annotations {
+  fill: #0357d663;
+  font: 8px monospace;
+  letter-spacing: .18em;
+}
+.computing-backdrop-knowledge-nodes { stroke: #0357d63d; stroke-width: 1; fill: #fff9ec; }
+.computing-backdrop-knowledge-nodes circle + circle { fill: #fd9c3659; stroke: none; }
+.computing-backdrop-clock {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  top: -92px;
+  right: -98px;
+  stroke: #0357d61c;
+  stroke-width: 1;
+}
+.computing-backdrop-clock-inner, .computing-backdrop-clock-ticks { stroke: #05050512; }
+.computing-backdrop--faq .computing-backdrop-clock { top: 160px; right: auto; left: -176px; width: 310px; height: 310px; }
+/* Both local SVGs use the same horizontal boundary coordinate. No line is
+   positioned across another section, and its route scales with each section. */
+.computing-backdrop-handoff {
+  position: absolute;
+  bottom: 0;
+  left: var(--computing-boundary-x);
+  width: min(450px, calc(100% - var(--computing-boundary-x)));
+  height: 140px;
+  stroke: #0357d64d;
+  stroke-width: 1;
+}
+.computing-backdrop--faq .computing-backdrop-handoff {
+  top: 0;
+  bottom: auto;
+  left: auto;
+  right: calc(100% - var(--computing-boundary-x));
+  width: min(450px, var(--computing-boundary-x));
+  height: 320px;
+}
+.computing-backdrop-draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.computing-backdrop[data-entered="true"] .computing-backdrop-draw { animation: computing-backdrop-draw 1100ms ease-out both; }
+@keyframes computing-backdrop-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@media (max-width: 760px) {
+  .computing-backdrop { --computing-boundary-x: calc(50% + 27px); }
+  .computing-backdrop-grid { mask-image: radial-gradient(ellipse 80% 280px at 65% 360px, #000 5%, transparent 85%); }
+  .computing-backdrop--faq .computing-backdrop-grid { mask-image: radial-gradient(ellipse 80% 250px at 35% 340px, #000 5%, transparent 85%); }
+  .computing-backdrop-schematic,
+  .computing-backdrop--faq .computing-backdrop-schematic {
+    top: 240px;
+    left: 50%;
+    right: auto;
+    width: min(460px, calc(100% - 24px));
+    height: 390px;
+    transform: translateX(-50%);
+  }
+  .computing-backdrop--faq .computing-backdrop-schematic { top: 200px; height: 350px; }
+  .computing-backdrop-annotations,
+  .computing-backdrop-documents,
+  .computing-backdrop-detail { display: none; }
+  .computing-backdrop-traces > path:nth-child(n+3),
+  .computing-backdrop-nodes > circle:nth-child(n+3) { display: none; }
+  .computing-backdrop-clock { width: 190px; height: 190px; top: -80px; right: -100px; }
+  .computing-backdrop--faq .computing-backdrop-clock { top: 170px; left: -145px; width: 200px; height: 200px; }
+  .computing-backdrop-handoff { width: min(120px, calc(100% - var(--computing-boundary-x))); height: 64px; }
+  .computing-backdrop--faq .computing-backdrop-handoff { width: min(160px, var(--computing-boundary-x)); height: 180px; }
+  .computing-backdrop[data-entered="true"] .computing-backdrop-draw { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .computing-backdrop[data-entered="true"] .computing-backdrop-draw { animation: none !important; stroke-dashoffset: 0; }
+}
+/* Procedure delegates every animated background value to its story controller.
+   The full-width clipped layer stays section-local; only its SVG plane sticks. */
+.computing-backdrop--choreographed .computing-backdrop-schematic {
+  position:sticky;
+  top:var(--procedure-stage-top,128px);
+  right:auto;
+  left:auto;
+  display:block;
+  margin-left:max(40%,calc((100% - 1100px) / 2 + 540px));
+  width:min(660px,60%);
+  height:min(660px,calc(100svh - 170px));
+  transform:translate3d(0,calc(var(--network-shift,0) * -1px),0);
+}
+.computing-backdrop--choreographed .computing-backdrop-grid {
+  mask-image:linear-gradient(90deg,transparent 35%,#000 90%);
+  transform:translate3d(calc(var(--network-shift,0) * .3px),0,0);
+}
+.computing-backdrop--choreographed .computing-backdrop-draw { animation:none; stroke-dashoffset:calc(1 - var(--network-progress,1)); }
+.computing-backdrop--choreographed .computing-backdrop-handoff path { stroke-dashoffset:calc(1 - var(--handoff-progress,1)); }
+.computing-backdrop--choreographed .computing-backdrop-clock { transform:rotate(calc(var(--story-progress,0) * 8deg)); }
+@media (max-width:760px), (max-height:660px), (prefers-reduced-motion:reduce) {
+  .computing-backdrop--choreographed .computing-backdrop-schematic {
+    position:absolute;
+    top:240px;
+    left:50%;
+    margin-left:0;
+    width:min(460px,calc(100% - 24px));
+    height:390px;
+    transform:translateX(-50%);
+  }
+  .computing-backdrop--choreographed .computing-backdrop-grid { mask-image:radial-gradient(ellipse 80% 280px at 65% 360px,#000 5%,transparent 85%); transform:none; }
+  .computing-backdrop--choreographed .computing-backdrop-draw { stroke-dashoffset:0; }
+  .computing-backdrop--choreographed .computing-backdrop-clock { transform:none; }
+}

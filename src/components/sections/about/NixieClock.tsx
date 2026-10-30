@@ -55,6 +55,18 @@ export default function NixieClock() {
 
         {/* the case */}
         <div className="relative rounded-[3px] border-[3px] border-[#9a7a48] bg-[linear-gradient(135deg,#5b4228,#3a2916_70%)] px-[4%] pb-4 pt-[4%] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_50px_-28px_rgba(60,35,10,0.75)]">
+          {/* nameplate: the brand glows like the tubes */}
+          <div className="mb-[4%] flex items-center justify-center gap-3">
+            <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-transparent to-[#d9b878]/60" />
+            <p className="font-display text-[clamp(22px,4.4vw,44px)] font-extrabold leading-none tracking-[-0.04em] text-[#f3e3c0] [font-stretch:125%] [text-shadow:0_1px_0_rgba(0,0,0,0.6)]">
+              w
+              <span className="text-[#ffb36b] [text-shadow:0_0_6px_#ff7a1a,0_0_18px_#ff6a00,0_0_34px_rgba(255,106,0,0.55)]">HACK</span>
+              iest
+              <span className="ml-2 align-middle font-mono text-[0.32em] font-normal tracking-[0.2em] text-[#c7ad72]">2026</span>
+            </p>
+            <span aria-hidden className="h-px flex-1 bg-gradient-to-l from-transparent to-[#d9b878]/60" />
+          </div>
+
           <div
             role="timer"
             aria-label={live ? "wHACKiest is live" : groups ? `${groups[0]} days ${groups[1]} hours ${groups[2]} minutes until wHACKiest 2026` : "Countdown to wHACKiest 2026"}
@@ -75,7 +87,7 @@ export default function NixieClock() {
           </div>
 
           <p className="mx-auto mt-3 w-fit bg-[linear-gradient(#e2cf9f,#c7ad72)] px-3 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-[#4a3a20] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] sm:text-[10px]">
-            {live ? "wHACKiest / We're live" : "wHACKiest / Starts 01.12.2026"}
+            {live ? "We're live" : "Countdown / starts 01.12.2026"}
           </p>
         </div>
         {/* plinth */}

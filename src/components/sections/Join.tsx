@@ -32,7 +32,7 @@ export default function Join() {
         </Reveal>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[760px] px-6 pb-24 pt-8">
+      <div className="relative z-10 mx-auto max-w-[1100px] px-6 pb-24 pt-8">
         <Reveal>
           <FindUs />
         </Reveal>

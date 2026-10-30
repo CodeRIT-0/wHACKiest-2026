@@ -260,13 +260,40 @@ export default function Hero() {
         <Gear teeth={22} speed={0.02} className="-bottom-40 left-[38%] w-72" />
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1100px] content-center items-center gap-6 px-6 pb-10 pt-28 lg:grid-cols-2 lg:gap-16 lg:pb-16">
+      <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-[1100px] content-center items-center gap-6 px-6 pb-10 pt-28 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-12 lg:pb-16">
         <div data-copy className="min-w-0 lg:order-2">
           <p data-intro-fade className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
-            CodeRIT presents <span className="text-accent">/</span> w<span className="text-accent">HACK</span>iest 2026
+            CodeRIT presents <span className="text-accent">/</span> 01–02 Dec 2026
           </p>
-          <h1 data-hero-words className="display-wide mt-4 text-[42px] uppercase leading-[0.92] sm:text-6xl xl:text-7xl">
-            <Words text="Every second counts" tail={<span className="text-accent">.</span>} />
+          {/* the wordmark is the headline: ink letters over an orange outline echo (misregistered
+              print, slides further on hover), HACK with a hard ink shadow, a blinking terminal cursor */}
+          <h1 aria-label="wHACKiest 2026. Every second counts." className="group/word mt-3">
+            <span data-hero-words aria-hidden className="display-wide block whitespace-nowrap text-[min(48px,12.2vw)] leading-[0.82] tracking-[-0.06em] sm:text-[82px] md:text-[96px] lg:text-[77px] xl:text-[84px]">
+              <span className="inline-block overflow-hidden pb-[0.16em] pr-[0.14em] align-bottom">
+                <span className="word-inner relative inline-block">
+                  <span className="absolute inset-0 translate-x-[0.05em] translate-y-[0.05em] text-transparent transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [-webkit-text-stroke:1.5px_var(--accent)] group-hover/word:translate-x-[0.09em] group-hover/word:translate-y-[0.08em]">
+                    wHACKiest
+                  </span>
+                  <span className="relative">
+                    w<span className="text-accent [text-shadow:0.045em_0.045em_0_var(--fg)]">HACK</span>iest
+                  </span>
+                  <span className="relative ml-[0.06em] inline-block h-[0.62em] w-[0.16em] translate-y-[0.02em] bg-accent motion-safe:animate-[blink_1s_steps(1)_infinite]" />
+                </span>
+              </span>
+            </span>
+            <span aria-hidden className="mt-4 flex flex-wrap items-center gap-3">
+              <span className="font-display text-xl font-extrabold tracking-[-0.02em] [font-stretch:115%] sm:text-2xl">2026</span>
+              <span data-intro-fade className="inline-flex items-center gap-2.5 bg-ink px-3 py-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-bg shadow-[3px_3px_0_var(--accent)] sm:text-sm">
+                {/* a seconds hand that ticks once a second */}
+                <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0" fill="none">
+                  <circle cx="8" cy="8" r="7" className="stroke-accent" strokeWidth="1.5" />
+                  <g className="clock-seconds" style={{ transformOrigin: "8px 8px", animationDuration: "60s" }}>
+                    <path d="M8 8V3" className="stroke-accent" strokeWidth="1.5" strokeLinecap="round" />
+                  </g>
+                </svg>
+                Every second counts<span className="text-accent">.</span>
+              </span>
+            </span>
           </h1>
           <p data-intro-fade className="mt-6 max-w-[36ch] text-lg text-muted">Real problems. Bigger possibilities. 24 hours to build what matters.</p>
           <div data-intro-fade className="mt-8 flex flex-wrap gap-3">

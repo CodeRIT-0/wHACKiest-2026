@@ -5,13 +5,18 @@ import Link from "next/link";
 import { useState } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 
+// every homepage section in page order, then the announcements page
 const links = [
-  { href: "/#about", label: "About" },
+  { href: "/#home", label: "About" },
   { href: "/#timeline", label: "Timeline" },
   { href: "/#tracks", label: "Tracks" },
   { href: "/#prizes", label: "Prizes" },
+  { href: "/#sponsors", label: "Sponsors" },
+  { href: "/#procedure", label: "How to join" },
   { href: "/#faqs", label: "FAQs" },
-  { href: "/announcements", label: "Updates" },
+  { href: "/#team", label: "Team" },
+  { href: "/#contact", label: "Contact" },
+  { href: "/announcements", label: "Announcements" },
 ];
 
 const EASE = "ease-[cubic-bezier(0.16,1,0.3,1)]";
@@ -20,6 +25,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [away, setAway] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
 
   // only re-render when crossing a threshold, not on every scroll frame. Scrolling down tucks
@@ -85,7 +91,7 @@ export default function Navbar() {
         }`}
       >
         <div className="flex min-w-0 items-center overflow-hidden">
-          <ul className="hidden items-center gap-6 whitespace-nowrap pl-6 pr-6 text-sm lg:flex">
+          <ul className="hidden items-center gap-4 whitespace-nowrap pl-5 pr-4 text-[13px] xl:flex">
             {links.map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className="transition-colors hover:text-accent">
@@ -94,14 +100,44 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
+          {/* below xl the sections live in a dropdown */}
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+            onClick={() => setMenuOpen((v) => !v)}
+            className="ml-3 whitespace-nowrap rounded-full border border-ink/30 px-4 py-3 text-xs font-semibold uppercase transition-colors hover:border-ink xl:hidden"
+          >
+            Menu {menuOpen ? "−" : "+"}
+          </button>
           <Link
             href="/register"
-            className="ml-3 whitespace-nowrap rounded-full bg-ink px-5 py-3 text-xs font-semibold uppercase text-bg transition-transform active:scale-[0.97] lg:ml-0"
+            className="ml-2 whitespace-nowrap rounded-full bg-ink px-5 py-3 text-xs font-semibold uppercase text-bg transition-transform active:scale-[0.97] xl:ml-0"
           >
             Register
           </Link>
         </div>
       </div>
+
+      {menuOpen && !condensed && (
+        <ul
+          id="site-menu"
+          className="absolute left-0 top-[calc(100%+8px)] grid w-[min(92vw,420px)] grid-cols-2 gap-1 rounded-2xl border border-line bg-bg/95 p-2 shadow-[0_18px_40px_-20px_color-mix(in_srgb,var(--fg)_45%,transparent)] backdrop-blur xl:hidden"
+        >
+          {links.map((l, i) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-ink hover:text-bg"
+              >
+                <span className="font-mono text-[10px] text-accent">{String(i + 1).padStart(2, "0")}</span>
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 }
