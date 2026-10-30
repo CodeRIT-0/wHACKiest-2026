@@ -29,3 +29,62 @@ section[id] {
     transform: translateX(-50%);
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   TIME HEIST — GPU KEYFRAMES & OPTIMIZATIONS
+   ════════════════════════════════════════════════════════════ */
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0%) translateZ(0);
+  }
+  50% {
+    transform: translateY(180px) translateZ(0);
+  }
+  100% {
+    transform: translateY(0%) translateZ(0);
+  }
+}
+
+@keyframes curvedFlight {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes particlePop {
+  0% {
+    transform: translate(0, 0) scale(0) translateZ(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+    transform: translate(calc(cos(var(--tw-rotate, 0deg)) * 35px), calc(sin(var(--tw-rotate, 0deg)) * 35px)) scale(1.4) translateZ(0);
+  }
+  100% {
+    transform: translate(calc(cos(var(--tw-rotate, 0deg)) * 60px), calc(sin(var(--tw-rotate, 0deg)) * 60px)) scale(0) translateZ(0);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
