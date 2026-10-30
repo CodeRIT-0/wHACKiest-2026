@@ -215,7 +215,7 @@ export default function PrizeVault() {
                             x={r2(50 + 28 * Math.sin(a))}
                             y={r2(50 - 28 * Math.cos(a) + 3)}
                             fontSize="8"
-                            fontFamily="monospace"
+                            className="font-mono"
                             textAnchor="middle"
                             fill="#e8e2d4"
                           >
@@ -333,7 +333,7 @@ function Clockwork({ p }: { p: MotionValue<number> }) {
         {ROMAN.map((n, i) => {
           const a = (i * Math.PI) / 6;
           return (
-            <text key={n} x={r2(100 + 70 * Math.sin(a))} y={r2(100 - 70 * Math.cos(a) + 3)} textAnchor="middle" fontSize={8} fontFamily="serif" fill="#d9b45a" stroke="none">
+            <text key={n} x={r2(100 + 70 * Math.sin(a))} y={r2(100 - 70 * Math.cos(a) + 3)} textAnchor="middle" fontSize={8} className="font-display" fill="#d9b45a" stroke="none">
               {n}
             </text>
           );

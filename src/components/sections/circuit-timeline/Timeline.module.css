@@ -58,15 +58,14 @@
   margin: 0 0 8px;
   color: #aaa49a;
   font:
-    9px/1.4 "Courier New",
-    monospace;
+    9px/1.4 var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.08em;
 }
 .headingBar h2 {
   margin: 0;
   font-size: clamp(28px, 3.3vw, 48px);
   font-weight: 700;
-  font-family: var(--display-font);
+  font-family: var(--font-archivo);
   letter-spacing: -0.015em;
   line-height: 1.02;
 }
@@ -88,16 +87,14 @@
 }
 .era > strong {
   font:
-    8px "Courier New",
-    monospace;
+    8px var(--font-jetbrains-mono), monospace;
   color: #c1baad;
   letter-spacing: 0.08em;
 }
 .era > small {
   margin-top: 5px;
   font:
-    7px "Courier New",
-    monospace;
+    7px var(--font-jetbrains-mono), monospace;
   color: #8d877d;
 }
 .viewport {
@@ -151,8 +148,7 @@
 .interconnectLabel {
   fill: #a6a99d;
   font:
-    7px "Courier New",
-    monospace;
+    7px var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.06em;
 }
 .chipFanBase {
@@ -232,15 +228,13 @@
 .chipWords {
   fill: #f4dfb6;
   font:
-    bold 9px "Courier New",
-    monospace;
+    bold 9px var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.06em;
 }
 .componentLabel {
   fill: #aaa49a;
   font:
-    8px "Courier New",
-    monospace;
+    8px var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.04em;
   paint-order: stroke fill;
   stroke: var(--paper);
@@ -249,8 +243,7 @@
 .componentSpec {
   fill: #777b72;
   font:
-    6px "Courier New",
-    monospace;
+    6px var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.12em;
   paint-order: stroke fill;
   stroke: var(--paper);
@@ -391,8 +384,7 @@
   background: #1d1b18;
   color: #b9b3a8;
   font:
-    9px/1 "Courier New",
-    monospace;
+    9px/1 var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.05em;
   border-radius: 2px 2px 0 0;
   transition:
@@ -446,8 +438,7 @@
   background: #27231c;
   border: 1px solid #4c4436;
   font:
-    600 23px/1 "Courier New",
-    monospace;
+    600 23px/1 var(--font-jetbrains-mono), monospace;
 }
 .checkpoint[data-state="active"] .dateStamp > strong {
   color: #050505;
@@ -464,8 +455,7 @@
   margin-top: 3px;
   color: #aaa49a;
   font:
-    9px/1.2 "Courier New",
-    monospace;
+    9px/1.2 var(--font-jetbrains-mono), monospace;
 }
 /* date on the left, live countdown to it on the right */
 .dateRow {
@@ -484,8 +474,7 @@
   background: #16130f;
   border: 1px solid #4c4436;
   font:
-    600 12px/1 "Courier New",
-    monospace;
+    600 12px/1 var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.02em;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -518,7 +507,7 @@
   margin: 15px 0 9px;
   color: #f4f1eb;
   font-size: 26px;
-  font-family: var(--body-font);
+  font-family: var(--font-space-grotesk);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.15;
@@ -540,8 +529,7 @@
   border-top: 1px solid #38332d;
   color: #a6aa9f;
   font:
-    8px/1.4 "Courier New",
-    monospace;
+    8px/1.4 var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.025em;
 }
 .cardFooter > span:last-child {
@@ -553,8 +541,7 @@
   margin-top: 7px;
   color: #aaa49a;
   font:
-    8px/1.4 "Courier New",
-    monospace;
+    8px/1.4 var(--font-jetbrains-mono), monospace;
 }
 .cornerTL,
 .cornerBR {
@@ -606,8 +593,7 @@
   gap: 8px;
   color: #aaa49a;
   font:
-    8px/1.4 "Courier New",
-    monospace;
+    8px/1.4 var(--font-jetbrains-mono), monospace;
 }
 .signalStatus i {
   width: 5px;
@@ -689,8 +675,7 @@
 .stageCount {
   text-align: right;
   font:
-    8px/1.4 "Courier New",
-    monospace;
+    8px/1.4 var(--font-jetbrains-mono), monospace;
   color: #aaa49a;
 }
 .stageCount > strong {
@@ -707,8 +692,7 @@
   border-top: 1px solid var(--line);
   color: #8d877d;
   font:
-    7px/1.4 "Courier New",
-    monospace;
+    7px/1.4 var(--font-jetbrains-mono), monospace;
   letter-spacing: 0.06em;
 }
 /* Density changes typography only. Card sides never change with viewport size. */

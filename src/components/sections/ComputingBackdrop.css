@@ -47,7 +47,7 @@
 .computing-backdrop-nodes { stroke: #05050535; stroke-width: .7; fill: #fd9c3659; }
 .computing-backdrop-annotations {
   fill: #0357d663;
-  font: 8px monospace;
+  font: 8px var(--font-jetbrains-mono), monospace;
   letter-spacing: .18em;
 }
 .computing-backdrop-knowledge-nodes { stroke: #0357d63d; stroke-width: 1; fill: #fff9ec; }
