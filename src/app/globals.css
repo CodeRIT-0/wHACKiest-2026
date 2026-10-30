@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #fff9ec;
+  --color-ink: #050505;
+  --color-muted: #6b665c;
+  --color-accent: #fd9c36;
+  --color-line: #cfc6b4;
+  --color-navy: #050505;
+  --color-surface: #111111;
+  --font-sans: var(--font-space-grotesk);
+}
+
+:root {
+  --site-background: #fff9ec;
+  --site-foreground: #050505;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--site-background);
+}
+
+body {
+  background: var(--site-background);
+  color: var(--site-foreground);
+}
+
+/* sections scroll to just below the fixed marquee + nav */
+section[id] {
+  scroll-margin-top: 110px;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.editorial-section {
+  background: #fff9ec;
+}
+.editorial-section[data-theme="dark"] {
+  background: #050505;
+  color: #fff9ec;
+  border-color: #38332d;
+}
+.editorial-section[data-theme="dark"] .section-eyebrow {
+  color: #aaa49a;
+}
+.section-content > h2 {
+  text-wrap: balance;
+}
+.section-grid > div {
+  transition:
+    border-color 250ms ease,
+    background-color 250ms ease,
+    transform 250ms ease;
+}
+.section-grid > div:hover {
+  border-color: #fd9c36;
+  background: #fd9c3608;
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .section-grid > div {
+    transition: none;
+  }
+  .section-grid > div:hover {
+    transform: none;
+  }
+}

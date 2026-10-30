@@ -1,0 +1,225 @@
+.scene {
+  isolation: isolate;
+  background: #fff9ec;
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.blueprintGrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#b8a988 0.7px, transparent 0.8px);
+  background-size: 24px 24px;
+  opacity: 0.17;
+  mask-image: linear-gradient(90deg, transparent 25%, #000 68%, transparent);
+}
+.gear {
+  position: absolute;
+  color: #bca881;
+  opacity: 0.19;
+  animation: turn 80s linear infinite;
+  animation-play-state: paused;
+}
+.gearOne {
+  top: -100px;
+  right: 16%;
+  width: 260px;
+}
+.gearTwo {
+  bottom: -125px;
+  left: -105px;
+  width: 300px;
+  animation-duration: 100s;
+  animation-direction: reverse;
+}
+.gearThree {
+  width: 160px;
+  bottom: 17%;
+  right: 6%;
+  animation-duration: 46s;
+}
+.schematic {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  overflow: visible;
+}
+.dial {
+  stroke: #bba984;
+  stroke-width: 0.8;
+  opacity: 0.45;
+}
+.dial path {
+  stroke-width: 1.1;
+}
+.orbitCarrier {
+  transform-origin: 860px 410px;
+  animation: turn 28s linear infinite;
+  animation-play-state: paused;
+  opacity: 0.75;
+}
+.orbitReverse {
+  animation-duration: 45s;
+  animation-direction: reverse;
+}
+.wire {
+  stroke: #b7aa90;
+  stroke-width: 0.85;
+  opacity: 0.35;
+}
+.signal {
+  stroke: #fd9c36;
+  stroke-width: 1.6;
+  stroke-dasharray: 25 1240;
+  animation: current 12s linear infinite;
+  animation-play-state: paused;
+  opacity: 0.7;
+}
+.terminals {
+  stroke: #9a997f;
+  fill: #fff9ec;
+  opacity: 0.6;
+}
+.reticle {
+  position: absolute;
+  z-index: 0;
+  width: 46px;
+  height: 46px;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  color: #bc7a31;
+  pointer-events: none;
+}
+.reticle i {
+  position: absolute;
+  inset: 0;
+  border: 1px dashed #bda174;
+  border-radius: 50%;
+}
+.reticle span {
+  font: 14px/1 var(--mono-font);
+}
+.machineParallax {
+  position: relative;
+  z-index: 1;
+}
+.machineFloat {
+  animation: float 7s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.motionControls {
+  position: absolute;
+  z-index: 3;
+  right: max(32px, calc((100vw - 1280px) / 2));
+  bottom: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  color: #8a775b;
+  font: 8px/1.4 var(--mono-font);
+  letter-spacing: 0.06em;
+}
+.motionControls button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid #cfc6b4;
+  background: #f7f2e5;
+  color: #635a4a;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+.motionControls button:hover {
+  border-color: #b68542;
+}
+.motionControls button span {
+  color: #9e671f;
+  font-size: 13px;
+}
+.scene[data-hero-running="true"] .gear,
+.scene[data-hero-running="true"] .orbitCarrier,
+.scene[data-hero-running="true"] .signal,
+.scene[data-hero-running="true"] .machineFloat {
+  animation-play-state: running;
+}
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0.35deg);
+  }
+}
+@keyframes current {
+  to {
+    stroke-dashoffset: -1265;
+  }
+}
+@media (max-width: 800px) {
+  .motionControls {
+    right: 20px;
+    font-size: 7px;
+  }
+  .gearThree {
+    right: -50px;
+    bottom: 32%;
+  }
+}
+@media (max-width: 540px) {
+  .motionControls {
+    right: 18px;
+    bottom: 55px;
+  }
+  .pointerHint {
+    display: none;
+  }
+  .gearOne {
+    right: -110px;
+    top: 80px;
+    width: 220px;
+  }
+  .gearTwo {
+    bottom: 20px;
+    width: 220px;
+  }
+  .machineFloat {
+    animation-duration: 8s;
+  }
+  .schematic {
+    opacity: 0.55;
+  }
+}
+@media (pointer: coarse) {
+  .pointerHint,
+  .reticle {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gear,
+  .orbitCarrier,
+  .signal,
+  .machineFloat {
+    animation: none !important;
+  }
+  .motionControls,
+  .reticle {
+    display: none;
+  }
+}

@@ -1,0 +1,129 @@
+.transition {
+  --from: #fff9ec;
+  --to: #050505;
+  --caption: #b8afa0;
+  position: relative;
+  height: clamp(180px, 19vw, 270px);
+  overflow: hidden;
+  isolation: isolate;
+  --bridge-gradient: linear-gradient(
+    180deg,
+    var(--from) 0%,
+    var(--from) 5%,
+    #c0b8a8 30%,
+    #49453d 54%,
+    var(--to) 92%,
+    var(--to)
+  );
+  background: var(--bridge-gradient);
+}
+.transition[data-to="light"] {
+  --from: #050505;
+  --to: #fff9ec;
+  --caption: #635c50;
+  --bridge-gradient: linear-gradient(
+    180deg,
+    var(--from),
+    var(--from) 5%,
+    #49453d 35%,
+    #c0b8a8 64%,
+    var(--to) 94%,
+    var(--to)
+  );
+}
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.17;
+  background-image: radial-gradient(#fff9ec 0.65px, transparent 0.8px);
+  background-size: 4px 4px;
+  mask-image: linear-gradient(transparent, black 40%, black 65%, transparent);
+}
+.curtainPanel {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background: var(--bridge-gradient);
+  pointer-events: none;
+}
+.curtainLeft {
+  left: 0;
+}
+.curtainRight {
+  right: 0;
+}
+.traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.traces path {
+  fill: none;
+  stroke: #fd9c36;
+  stroke-width: 0.65;
+  opacity: 0.2;
+  vector-effect: non-scaling-stroke;
+}
+.traces .bus {
+  stroke-width: 1;
+  opacity: 0.4;
+}
+.traces .power {
+  stroke: #ffd7a4;
+  stroke-width: 2;
+  opacity: 1;
+}
+.halo {
+  fill: #fd9c36;
+  filter: blur(9px);
+}
+.contact {
+  fill: #fd9c36;
+  stroke: #fff9ec;
+  stroke-width: 1;
+}
+.caption {
+  position: absolute;
+  z-index: 2;
+  right: max(28px, calc((100vw - 1280px) / 2));
+  bottom: 24px;
+  left: max(28px, calc((100vw - 1280px) / 2));
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--caption);
+  font:
+    9px/1.4 "Courier New",
+    monospace;
+  letter-spacing: 0.12em;
+}
+.caption span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.caption i {
+  width: 4px;
+  height: 4px;
+  background: #fd9c36;
+  border-radius: 50%;
+}
+.caption b {
+  color: #fd9c36;
+  font-size: 16px;
+  font-weight: 400;
+}
+@media (max-width: 600px) {
+  .transition {
+    height: 180px;
+  }
+  .caption {
+    left: 16px;
+    right: 16px;
+    font-size: 7px;
+    letter-spacing: 0.04em;
+  }
+}
