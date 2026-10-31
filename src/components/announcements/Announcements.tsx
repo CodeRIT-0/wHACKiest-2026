@@ -176,8 +176,8 @@ export default function Announcements() {
               <ol className="relative ml-1 border-l border-ink/40 pl-5">
                 {[
                   ["29 Oct", "Registration opens", true],
-                  ["28 Nov", "Registration closes", false],
-                  ["29 Nov", "Shortlist announced", false],
+                  ["15 Nov", "Registration closes", false],
+                  ["22 Nov", "Shortlist announced", false],
                   ["01–02 Dec", "wHACKiest 2026", false],
                 ].map(([date, label, current]) => (
                   <li key={label as string} className="relative pb-5 last:pb-0">

@@ -57,7 +57,7 @@ function CheckpointContent({
 export default function Timeline({
   id = "timeline",
   checkpoints = timelineCheckpoints,
-  datesAreTentative = true,
+  datesAreTentative = false,
 }: TimelineProps) {
   const headingId = useId();
   const reducedMotion = useTimelineReducedMotion();

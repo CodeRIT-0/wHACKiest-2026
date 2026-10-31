@@ -586,7 +586,7 @@ export default function Hero() {
               </span>
             </p>
             <p data-story-fade className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-muted sm:mt-5 sm:text-lg lg:text-[min(1.375rem,2.5vh)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden">
-              wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In one{" "}
+              wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In this{" "}
               <span className="whitespace-nowrap font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
               pitch working prototypes for real-world problems.
             </p>

@@ -17,7 +17,7 @@ export type TimelineCheckpoints = readonly [
   TimelineCheckpoint,
 ];
 
-// Planning placeholders, not the official event schedule. All times are IST.
+// The event schedule. All times are IST.
 export const timelineCheckpoints: TimelineCheckpoints = [
   {
     id: "registration-opens",
@@ -40,8 +40,8 @@ export const timelineCheckpoints: TimelineCheckpoints = [
   {
     id: "mission-briefing",
     title: "Shortlisting",
-    date: "01 December 2026",
-    dateTime: "2026-12-01T09:00:00+05:30",
+    date: "22 November 2026",
+    dateTime: "2026-11-22T09:00:00+05:30",
     time: "09:00 AM",
     description: "Proposals are evaluated and the selected teams advance to the offline hackathon.",
     tag: "OBJECTIVES DECODED",
