@@ -45,20 +45,21 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, y: -16, filter: "blur(8px)", transition: { duration: 0.22 } }}
               transition={{ duration: 0.55, delay: 0.08 + i * 0.09, ease: [0.16, 1, 0.3, 1] }}
+              data-touch
               className="group/card relative overflow-hidden rounded-[18px] p-px"
               style={{ background: "rgba(255,249,236,0.1)" }}
             >
               {/* the lit border: a glow behind the card that only shows through its 1px edge */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/card:opacity-100 group-data-[active]/card:opacity-100"
                 style={{ background: `radial-gradient(320px circle at var(--sx, 50%) var(--sy, 50%), ${t.hue}, transparent 65%)` }}
               />
               <div className="relative flex h-full flex-col rounded-[17px] bg-[#0c0b09] p-5 sm:p-6">
                 {/* and a fainter wash on the face */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 rounded-[17px] opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
+                  className="pointer-events-none absolute inset-0 rounded-[17px] opacity-0 transition-opacity duration-500 group-hover/card:opacity-100 group-data-[active]/card:opacity-100"
                   style={{ background: `radial-gradient(420px circle at var(--sx, 50%) var(--sy, 50%), ${t.hue}14, transparent 60%)` }}
                 />
 
@@ -82,7 +83,7 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
                   style={{ color: t.hue }}
                 >
                   Take this on
-                  <ArrowUpRight size={14} weight="bold" className="transition-transform duration-300 group-hover/card:-translate-y-0.5 group-hover/card:translate-x-0.5" />
+                  <ArrowUpRight size={14} weight="bold" className="transition-transform duration-300 group-hover/card:-translate-y-0.5 group-data-[active]/card:-translate-y-0.5 group-hover/card:translate-x-0.5 group-data-[active]/card:translate-x-0.5" />
                 </Link>
               </div>
             </motion.article>
@@ -108,7 +109,7 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
             className="group/reg relative mt-6 inline-flex items-center gap-2 border-2 border-[#050505] bg-accent px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] text-[#050505] shadow-[4px_4px_0_#050505] transition-[translate,box-shadow] duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#050505] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0_#050505]"
           >
             Register your team
-            <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/reg:translate-x-1" />
+            <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/reg:translate-x-1 group-data-[active]/reg:translate-x-1" />
           </Link>
         </aside>
       </div>

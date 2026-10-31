@@ -62,7 +62,7 @@ export default function FindUs() {
                 {CONTACT.email ? (
                 <a href={`mailto:${CONTACT.email}`} className="group/m mt-2 inline-flex items-center gap-2 font-semibold">
                   <EnvelopeSimple size={16} weight="bold" className="text-accent" />
-                  <span className="bg-[linear-gradient(var(--accent),var(--accent))] bg-[length:0%_2px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-300 group-hover/m:bg-[length:100%_2px]">
+                  <span className="bg-[linear-gradient(var(--accent),var(--accent))] bg-[length:0%_2px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-300 group-hover/m:bg-[length:100%_2px] group-data-[active]/m:bg-[length:100%_2px]">
                     {CONTACT.email}
                   </span>
                 </a>
@@ -103,14 +103,17 @@ export default function FindUs() {
             </div>
 
             {/* ---- map ---- */}
-            <figure className="group/map relative overflow-hidden rounded-[18px] border-2 border-accent shadow-[0_24px_48px_-28px_var(--accent)] transition-transform duration-500 hover:scale-[1.015]">
+            <figure
+              data-touch
+              className="group/map relative overflow-hidden rounded-[18px] border-2 border-accent shadow-[0_24px_48px_-28px_var(--accent)] transition-transform duration-500 hover:scale-[1.015] data-[active]:scale-[1.015]"
+            >
               <div className="relative h-64 sm:h-72">
                 <iframe
                   title={`Map: ${VENUE.name}`}
                   src={mapSrc}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  className="absolute inset-0 h-full w-full border-0 transition-[filter] duration-700 [filter:grayscale(1)_invert(0.92)_contrast(0.9)_brightness(0.95)] group-hover/map:[filter:grayscale(0.2)_invert(0.92)_contrast(0.95)_brightness(1)]"
+                  className="absolute inset-0 h-full w-full border-0 transition-[filter] duration-700 [filter:grayscale(1)_invert(0.92)_contrast(0.9)_brightness(0.95)] group-hover/map:[filter:grayscale(0.2)_invert(0.92)_contrast(0.95)_brightness(1)] group-data-[active]/map:[filter:grayscale(0.2)_invert(0.92)_contrast(0.95)_brightness(1)]"
                 />
                 <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                   <span className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/70 motion-safe:animate-ping [animation-duration:2.4s]" />

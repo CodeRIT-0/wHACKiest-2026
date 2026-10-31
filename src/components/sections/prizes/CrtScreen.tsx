@@ -98,7 +98,7 @@ export default function CrtScreen({
         {/* status strip burned into the top of the tube. Everything on the tube is shrink-0: a
             flex item that compresses below its line height is what makes lines overlap. */}
         <div
-          className="flex shrink-0 items-center justify-between gap-2 border-b border-dashed pb-[0.3em] text-[0.82em] uppercase tracking-[0.12em] opacity-70"
+          className="flex shrink-0 items-center justify-between gap-2 border-b border-dashed pb-[0.3em] text-[0.82em] uppercase tracking-[0.12em] opacity-70 @max-[240px]:hidden"
           style={{ borderColor: `${AMBER}55` }}
         >
           <span className="truncate">wHACKiest OS 26.1</span>
@@ -203,7 +203,7 @@ export default function CrtScreen({
                 className="min-w-0"
               >
                 <span className="block text-[0.82em] uppercase tracking-[0.16em] opacity-60">total prize pool</span>
-                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums" style={{ color: AMBER }}>
+                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums @max-[240px]:text-[2.3em]" style={{ color: AMBER }}>
                   {inr(TOTAL)}
                 </span>
               </motion.div>

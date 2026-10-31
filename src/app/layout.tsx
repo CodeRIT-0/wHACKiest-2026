@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import ColourJourney from "@/components/system/ColourJourney";
 import MotionProvider from "@/components/system/MotionProvider";
 import SmoothScroll from "@/components/system/SmoothScroll";
+import TouchActivate from "@/components/system/TouchActivate";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${spaceGrotesk.variable} ${archivo.variable} ${jetbrainsMono.variable} antialiased`}>
       <body className="min-h-screen font-sans">
         <SmoothScroll />
+        <TouchActivate />
         <ColourJourney />
         <Marquee />
         <Navbar />

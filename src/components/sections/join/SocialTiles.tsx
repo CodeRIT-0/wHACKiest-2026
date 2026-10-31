@@ -72,17 +72,18 @@ export default function SocialTiles() {
               target={external ? "_blank" : undefined}
               rel={external ? "noopener noreferrer" : undefined}
               aria-label={`${label}: ${note}`}
-              className="group/s relative flex h-full items-center gap-3 overflow-hidden rounded-[16px] border border-line bg-panel p-3.5 transition-[translate,box-shadow,border-color] duration-300 hover:-translate-y-1 sm:p-4"
+              data-touch
+              className="group/s relative flex h-full items-center gap-3 overflow-hidden rounded-[16px] border border-line bg-panel p-3.5 transition-[translate,box-shadow,border-color] duration-300 hover:-translate-y-1 active:scale-[0.98] data-[active]:-translate-y-1 sm:p-4"
               style={{ ["--brand" as string]: brand }}
             >
               {/* brand wash rising from the bottom */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-20 transition-[height] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/s:h-full"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-20 transition-[height] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/s:h-full group-data-[active]/s:h-full"
                 style={{ background: bg }}
               />
               <span
-                className="relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] text-white shadow-[0_6px_14px_-6px_var(--brand)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/s:-rotate-6 group-hover/s:scale-110 sm:h-12 sm:w-12"
+                className="relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] text-white shadow-[0_6px_14px_-6px_var(--brand)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/s:-rotate-6 group-data-[active]/s:-rotate-6 group-hover/s:scale-110 group-data-[active]/s:scale-110 sm:h-12 sm:w-12"
                 style={{ background: bg }}
               >
                 <SocialIcon size={24} weight="fill" />
@@ -94,12 +95,12 @@ export default function SocialTiles() {
               <ArrowUpRight
                 size={15}
                 weight="bold"
-                className="relative shrink-0 text-muted transition-[translate,color] duration-300 group-hover/s:-translate-y-0.5 group-hover/s:translate-x-0.5 group-hover/s:text-[var(--brand)]"
+                className="relative shrink-0 text-muted transition-[translate,color] duration-300 group-hover/s:-translate-y-0.5 group-data-[active]/s:-translate-y-0.5 group-hover/s:translate-x-0.5 group-data-[active]/s:translate-x-0.5 group-hover/s:text-[var(--brand)] group-data-[active]/s:text-[var(--brand)]"
               />
               {/* border and shadow pick up the brand colour */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-[16px] border-2 border-[var(--brand)] opacity-0 shadow-[0_18px_36px_-18px_var(--brand)] transition-opacity duration-300 group-hover/s:opacity-100"
+                className="pointer-events-none absolute inset-0 rounded-[16px] border-2 border-[var(--brand)] opacity-0 shadow-[0_18px_36px_-18px_var(--brand)] transition-opacity duration-300 group-hover/s:opacity-100 group-data-[active]/s:opacity-100"
               />
             </a>
           </motion.li>

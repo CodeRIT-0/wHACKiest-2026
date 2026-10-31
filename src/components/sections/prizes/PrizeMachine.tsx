@@ -8,7 +8,7 @@ import SectionHeader from "../../SectionHeader";
 import { useHydrated } from "@/hooks/useHydrated";
 import CrtScreen, { type Stage } from "./CrtScreen";
 import PrizeWindow from "./PrizeWindow";
-import { inr, PRIZES, TOTAL, type Prize } from "./prize-data";
+import { inr, masked, PRIZES, TOTAL, type Prize } from "./prize-data";
 
 // The prize reveal, driven entirely by scroll. The section is a tall stretch with a pinned stage:
 // the machine boots as it arrives, reports the pool as encrypted, and then each further screen of
@@ -94,11 +94,11 @@ export default function PrizeMachine() {
           {/* ---------------- the stage ---------------- */}
           <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10 lg:pt-3">
             {/* the machine */}
-            <div data-trace className="relative mx-auto w-[min(100%,calc(100vh_-_460px))] min-w-0 lg:w-[min(100%,calc(100vh_-_268px))]">
+            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_330px))] min-w-0 sm:w-[min(100%,calc(100svh_-_470px))] lg:w-[min(100%,calc(100vh_-_268px))]">
               {/* On phones the frame crops in on the tube, so the screen stays readable; from lg up the
                   whole machine is in shot and sized to whatever height the pinned stage has. */}
-              <div className="relative aspect-[646/528] w-full overflow-hidden lg:aspect-square">
-                <div className="absolute left-0 top-0 aspect-square w-[154.8%] -translate-x-[17.4%] -translate-y-[3.2%] lg:w-full lg:translate-x-0 lg:translate-y-0">
+              <div className="relative aspect-square w-full overflow-hidden">
+                <div className="absolute inset-0">
                   <Image
                     src="/assets/prizes/retro-computer.webp"
                     alt=""
@@ -151,11 +151,34 @@ export default function PrizeMachine() {
                 </span>
               </div>
 
-              <div className="grid gap-2 sm:gap-3">
+              <div className="hidden gap-3 lg:grid">
                 {PRIZES.map((p, i) => (
                   <PrizeWindow key={p.id} prize={p} slot={i + 1} open={ids.includes(p.id)} reduce={reduce} />
                 ))}
               </div>
+              <ul className="grid grid-cols-3 gap-2 sm:gap-3 lg:hidden">
+                {PRIZES.map((p) => {
+                  const open = ids.includes(p.id);
+                  const Icon = p.icon;
+                  return (
+                    <li
+                      key={p.id}
+                      className={`relative overflow-hidden border-2 px-2 py-2 text-center transition-[border-color,box-shadow,translate] duration-500 ${
+                        open ? "-translate-y-0.5 border-ink bg-panel shadow-[3px_3px_0_var(--fg)]" : "border-dashed border-ink/25 bg-panel/40"
+                      }`}
+                    >
+                      <span className="flex items-center justify-center gap-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+                        <Icon size={12} weight="duotone" style={{ color: open ? p.hue : undefined }} />
+                        {p.short}
+                      </span>
+                      <span className={`display-wide mt-1 block text-[15px] leading-none tabular-nums ${open ? "" : "text-ink/25"}`}>
+                        {open ? inr(p.amount) : masked(p.amount)}
+                      </span>
+                      <span className="sr-only">{`${p.place}: ${p.name}, ${inr(p.amount)}`}</span>
+                    </li>
+                  );
+                })}
+              </ul>
 
             </div>
           </div>
