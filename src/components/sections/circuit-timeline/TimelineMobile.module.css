@@ -1,0 +1,529 @@
+/* The phone timeline (TimelineMobile.tsx). Same palette and retro-window language as the wide
+   circuit (Timeline.module.css), laid out down the page. Only transforms and opacity animate. */
+.root {
+  --paper: #050505;
+  --ink: #f4f1eb;
+  --orange: #fd9c36;
+  --blue: #6c97f1;
+  --line: #38332d;
+  position: relative;
+  padding: 0 16px 64px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 1px 1px, #ffffff0d 1px, transparent 1.4px) 0 0 / 22px 22px,
+    var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---- section rule with the era number ---- */
+.rule {
+  position: relative;
+  height: 28px;
+  margin: 0 -16px;
+  border-bottom: 1px solid var(--line);
+}
+.rule > span {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border: 1px solid #6d6252;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: 12px;
+  transform: translateX(-50%);
+}
+
+/* ---- heading ---- */
+.header {
+  padding: 40px 0 22px;
+}
+.eyebrow {
+  margin: 0 0 10px;
+  color: #aaa49a;
+  font: 9px/1.4 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.08em;
+}
+.header h2 {
+  margin: 0;
+  font: 700 clamp(30px, 9.4vw, 40px) / 1 var(--font-archivo);
+  letter-spacing: -0.02em;
+}
+.header h2 > span {
+  color: var(--orange);
+}
+.era {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 16px 0 0;
+  color: #d8ccba;
+  font: 600 10px/1.3 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.08em;
+}
+.era > span {
+  color: var(--orange);
+}
+.era > small {
+  flex-basis: 100%;
+  color: #8f877a;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+}
+
+/* ---- the HUD that rides along at the top ---- */
+.hud {
+  position: sticky;
+  top: 10px;
+  z-index: 5;
+  margin: 4px -4px 26px;
+  overflow: hidden;
+  border: 1px solid #4c4436;
+  border-radius: 6px;
+  background: #0d0c0aeb;
+  box-shadow: 0 14px 30px -14px #000;
+  /* below the floating nav while it shows (it ends ~74px down), up to the top when it tucks away */
+  transform: translateY(66px);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+:global(html[data-nav-away]) .hud {
+  transform: none;
+}
+.hudRow {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  font: 9px/1 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.06em;
+}
+.hudRow > i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+  animation: blink 1.6s steps(2, jump-none) infinite;
+}
+.hudRow > i[data-complete] {
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+  animation: none;
+}
+.hudSignal {
+  color: var(--orange);
+}
+.hudTitle {
+  overflow: hidden;
+  color: #d8ccba;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hudRow > strong {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.hudRow > strong small {
+  color: #8f877a;
+  font-size: 8px;
+  font-weight: 400;
+}
+.hudBar {
+  height: 2px;
+  background: linear-gradient(90deg, var(--orange), #ffc27a);
+  transform-origin: left;
+}
+
+/* ---- the rail and the list ---- */
+.track {
+  position: relative;
+}
+.rail {
+  position: absolute;
+  top: 30px; /* RAIL_TOP in TimelineMobile.tsx */
+  bottom: 0;
+  left: 21px;
+  width: 2px;
+  background: repeating-linear-gradient(#2c2823 0 6px, #1c1915 6px 9px);
+}
+.railLive {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--orange), #ffb766);
+  box-shadow: 0 0 10px #fd9c3680;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.signal {
+  position: absolute;
+  top: -6px;
+  left: -5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff3e0;
+  box-shadow:
+    0 0 0 3px #fd9c3655,
+    0 0 16px 4px #fd9c36aa;
+}
+.signal::after {
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--orange);
+  border-radius: 50%;
+  content: "";
+  animation: ping 1.8s ease-out infinite;
+}
+
+.list {
+  display: grid;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  position: relative;
+  isolation: isolate; /* keeps the glow layer (::after, z-index -1) above the section background */
+  padding-left: 52px;
+}
+
+/* the pad on the rail and the branch out to the card */
+.pad {
+  position: absolute;
+  top: 22px;
+  left: 12px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #5b5348;
+  border-radius: 4px;
+  background: #0b0a09;
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s;
+}
+.pad > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: #3b362f;
+  transition:
+    background 0.4s,
+    transform 0.4s;
+}
+.pad::after {
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--orange);
+  border-radius: 6px;
+  opacity: 0;
+  content: "";
+}
+.item:not([data-state="upcoming"]) .pad {
+  border-color: var(--orange);
+  box-shadow: 0 0 14px #fd9c3666;
+}
+.item:not([data-state="upcoming"]) .pad > span {
+  background: var(--orange);
+  transform: scale(1.25);
+}
+.item[data-state="active"] .pad::after {
+  animation: ping 1.6s ease-out infinite;
+}
+.branch {
+  position: absolute;
+  top: 31px;
+  left: 32px;
+  width: 20px;
+  height: 2px;
+  background: var(--orange);
+  box-shadow: 0 0 8px #fd9c3680;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+.item:not([data-state="upcoming"]) .branch {
+  transform: scaleX(1);
+}
+
+/* ---- the card ---- */
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #48433a;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1b1915, #111 65%);
+  box-shadow: 4px 6px 0 #00000080;
+  transition: border-color 0.45s;
+}
+.item[data-state="active"] .card {
+  border-color: var(--orange);
+}
+/* the live card's glow is its own layer that only fades in and out (animating the box-shadow
+   itself repainted the card on every frame of the change) */
+.item::after {
+  position: absolute;
+  inset: 0 0 0 52px;
+  z-index: -1;
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px #fd9c3622,
+    0 18px 50px -10px #fd9c3650;
+  opacity: 0;
+  content: "";
+  transition: opacity 0.45s;
+  pointer-events: none;
+}
+.item[data-state="active"]::after {
+  opacity: 1;
+}
+.item[data-state="complete"] .card {
+  border-color: #3c506e;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #1d1b18;
+  color: #b9b3a8;
+  font: 9px/1 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.05em;
+  transition:
+    background 0.45s,
+    color 0.45s;
+}
+.item[data-state="active"] .bar {
+  background: var(--orange);
+  color: #17110a;
+}
+.item[data-state="complete"] .bar {
+  background: #142138;
+  color: #abc7f8;
+}
+.state {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+}
+.state i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+.item[data-state="active"] .state i {
+  animation: blink 1.2s steps(2, jump-none) infinite;
+}
+.item[data-state="active"] .state i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.item[data-state="active"] .state i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.body {
+  position: relative;
+  padding: 16px 16px 14px;
+}
+/* the vintage component for this stop, tucked into the corner; it comes alive with its card */
+.art {
+  position: absolute;
+  top: 8px;
+  right: -6px;
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  object-position: top right;
+  opacity: 0.4;
+  /* the colour switches at once; only opacity and the turn animate (an animated filter repaints) */
+  filter: grayscale(1) drop-shadow(0 8px 14px #000);
+  transform: rotate(-10deg) scale(0.9);
+  transition:
+    opacity 0.6s,
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.item:not([data-state="upcoming"]) .art {
+  opacity: 0.95;
+  filter: grayscale(0) drop-shadow(0 8px 14px #000);
+  transform: rotate(-4deg) scale(1);
+}
+.item[data-state="active"] .art {
+  transform: rotate(0deg) scale(1.06);
+}
+
+.dateRow {
+  padding-right: 84px;
+}
+.date {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.date > strong {
+  display: grid;
+  place-items: center;
+  min-width: 52px;
+  height: 52px;
+  border: 1px solid #4c4436;
+  background: #16130f;
+  font: 700 30px/1 var(--font-archivo);
+  font-variant-numeric: tabular-nums;
+  transition:
+    color 0.45s,
+    border-color 0.45s;
+}
+.item[data-state="active"] .date > strong {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+.date > span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font: 600 15px/1.1 var(--font-space-grotesk);
+}
+.date small {
+  color: #9b9385;
+  font: 10px/1 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.05em;
+}
+
+/* the live card's countdown glows like the wide timeline's */
+.item[data-state="active"] .count > span:not([data-passed]) {
+  color: var(--orange);
+  border-color: var(--orange);
+  box-shadow: 0 0 10px #fd9c3640;
+}
+.count {
+  margin-top: 12px;
+}
+.card h3 {
+  margin: 14px 0 8px;
+  color: var(--ink);
+  font: 600 22px/1.15 var(--font-space-grotesk);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.card p {
+  margin: 0;
+  color: #c0b9ad;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 11px;
+  border-top: 1px dashed #3a352e;
+  color: #8f877a;
+  font: 9px/1 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.1em;
+}
+.footer > span:last-child {
+  color: var(--orange);
+  font-size: 13px;
+}
+
+/* ---- the end of the line ---- */
+.terminal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 34px;
+  padding-left: 1px; /* 42px chip centred on the rail (22px) */
+}
+/* the last stretch of rail, from the final card down to the chip */
+.terminal::before {
+  position: absolute;
+  top: -34px;
+  left: 21px; /* same line as .rail */
+  width: 2px;
+  height: 34px;
+  background: repeating-linear-gradient(#2c2823 0 6px, #1c1915 6px 9px);
+  content: "";
+  transition:
+    background 0.5s,
+    box-shadow 0.5s;
+}
+.terminal[data-complete]::before {
+  background: var(--orange);
+  box-shadow: 0 0 10px #fd9c3680;
+}
+.terminalChip {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid #5b5348;
+  border-radius: 6px;
+  background: #0b0a09;
+  color: #6e665a;
+  font: 600 5.5px/1.35 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.06em;
+  transition:
+    border-color 0.5s,
+    color 0.5s,
+    box-shadow 0.5s,
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.terminalChip b {
+  font-weight: inherit;
+}
+.terminalText {
+  color: #8f877a;
+  font: 9px/1.4 var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.12em;
+  transition: color 0.5s;
+}
+.terminal[data-complete] .terminalChip {
+  border-color: var(--orange);
+  color: var(--orange);
+  box-shadow: 0 0 24px #fd9c3677;
+  transform: scale(1.12);
+}
+.terminal[data-complete] .terminalText {
+  color: var(--ink);
+}
+
+@keyframes ping {
+  from {
+    opacity: 0.9;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal::after,
+  .hudRow > i,
+  .item[data-state="active"] .pad::after,
+  .item[data-state="active"] .state i {
+    animation: none;
+  }
+}

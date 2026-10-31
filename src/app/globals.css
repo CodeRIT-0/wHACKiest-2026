@@ -318,3 +318,31 @@ section[id] {
     scroll-behavior: auto !important;
   }
 }
+
+/* The hero clock on phones and tablets (no pinned sequence there, see Hero.tsx): it floats gently
+   while it rests, and drifts back and fades as you scroll on into the About section. Transforms and
+   opacity only; the drift is scroll-driven CSS, so where supported it runs off the main thread (and
+   browsers without scroll timelines simply skip it) */
+@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
+  .hero-clock-float {
+    animation: hero-clock-float 6s ease-in-out infinite;
+  }
+  @supports (animation-timeline: scroll()) {
+    .hero-clock-drift {
+      animation: hero-clock-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90svh;
+    }
+  }
+}
+@keyframes hero-clock-float {
+  50% {
+    transform: translateY(-7px);
+  }
+}
+@keyframes hero-clock-drift {
+  to {
+    opacity: 0.35;
+    transform: translateY(9svh) scale(0.86);
+  }
+}

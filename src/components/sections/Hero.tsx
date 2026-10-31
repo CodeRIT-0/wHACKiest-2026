@@ -13,6 +13,8 @@ import { Gear } from "../decor/Decor";
 import Words from "../motion/Words";
 import FlipBoard from "../hero/FlipBoard";
 import SecondsDial from "../hero/SecondsDial";
+import MobileAbout from "../hero/MobileAbout";
+import { AboutBlurb, POLAROIDS, STATS } from "../hero/about-content";
 import { phaseAt, STATUS } from "../hero/hero-status";
 import { HERO_TRIGGER_ID, scrollToStory, STORY_HASH } from "../hero/story-scroll";
 
@@ -28,13 +30,11 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 //   3. it bursts into line-art glass shards and gears that fall toward the vacuum-tube era below
 // The frames are transparent, so the paper stays one flat colour. The shatter clip is cut before
 // its smoke. Reduced motion: no pin, no scrub, just the clock beside the copy.
+// Phones and tablets (below lg): no pin and no frame sequence either. The hero is one first screen
+// (its intro plays on load, the clock floats gently and drifts back as you scroll on) and the About
+// story is its own section after it (MobileAbout). The scrubbed sequence was the main source of
+// jank and download weight on a phone.
 
-// photos from wHACKiest 2025, cropped square in public/assets/about
-const POLAROIDS = [
-  { caption: "Kick-off, 2025", src: "/assets/about/kickoff.webp", alt: "The wHACKiest 2025 crew with the event banner", tilt: "-rotate-6" },
-  { caption: "3am debugging", src: "/assets/about/debugging.webp", alt: "Teams heads-down at their laptops in the lab", tilt: "rotate-3" },
-  { caption: "Final demos", src: "/assets/about/demos.webp", alt: "Teams presenting their projects to the judges", tilt: "-rotate-2" },
-];
 
 const TURN_END = FRAMES.turn.count - 1;
 const SHATTER_STOP = 52; // smoke takes over after this frame
@@ -101,12 +101,11 @@ function gearPath(teeth: number, outer: number, inner: number) {
   return `M${pts.join("L")}Z`;
 }
 
-type Frame = HTMLImageElement | ImageBitmap;
 const ready = (img?: HTMLImageElement) => (img?.complete && img.naturalWidth > 0 ? img : undefined);
 // closest frame that has finished loading, so a slow network shows a nearby angle, not a gap
-function nearest(pick: (i: number) => Frame | undefined, count: number, i: number) {
-  for (let d = 0; d < count; d++) {
-    const img = pick(i - d) ?? pick(i + d);
+function nearest(list: HTMLImageElement[], i: number) {
+  for (let d = 0; d < list.length; d++) {
+    const img = ready(list[i - d]) ?? ready(list[i + d]);
     if (img) return img;
   }
 }
@@ -136,11 +135,6 @@ export default function Hero() {
   const [prints, setPrints] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const images = useRef<Record<Seq, HTMLImageElement[]>>({ turn: [], shatter: [] });
-  // phones: every frame decoded once, up front, at half size. Drawing a plain <img> decodes the
-  // WebP again on every scroll frame (the browser doesn't keep 120 decoded frames around), which
-  // was most of the hero's jank on a phone. While it plays the clock is shrunk to a fifth of the
-  // screen, so half size is plenty; the resting frame still draws from the full-size image
-  const bitmaps = useRef<Record<Seq, (ImageBitmap | undefined)[]>>({ turn: [], shatter: [] });
   // scroll-driven playhead: `turn` 0-1 plays the turn clip out and back, `shatter` is a frame index
   const play = useRef({ turn: 0, shatter: 0 });
   const drawn = useRef("");
@@ -155,52 +149,38 @@ export default function Hero() {
     const key = `${seq}:${frame.toFixed(2)}`;
     if (key === drawn.current && !force) return;
     const list = images.current[seq];
-    const pick = (i: number): Frame | undefined => (seq === "turn" && i === 0 ? undefined : bitmaps.current[seq][i]) ?? ready(list[i]);
     const base = Math.floor(frame);
     // the shatter clip loads second; until it has, hold the turn's opening frame (same shot)
-    const a = nearest(pick, list.length, base) ?? ready(images.current.turn[0]);
+    const a = nearest(list, base) ?? ready(images.current.turn[0]);
     if (!a) return;
     drawn.current = key;
     const { width, height } = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
     ctx.globalAlpha = 1;
     ctx.drawImage(a, 0, 0, width, height);
-    const next = frame - base > 0.02 ? pick(base + 1) : undefined;
+    const next = frame - base > 0.02 ? ready(list[base + 1]) : undefined;
     if (next) {
       ctx.globalAlpha = frame - base;
       ctx.drawImage(next, 0, 0, width, height);
     }
   }, []);
 
-  // load the turn first; the shatter is further into the scroll, so it can follow after
+  // The resting frame paints the hero everywhere. The rest of the sequence (~120 frames, several
+  // MB) only ever plays on a desktop, so only a desktop fetches it: a couple of seconds after load
+  // at an idle moment (or on the first scroll), the turn first and the shatter after it
   useEffect(() => {
     let cancelled = false;
-    const small = window.matchMedia("(max-width: 1023px)").matches && "createImageBitmap" in window;
-    // a newly arrived frame only needs painting if the clock is mid-animation (at rest it shows frame 0)
-    const repaint = () => {
-      if (!cancelled && (play.current.turn > 0 || play.current.shatter > 0)) draw(true);
-    };
     const load = (seq: Seq, count: number) =>
-      Array.from({ length: count }, () => {
+      Array.from({ length: count }, (_, i) => {
         const img = new window.Image();
         img.decoding = "async";
-        img.onload = repaint;
+        // a newly arrived frame only needs painting mid-animation (at rest the clock shows frame 0)
+        img.onload = () => {
+          if (!cancelled && (i === 0 || play.current.turn > 0 || play.current.shatter > 0)) draw(true);
+        };
         return img;
       });
-    // phones: fetched as files and decoded straight to half-size bitmaps. Made from a Blob, the
-    // decode runs off the main thread (made from an <img>, it ran on it: seconds of blocked time)
-    const halfSize = (seq: Seq, i: number) =>
-      fetch(frameSrc(seq, i))
-        .then((r) => r.blob())
-        .then((blob) => createImageBitmap(blob, { resizeWidth: FRAMES[seq].width >> 1, resizeHeight: FRAMES[seq].height >> 1, resizeQuality: "medium" }))
-        .then((bmp) => {
-          if (cancelled) return bmp.close();
-          bitmaps.current[seq][i] = bmp;
-          repaint();
-        })
-        .catch(() => {});
-    const fetchAll = (seq: Seq, list: HTMLImageElement[]): Promise<unknown> => {
-      if (small) return Promise.allSettled(list.map((_, i) => (seq === "turn" && i === 0 ? undefined : halfSize(seq, i))));
+    const fetchAll = (seq: Seq, list: HTMLImageElement[]) => {
       list.forEach((img, i) => {
         if (!img.getAttribute("src")) img.src = frameSrc(seq, i);
       });
@@ -208,53 +188,52 @@ export default function Hero() {
     };
     const turn = load("turn", FRAMES.turn.count);
     images.current.turn = turn;
-    // only the resting frame is needed to paint the hero. The other ~120 frames (several MB) only
-    // play once you scroll, so they wait until the page has loaded and the main thread is idle
-    // rather than competing with the page's scripts, fonts and first paint on a phone connection
-    turn[0].onload = () => !cancelled && draw(true);
     turn[0].src = frameSrc("turn", 0);
+
+    if (!window.matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)").matches) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
     let started = false;
     let idle = 0;
+    let wait = 0;
     const rest = () => {
       if (cancelled || started) return;
       started = true;
       setPrints(true);
-      const turnDone = fetchAll("turn", turn);
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      turnDone.then(() => {
+      fetchAll("turn", turn).then(() => {
         if (cancelled) return;
         images.current.shatter = load("shatter", SHATTER_STOP + 1);
         fetchAll("shatter", images.current.shatter);
       });
     };
     const whenIdle = () => {
-      idle = typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(rest, { timeout: 2500 }) : window.setTimeout(rest, 400);
+      wait = window.setTimeout(() => {
+        idle = typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(rest, { timeout: 2500 }) : window.setTimeout(rest, 400);
+      }, 2000);
     };
-    // someone who starts scrolling straight away needs them now
     window.addEventListener("scroll", rest, { passive: true, once: true });
     if (document.readyState === "complete") whenIdle();
     else window.addEventListener("load", whenIdle, { once: true });
-    const held = bitmaps.current;
     return () => {
       cancelled = true;
       window.removeEventListener("load", whenIdle);
       window.removeEventListener("scroll", rest);
       if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idle);
       window.clearTimeout(idle);
-      for (const seq of ["turn", "shatter"] as const) {
-        held[seq].forEach((b) => b?.close());
-        held[seq] = [];
-      }
+      window.clearTimeout(wait);
     };
   }, [draw]);
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
+      // desktop only: phones and tablets get the lighter hero and MobileAbout (see the top of the file)
       mm.add(
-        { desktop: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)", mobile: "(max-width: 1023px) and (prefers-reduced-motion: no-preference)" },
-        (ctx) => {
-          const { desktop } = ctx.conditions as { desktop: boolean };
+        "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+        () => {
           // the section after the hero tucks up into its scroll room ([data-hero-pinned] in page.tsx);
           // only now does that room exist, so only now is the tuck allowed (no shift on load)
           document.documentElement.setAttribute("data-hero-pinned", "");
@@ -263,45 +242,32 @@ export default function Hero() {
           const copies = q("[data-copy]") as HTMLElement[];
           const [story] = q("[data-story] > div") as HTMLElement[];
 
-          // desktop: across into the middle of the space the story leaves on its left, measured
-          // without the stage's own shift so a mid-scroll refresh still lands it in the right place.
-          // Stacked: the copy above makes way for the story, so the clock settles a little lower instead
+          // across into the middle of the space the story leaves on its left, measured without the
+          // stage's own shift so a mid-scroll refresh still lands it in the right place
           const to = () => {
-            if (!desktop) return 0;
             const s = stage.getBoundingClientRect();
             return story.getBoundingClientRect().left / 2 - (s.left + s.width / 2) - Number(gsap.getProperty(stage, "x"));
           };
-          // stacked (phones, tablets): the story takes the top of the screen, so the clock shrinks and
-          // sinks into the bottom of it as it turns, and shatters down there
-          const shrink = () => (desktop ? 1 : Math.min(1, (window.innerHeight * 0.22) / stage.offsetHeight));
-          const drop = () => {
-            if (desktop) return 0;
-            // measured from the hero's own top: that's where the screen's top is while it's pinned,
-            // so the result doesn't depend on where the page happened to be scrolled at setup
-            const s = stage.getBoundingClientRect();
-            const centre = s.top - root.current!.getBoundingClientRect().top + s.height / 2 - Number(gsap.getProperty(stage, "y"));
-            return window.innerHeight * 0.86 - centre;
-          };
           // the clock grows a little as it cracks, but never past the space beside the story (it's
           // sized by viewport height, so in a tall, narrow window it would run into the text)
-          const grow = () => (desktop ? Math.min(1.08, (story.getBoundingClientRect().left - 48) / stage.offsetWidth) : shrink() * 1.08);
+          const grow = () => Math.min(1.08, (story.getBoundingClientRect().left - 48) / stage.offsetWidth);
 
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             onUpdate: () => draw(),
-            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: desktop ? "+=170%" : "+=150%", pin: true, scrub: desktop ? true : 0.45, invalidateOnRefresh: true, refreshPriority: 1 },
+            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: "+=170%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
           });
 
           // 1. travel right -> left, turning as it goes; the copy, board and dial clear out of its way
-          tl.fromTo(stage, { x: 0, y: 0, scale: 1 }, { x: to, y: drop, scale: shrink, duration: 0.4, ease: "power1.inOut" }, 0)
+          tl.fromTo(stage, { x: 0, scale: 1 }, { x: to, duration: 0.4, ease: "power1.inOut" }, 0)
             .fromTo(play.current, { turn: 0 }, { turn: 1, duration: 0.4, ease: "power1.inOut" }, 0)
-            .to(copies, { opacity: 0, x: desktop ? -50 : 0, y: desktop ? 0 : -30, duration: 0.18, stagger: 0.02 }, 0.04)
-                        .to(q("[data-spotlight-wrap]"), { opacity: 0, duration: 0.1 }, 0)
+            .to(copies, { opacity: 0, x: -50, duration: 0.18, stagger: 0.02 }, 0.04)
+            .to(q("[data-spotlight-wrap]"), { opacity: 0, duration: 0.1 }, 0)
             .to(q("[data-dims]"), { opacity: 0, duration: 0.12 }, 0)
             .to(q("[data-hero-gears], [data-hero-dial]"), { opacity: 0, scale: 0.85, duration: 0.2 }, 0)
             // 2. the glass cracks and the clock flips to show its gear train
             .fromTo(play.current, { shatter: 0 }, { shatter: SHATTER_STOP, duration: 0.34 }, 0.42)
-            .fromTo(stage, { scale: shrink }, { scale: grow, duration: 0.34, ease: "power1.in" }, 0.42)
+            .fromTo(stage, { scale: 1 }, { scale: grow, duration: 0.34, ease: "power1.in" }, 0.42)
             // 3. burst: the photo gives way to line-art debris that falls into the next era
             .to(canvasRef.current, { opacity: 0, scale: 1.2, duration: 0.05 }, 0.76)
             .set(q("[data-burst]"), { opacity: 1 }, 0.75)
@@ -311,8 +277,7 @@ export default function Hero() {
             .from(q("[data-story-fade]"), { y: 20, opacity: 0, duration: 0.08, stagger: 0.03 }, 0.34)
             .from(q('[data-story-line="b"] .word-inner'), { yPercent: 115, duration: 0.1, stagger: 0.02 }, 0.46);
           // last year's prints drop onto the board as the clock breaks
-          // the board belongs to the resting frame and clears for the story (on phones it would sit
-          // right on top of it)
+          // the board belongs to the resting frame and clears for the story
           tl.to(q("[data-board-wrap]"), { opacity: 0, y: 40, duration: 0.14 }, 0.02);
           tl.from(q("[data-story-print]"), { y: 60, opacity: 0, duration: 0.1, stagger: 0.06, ease: "back.out(1.6)" }, 0.5);
           tl.to(q("[data-story]"), { autoAlpha: 0, duration: 0.06 }, 0.84);
@@ -460,6 +425,7 @@ export default function Hero() {
   );
 
   return (
+    <>
     <section ref={root} id="home" className="relative overflow-hidden">
       {/* faint drafting-table props */}
       <div aria-hidden className="pointer-events-none absolute inset-0 text-ink/[0.08]">
@@ -548,7 +514,7 @@ export default function Hero() {
           </div>
 
           {/* ---------------- the clock ---------------- */}
-          <div className="relative mx-auto w-[min(100%,31vh)] min-w-0 sm:w-[min(100%,28vh)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:w-[min(104%,58vh)] xl:w-[min(118%,58vh)]">
+          <div className="hero-clock-drift relative mx-auto w-[min(100%,31vh)] min-w-0 sm:w-[min(100%,28vh)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:w-[min(104%,58vh)] xl:w-[min(118%,58vh)]">
             {/* warm light behind the movement */}
             <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(253,156,54,0.17),transparent)]" />
 
@@ -565,7 +531,7 @@ export default function Hero() {
               <Gear teeth={10} speed={0.14} className="bottom-[22%] right-[30%] w-[16%]" />
             </div>
 
-            <div data-stage className="relative will-change-transform">
+            <div data-stage className="hero-clock-float relative will-change-transform">
               <div data-tilt className="[transform-style:preserve-3d] [transform:perspective(900px)]">
                 <div data-intro-clock>
                   <canvas
@@ -645,12 +611,12 @@ export default function Hero() {
           <FlipBoard />
         </div>
 
-        {/* About, told while the clock turns: takes over the half the clock rolls away from (the top
-            on mobile, where the copy was) */}
+        {/* About, told while the clock turns: takes over the half the clock rolls away from (desktop;
+            phones and tablets have MobileAbout after the hero) */}
         <div
           data-story
           aria-hidden
-          className="pointer-events-none invisible absolute inset-x-0 top-[96px] z-20 opacity-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(58%-1.5rem)] lg:items-center lg:pr-[4vw]"
+          className="pointer-events-none invisible absolute inset-x-0 top-[96px] z-20 opacity-0 max-lg:hidden lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(58%-1.5rem)] lg:items-center lg:pr-[4vw]"
         >
           <div className="w-full">
             <p data-story-fade className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em]">
@@ -673,16 +639,10 @@ export default function Hero() {
               </span>
             </p>
             <p data-story-fade className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-muted sm:mt-5 sm:text-lg lg:text-[min(1.375rem,2.5vh)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden">
-              wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In this{" "}
-              <span className="whitespace-nowrap font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
-              pitch working prototypes for real-world problems.
+              <AboutBlurb />
             </p>
             <dl data-story-fade className="mt-4 grid grid-cols-3 gap-x-3 sm:mt-5 sm:flex sm:flex-wrap sm:gap-x-7 sm:gap-y-2">
-              {[
-                ["3000+", "Participants"],
-                ["1000+", "Projects built"],
-                ["20+", "Industry partners"],
-              ].map(([n, label]) => (
+              {STATS.map(([n, label]) => (
                 <div key={label} className="flex flex-col-reverse">
                   <dt className="mt-1.5 font-mono text-[9px] uppercase leading-snug tracking-[0.12em] text-muted sm:text-[11px] sm:tracking-[0.14em] lg:text-xs">{label}</dt>
                   <dd className="display-wide text-[26px] leading-none text-accent sm:text-3xl lg:text-[min(2.5rem,4.6vh)]">{n}</dd>
@@ -723,5 +683,7 @@ export default function Hero() {
         </div>
       </div>
     </section>
+    <MobileAbout />
+    </>
   );
 }

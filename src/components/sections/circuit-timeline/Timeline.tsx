@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useId, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -9,6 +9,7 @@ import {
 } from "motion/react";
 import { TimelineCircuit } from "./TimelineCircuit";
 import CheckpointCountdown from "./CheckpointCountdown";
+import TimelineMobile from "./TimelineMobile";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
 import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
 import {
@@ -54,7 +55,22 @@ function CheckpointContent({
   );
 }
 
-export default function Timeline({
+// Phones get their own timeline (TimelineMobile): the circuit runs down the page with ordinary
+// scrolling instead of a pinned sideways camera. The server can't know the screen, so it renders the
+// wide circuit and phones swap after hydration (the section is well below the first screen)
+const PHONE = "(max-width: 800px)";
+const subscribePhone = (onChange: () => void) => {
+  const mq = window.matchMedia(PHONE);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+
+export default function Timeline(props: TimelineProps) {
+  const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia(PHONE).matches, () => false);
+  return phone ? <TimelineMobile id={props.id} checkpoints={props.checkpoints} /> : <CircuitTimeline {...props} />;
+}
+
+function CircuitTimeline({
   id = "timeline",
   checkpoints = timelineCheckpoints,
   datesAreTentative = false,
