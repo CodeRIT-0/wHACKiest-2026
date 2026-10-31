@@ -488,7 +488,7 @@ export default function Hero() {
                 <span className="hidden min-[440px]:inline">
                   National hackathon <span className="text-accent">/</span>{" "}
                 </span>
-                01–02 Dec 2026
+                01–02 December 2026
               </span>
             </p>
 

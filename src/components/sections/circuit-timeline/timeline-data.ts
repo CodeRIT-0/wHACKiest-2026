@@ -53,7 +53,7 @@ export const timelineCheckpoints: TimelineCheckpoints = [
     dateTime: "2026-12-01T10:00:00+05:30",
     time: "10:00 AM",
     description: "Teams build and test functional prototypes in 24 hours. Every second counts.",
-    tag: "24H / OFFLINE",
+    tag: "24 HOURS / OFFLINE",
   },
   {
     id: "final-reveal",

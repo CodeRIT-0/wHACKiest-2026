@@ -413,7 +413,7 @@ export default function AdminAnnouncementsPage() {
                       type="text"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      placeholder="e.g. 29 Oct 2026 · 10:00 AM"
+                      placeholder="for example, 29 October 2026 · 10:00 AM"
                       className="mt-1.5 w-full border border-ink bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
                     />
                     <span className="text-[10px] text-muted">Leave empty to auto-set current time</span>

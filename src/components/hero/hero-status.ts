@@ -28,7 +28,7 @@ export function phaseAt(now: number): Phase {
 
 // IST date parts done by hand: Intl output differs between Node and browsers (spaces, padding),
 // and these strings are rendered on the server too
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const pad = (n: number) => String(n).padStart(2, "0");
 function ist(unixSeconds: number) {
   const d = new Date((unixSeconds + 5.5 * 3600) * 1000);

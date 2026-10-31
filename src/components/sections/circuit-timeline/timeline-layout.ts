@@ -37,7 +37,7 @@ export const timelineStations = [
     stop: 0.752,
     placement: "below",
     asset: "capacitor",
-    component: "C4 / 24H OFFLINE",
+    component: "C4 / 24 HOURS OFFLINE",
   },
   {
     x: 2880,

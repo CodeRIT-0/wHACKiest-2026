@@ -13,26 +13,26 @@ const LINKS = [
 
 // From the wHACKiest 2026 brochure (Conveners, Coordinators, Chief Patrons, Advisory Committee)
 const PATRONS = [
-  { name: "Dr. R China Appala Naidu", role: "Convener · HoD, Dept. of CSE", photo: "/assets/patrons/china-appala-naidu.jpg" },
-  { name: "Pradeep Kumar D", role: "Convener · Faculty Coordinator, Dept. of CSE", photo: "/assets/patrons/pradeep-kumar-d.jpg" },
+  { name: "Dr. R China Appala Naidu", role: "Convener · Head of Department, Computer Science and Engineering", photo: "/assets/patrons/china-appala-naidu.jpg" },
+  { name: "Pradeep Kumar D", role: "Convener · Faculty Coordinator, Department of Computer Science and Engineering", photo: "/assets/patrons/pradeep-kumar-d.jpg" },
 ];
 
 const CHIEF_PATRONS = [
-  ["Dr. M.R. Seetharam", "Chairman, GEF"],
-  ["Sri. M.R. Janakiram", "Vice-Chairman, GEF"],
-  ["Sri. M.R. Anandaram", "Secretary, GEF"],
-  ["Sri. M.R. Sampangiramaiah", "Director, RIT"],
-  ["Sri. M.R. Kodandaram", "Director, RIT"],
-  ["Dr. Parswanath", "Chief Executive, GEF (Engg. & GS)"],
-  ["Dr. Karisiddappa", "Chief Academic Advisor, GEF (Engg. & GS)"],
-  ["Sri. G. Ramachandra", "Chief of Finance, GEF (Engg. & GS)"],
+  ["Dr. M.R. Seetharam", "Chairman, Gokula Education Foundation"],
+  ["Sri. M.R. Janakiram", "Vice-Chairman, Gokula Education Foundation"],
+  ["Sri. M.R. Anandaram", "Secretary, Gokula Education Foundation"],
+  ["Sri. M.R. Sampangiramaiah", "Director, Ramaiah Institute of Technology"],
+  ["Sri. M.R. Kodandaram", "Director, Ramaiah Institute of Technology"],
+  ["Dr. Parswanath", "Chief Executive, Gokula Education Foundation (Engineering & GS)"],
+  ["Dr. Karisiddappa", "Chief Academic Advisor, Gokula Education Foundation (Engineering & GS)"],
+  ["Sri. G. Ramachandra", "Chief of Finance, Gokula Education Foundation (Engineering & GS)"],
 ];
 
 const ADVISORY = [
-  ["Dr. B. Sathish Babu", "Principal, RIT"],
-  ["Dr. G. M. Madhu", "Vice Principal, RIT"],
-  ["Dr. Chandra Prabha M N", "Vice Principal, RIT"],
-  ["Dr. Archna", "Registrar (Academics), RIT"],
+  ["Dr. B. Sathish Babu", "Principal, Ramaiah Institute of Technology"],
+  ["Dr. G. M. Madhu", "Vice Principal, Ramaiah Institute of Technology"],
+  ["Dr. Chandra Prabha M N", "Vice Principal, Ramaiah Institute of Technology"],
+  ["Dr. Archna", "Registrar (Academics), Ramaiah Institute of Technology"],
 ];
 
 // a name list in a framed card, one row per person, sliding in on hover

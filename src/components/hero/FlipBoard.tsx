@@ -11,11 +11,11 @@ import { boardAt, KICK_OFF_LABEL } from "./hero-status";
 // one. Everything comes from the shared one-second clock, so the board and the seconds dial
 // change on the same tick. Before hydration it shows dashes, so server and browser agree.
 
-const UNITS = ["Days", "Hrs", "Min", "Sec"];
+const UNITS = ["Days", "Hours", "Minutes", "Seconds"];
 const STATS = [
-  ["24", "hrs", "On the clock"],
+  ["24", "hours", "On the clock"],
   ["2–4", "", "Per team"],
-  ["₹50K", "", "Prize pool"],
+  ["₹50,000", "", "Prize pool"],
 ] as const;
 
 const pad = (n: number) => String(n).padStart(2, "0");

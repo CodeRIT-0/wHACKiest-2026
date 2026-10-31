@@ -22,7 +22,7 @@ const filters: Category[] = ["All", "General", "Deadline", "Results", "Venue", "
 const fallbackAnnouncements: Announcement[] = [
   {
     category: "General",
-    date: "29 Oct 2026 · 10:00 AM",
+    date: "29 October 2026 · 10:00 AM",
     title: "Registrations for wHACKiest 2026 are now open",
     copy: "Bring your sharpest idea. Team registrations are open for the 24-hour national hackathon.",
     action: "Register your team",
@@ -31,22 +31,22 @@ const fallbackAnnouncements: Announcement[] = [
   },
   {
     category: "Deadline",
-    date: "28 Nov 2026 · 11:59 PM",
-    title: "Registration closes on 28 November",
+    date: "15 November 2026 · 11:59 PM",
+    title: "Registration closes on 15 November",
     copy: "Complete your registration before the deadline to be considered for shortlisting.",
     action: "Register now",
     href: "/register",
   },
   {
     category: "Results",
-    date: "29 Nov 2026 · 6:00 PM",
+    date: "22 November 2026 · 6:00 PM",
     title: "Shortlisted teams will be announced here",
     copy: "Keep an eye on this page and our social channels for the final shortlist.",
   },
   {
     category: "Venue",
-    date: "01 Dec 2026 · 8:00 AM",
-    title: "wHACKiest 2026 takes over MSRIT, Bengaluru",
+    date: "01 December 2026 · 8:00 AM",
+    title: "wHACKiest 2026 takes over Ramaiah Institute of Technology, Bengaluru",
     copy: "Report to the Ramaiah Institute of Technology campus for check-in and the opening briefing.",
     action: "Event details",
     href: "/#contact",
@@ -136,14 +136,14 @@ export default function Announcements() {
             <span>Live now</span>
             <span className="font-normal text-bg/60">Registration is open</span>
           </div>
-          <span className="text-xs font-bold uppercase tracking-[0.1em] text-accent">Next · shortlist / 29 Nov</span>
+          <span className="text-xs font-bold uppercase tracking-[0.1em] text-accent">Next · shortlist / 22 November</span>
         </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_330px]">
           <div className="relative space-y-4" aria-live="polite">
             {visibleAnnouncements.map((item, idx) => (
               <article key={item._id || item.title || idx} className={`group relative isolate overflow-hidden border p-5 transition duration-300 md:p-6 ${item.featured ? "border-ink bg-ink text-bg shadow-[6px_6px_0_0_var(--color-accent)]" : "border-line bg-bg hover:-translate-y-1 hover:border-ink hover:shadow-[4px_4px_0_0_var(--color-ink)]"}`}>
-                {item.featured && <><span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-12 -z-10 text-[10rem] font-black leading-none tracking-[-0.12em] text-bg/[0.04]">24H</span><span aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-16 -z-10 h-48 w-48 rounded-full border-[22px] border-accent/25" /></>}
+                {item.featured && <><span aria-hidden="true" className="pointer-events-none absolute -right-7 -top-12 -z-10 whitespace-nowrap text-[10rem] font-black leading-none tracking-[-0.12em] text-bg/[0.04]">24 Hours</span><span aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-16 -z-10 h-48 w-48 rounded-full border-[22px] border-accent/25" /></>}
                 <div className="flex gap-4 md:gap-6">
                   <DateStamp date={item.date} dark={item.featured} />
                   <div className="min-w-0 flex-1">
@@ -170,15 +170,15 @@ export default function Announcements() {
               <Fact label="Prize pool" value="₹50,000" />
               <Fact label="Team size" value="2–4 people" />
               <Fact label="Entry fee" value="Free" />
-              <Fact label="Format" value="24H / Offline" />
+              <Fact label="Format" value="24 Hours / Offline" />
             </InfoCard>
             <InfoCard title="Key dates" mark="02">
               <ol className="relative ml-1 border-l border-ink/40 pl-5">
                 {[
-                  ["29 Oct", "Registration opens", true],
-                  ["15 Nov", "Registration closes", false],
-                  ["22 Nov", "Shortlist announced", false],
-                  ["01–02 Dec", "wHACKiest 2026", false],
+                  ["29 October", "Registration opens", true],
+                  ["15 November", "Registration closes", false],
+                  ["22 November", "Shortlist announced", false],
+                  ["01–02 December", "wHACKiest 2026", false],
                 ].map(([date, label, current]) => (
                   <li key={label as string} className="relative pb-5 last:pb-0">
                     <span className={`absolute -left-[1.66rem] top-1 h-3 w-3 rounded-full border border-ink ${current ? "bg-accent" : "bg-bg"}`} />
@@ -223,5 +223,5 @@ function Fact({ label, value }: { label: string; value: string }) {
 
 function DateStamp({ date, dark }: { date: string; dark?: boolean }) {
   const [day, ...rest] = date.split(" ");
-  return <div className={`w-12 shrink-0 border-r pr-4 md:w-16 ${dark ? "border-bg/25" : "border-line"}`}><p className={`text-2xl font-black leading-none tracking-[-0.08em] md:text-3xl ${dark ? "text-accent" : ""}`}>{day}</p><p className={`mt-1 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.08em] ${dark ? "text-bg/60" : "text-muted"}`}>{rest.join(" ") || "Soon"}</p><span aria-hidden="true" className={`mt-3 block h-1 w-5 ${dark ? "bg-accent" : "bg-ink"}`} /></div>;
+  return <div className={`w-[5.5rem] shrink-0 border-r pr-4 md:w-24 ${dark ? "border-bg/25" : "border-line"}`}><p className={`text-2xl font-black leading-none tracking-[-0.08em] md:text-3xl ${dark ? "text-accent" : ""}`}>{day}</p><p className={`mt-1 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.08em] ${dark ? "text-bg/60" : "text-muted"}`}>{rest.join(" ") || "Soon"}</p><span aria-hidden="true" className={`mt-3 block h-1 w-5 ${dark ? "bg-accent" : "bg-ink"}`} /></div>;
 }

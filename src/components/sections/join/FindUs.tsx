@@ -12,7 +12,7 @@ const CONTACT = {
     { name: "Kamal Karteek U", phone: "+91 9108055864" },
   ],
   faculty: [
-    { name: "Dr. China Appala Naidu", role: "Convener, HOD, Dept of CSE" },
+    { name: "Dr. China Appala Naidu", role: "Convener, Head of Department, Computer Science and Engineering" },
     { name: "Pradeep Kumar D", role: "Faculty Coordinator" },
   ],
 };
@@ -43,7 +43,7 @@ export default function FindUs() {
         </div>
         <p className="inline-flex items-center gap-2 rounded-full border border-accent/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent motion-safe:animate-pulse" />
-          01–02 Dec 2026 / On campus
+          01–02 December 2026 / On campus
         </p>
       </div>
 
