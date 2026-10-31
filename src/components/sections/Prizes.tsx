@@ -1,6 +1,7 @@
-import PrizeVault from "./prizes/PrizeVault";
+import PrizeMachine from "./prizes/PrizeMachine";
 
-// prize pool as a vault heist; the older retro-computer reveal lives on in prizes/PrizeComputer
+// The prize pool sits encrypted on a retro desktop and scrolling is what decrypts it, one place
+// at a time. Everything lives in prizes/PrizeMachine.
 export default function Prizes() {
-  return <PrizeVault />;
+  return <PrizeMachine />;
 }

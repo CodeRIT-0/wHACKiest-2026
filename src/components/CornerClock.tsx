@@ -17,6 +17,7 @@ export default function CornerClock() {
   const hourRef = useRef<SVGGElement>(null);
   const minuteRef = useRef<SVGGElement>(null);
   const secondRef = useRef<SVGGElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -24,6 +25,9 @@ export default function CornerClock() {
       hourRef.current?.setAttribute("transform", `rotate(${r2(p * 360)} 50 50)`);
       minuteRef.current?.setAttribute("transform", `rotate(${r2(p * 360 * 12)} 50 50)`);
       secondRef.current?.setAttribute("transform", `rotate(${r2(p * 360 * 60)} 50 50)`);
+      // the hero has its own big clock, and a countdown board right where this one sits, so this
+      // one waits until the hero's pinned opener has played out
+      wrapRef.current?.toggleAttribute("data-away", window.scrollY < window.innerHeight * 1.6);
     };
     const trigger = ScrollTrigger.create({ start: 0, end: "max", onUpdate: (self) => set(self.progress), onRefresh: (self) => set(self.progress) });
     set(trigger.progress);
@@ -33,7 +37,11 @@ export default function CornerClock() {
   if (pathname !== "/") return null;
 
   return (
-    <div aria-hidden className="pointer-events-none fixed bottom-3 left-3 z-40 h-11 w-11 rounded-full bg-panel/90 shadow-[0_6px_18px_-8px_color-mix(in_srgb,var(--fg)_35%,transparent)] backdrop-blur sm:bottom-6 sm:left-6 sm:h-[84px] sm:w-[84px]">
+    <div
+      ref={wrapRef}
+      data-away
+      aria-hidden
+      className="pointer-events-none fixed bottom-3 left-3 z-40 h-11 w-11 rounded-full transition-[opacity,scale] duration-500 data-[away]:scale-75 data-[away]:opacity-0 bg-panel/90 shadow-[0_6px_18px_-8px_color-mix(in_srgb,var(--fg)_35%,transparent)] backdrop-blur sm:bottom-6 sm:left-6 sm:h-[84px] sm:w-[84px]">
       <svg viewBox="0 0 100 100" className="line-art h-full w-full" fill="none" strokeLinecap="round">
         <circle cx={50} cy={50} r={47} className="stroke-ink" strokeWidth={1.5} />
         <circle cx={50} cy={50} r={41} className="stroke-ink/30" />
