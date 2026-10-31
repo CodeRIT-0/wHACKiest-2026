@@ -11,13 +11,50 @@ const LINKS = [
   { label: "LinkedIn", handle: "CodeRIT Club", href: "https://www.linkedin.com/company/coderitclub/", icon: LinkedinLogo },
 ];
 
-// TODO: confirm Pradeep Kumar D's designation with the department
+// From the wHACKiest 2026 brochure (Conveners, Coordinators, Chief Patrons, Advisory Committee)
 const PATRONS = [
-  { name: "Dr. China Appala Naidu", role: "Head of Department, CSE", photo: "/assets/patrons/china-appala-naidu.jpg" },
-  { name: "Pradeep Kumar D", role: "Department of CSE", photo: "/assets/patrons/pradeep-kumar-d.jpg" },
+  { name: "Dr. R China Appala Naidu", role: "Convener · HoD, Dept. of CSE", photo: "/assets/patrons/china-appala-naidu.jpg" },
+  { name: "Pradeep Kumar D", role: "Convener · Faculty Coordinator, Dept. of CSE", photo: "/assets/patrons/pradeep-kumar-d.jpg" },
 ];
 
-// Patrons first, as portrait cards that print in grayscale and come into colour on hover; then the
+const CHIEF_PATRONS = [
+  ["Dr. M.R. Seetharam", "Chairman, GEF"],
+  ["Sri. M.R. Janakiram", "Vice-Chairman, GEF"],
+  ["Sri. M.R. Anandaram", "Secretary, GEF"],
+  ["Sri. M.R. Sampangiramaiah", "Director, RIT"],
+  ["Sri. M.R. Kodandaram", "Director, RIT"],
+  ["Dr. Parswanath", "Chief Executive, GEF (Engg. & GS)"],
+  ["Dr. Karisiddappa", "Chief Academic Advisor, GEF (Engg. & GS)"],
+  ["Sri. G. Ramachandra", "Chief of Finance, GEF (Engg. & GS)"],
+];
+
+const ADVISORY = [
+  ["Dr. B. Sathish Babu", "Principal, RIT"],
+  ["Dr. G. M. Madhu", "Vice Principal, RIT"],
+  ["Dr. Chandra Prabha M N", "Vice Principal, RIT"],
+  ["Dr. Archna", "Registrar (Academics), RIT"],
+];
+
+// a name list in a framed card, one row per person, sliding in on hover
+function Roll({ title, people }: { title: string; people: string[][] }) {
+  return (
+    <div className="border-2 border-ink bg-panel shadow-[6px_6px_0_var(--fg)]">
+      <p className="border-b-2 border-ink px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em]">
+        <span className="text-accent">●</span> {title}
+      </p>
+      <ul className="divide-y divide-dashed divide-ink/20 px-4">
+        {people.map(([name, role]) => (
+          <li key={name} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 py-2.5 transition-[padding,color] duration-300 hover:pl-1.5 hover:text-accent">
+            <span className="font-semibold">{name}</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">{role}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Conveners first, as portrait cards that print in grayscale and come into colour on hover; then the
 // organising team as one group photo in a single large frame, with CodeRIT's socials beneath.
 export default function Team() {
   return (
@@ -42,7 +79,7 @@ export default function Team() {
       <div className="mt-14 flex items-center gap-4">
         <span className="h-px flex-1 bg-ink/25" />
         <h3 className="display-wide text-2xl sm:text-3xl">
-          Patrons<span className="text-accent">.</span>
+          Conveners<span className="text-accent">.</span>
         </h3>
         <span className="h-px flex-1 bg-ink/25" />
       </div>
@@ -69,6 +106,12 @@ export default function Team() {
         ))}
       </ul>
 
+      {/* ---------------- chief patrons + advisory committee ---------------- */}
+      <div data-stagger className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start">
+        <Roll title="Chief patrons" people={CHIEF_PATRONS} />
+        <Roll title="Advisory committee" people={ADVISORY} />
+      </div>
+
       {/* ---------------- organising team ---------------- */}
       <div className="mt-16 flex items-center gap-4">
         <span className="h-px flex-1 bg-ink/25" />
@@ -90,7 +133,7 @@ export default function Team() {
           <span className="text-muted">wHACKiest 2026</span>
         </figcaption>
 
-        <div className="relative m-3 aspect-[16/9] overflow-hidden border border-ink/20 bg-[linear-gradient(#e6decb,#cfc5ae)] sm:m-4">
+        <div className="relative m-3 aspect-[2000/858] overflow-hidden border border-ink/20 bg-[linear-gradient(#e6decb,#cfc5ae)] sm:m-4">
           {TEAM_PHOTO ? (
             <>
               {/* prints in black and white like the patrons, and comes into colour on hover */}

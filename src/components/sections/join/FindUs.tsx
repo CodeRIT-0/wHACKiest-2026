@@ -3,17 +3,21 @@ import Reveal from "../../motion/Reveal";
 import SocialTiles from "./SocialTiles";
 import { CopyAddress, VenueClock } from "./VenueTools";
 
-// TODO: real contact email and coordinator names + numbers from the organising team
+// From the wHACKiest 2026 brochure (Coordinators / Connect with us)
 const CONTACT = {
-  email: "" as string,
+  email: "coderit@msrit.edu" as string,
   students: [
-    { name: "Student coordinator", phone: "" },
-    { name: "Student coordinator", phone: "" },
+    { name: "Mishka Tiwari", phone: "+91 8218934580" },
+    { name: "Kamal Karteek U", phone: "+91 9108055864" },
   ],
-  faculty: [{ name: "Pradeep Kumar D", role: "Department of CSE" }],
+  faculty: [
+    { name: "Dr. China Appala Naidu", role: "Convener, HOD, Dept of CSE" },
+    { name: "Pradeep Kumar D", role: "Faculty Coordinator" },
+  ],
 };
 
-// TODO: confirm the venue with the organising team
+const DISCORD = "https://bit.ly/CodeRIT_Discord";
+
 const VENUE = {
   name: "Ramaiah Institute of Technology",
   lines: ["MSR Nagar, MSRIT Post", "Bengaluru, Karnataka — 560054"],
@@ -76,7 +80,7 @@ export default function FindUs() {
                       <Phone size={14} weight="bold" className="text-accent" />
                       <span className="font-semibold">{s.name}</span>
                       {s.phone ? (
-                        <a href={`tel:${s.phone}`} className="text-muted underline decoration-accent/50 underline-offset-4 hover:text-accent">
+                        <a href={`tel:${s.phone.replace(/\s/g, "")}`} className="text-muted underline decoration-accent/50 underline-offset-4 hover:text-accent">
                           {s.phone}
                         </a>
                       ) : (
@@ -87,7 +91,7 @@ export default function FindUs() {
                 </ul>
               </div>
               <div>
-                <Label>Faculty coordinator</Label>
+                <Label>Convener &amp; faculty</Label>
                 {CONTACT.faculty.map((f) => (
                   <p key={f.name} className="mt-2 text-sm">
                     <span className="font-semibold">{f.name}</span> <span className="text-muted">— {f.role}</span>
@@ -145,7 +149,9 @@ export default function FindUs() {
               <div className="mt-6">
                 <Label>Join us</Label>
                 <a
-                  href="#"
+                  href={DISCORD}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group/d mt-3 inline-flex items-center gap-2.5 rounded-full bg-[#5865f2] px-5 py-3 text-sm font-bold uppercase tracking-[0.06em] text-white shadow-[0_10px_24px_-12px_#5865f2] transition-[translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-12px_#5865f2]"
                 >
                   <DiscordLogo size={20} weight="fill" className="transition-transform duration-500 group-hover/d:-rotate-12 group-hover/d:scale-110" />

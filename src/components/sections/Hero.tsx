@@ -575,12 +575,25 @@ export default function Hero() {
               </span>
             </p>
             <p data-story-fade className="mt-4 hidden max-w-[46ch] text-muted sm:block">
-              wHACKiest is CodeRIT&apos;s hackathon: <span className="font-semibold text-ink">24 hours</span>, teams of two to four, and one
-              question. What can you build when every second counts? Last year set the bar. This year the clock starts again.
+              wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In one{" "}
+              <span className="font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
+              pitch working prototypes for real-world problems.
             </p>
+            <dl data-story-fade className="mt-5 flex flex-wrap gap-x-7 gap-y-2">
+              {[
+                ["3000+", "Participants"],
+                ["1000+", "Projects built"],
+                ["20+", "Industry partners"],
+              ].map(([n, label]) => (
+                <div key={label} className="flex flex-col-reverse">
+                  <dt className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">{label}</dt>
+                  <dd className="display-wide text-2xl leading-none text-accent">{n}</dd>
+                </div>
+              ))}
+            </dl>
 
             <p data-story-fade className="mt-6 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-              From the archive <span className="text-accent">/</span> wHACKiest 2025
+              From the archive <span className="text-accent">/</span> wHACKiest 2025 drew a packed house
             </p>
             <ul className="mt-4 flex max-w-[460px] gap-3 sm:gap-4">
               {POLAROIDS.map((p) => (

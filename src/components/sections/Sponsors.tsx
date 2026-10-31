@@ -5,11 +5,11 @@ import SplitSection from "../SplitSection";
 
 // TODO: real sponsors. Fill `name` (and later a logo) per slot; empty slots read as "open".
 type Slot = { name?: string };
+// tiers and notes from the wHACKiest 2026 brochure (Sponsorship structure)
 const TIERS: { id: string; label: string; note: string; slots: Slot[]; size: "title" | "gold" | "silver" | "community" }[] = [
-  { id: "title", label: "Title partner", note: "Presents wHACKiest 2026", slots: [{}], size: "title" },
-  { id: "gold", label: "Gold", note: "Track partners", slots: [{}, {}], size: "gold" },
-  { id: "silver", label: "Silver", note: "Build partners", slots: [{}, {}, {}], size: "silver" },
-  { id: "community", label: "Community", note: "Tools, credits & swag", slots: [{}, {}, {}, {}], size: "community" },
+  { id: "title", label: "Title sponsor", note: "Maximum brand visibility, stage recognition, mentor or judge teams", slots: [{}], size: "title" },
+  { id: "platinum", label: "Platinum sponsor", note: "Prominent placement and participant engagement", slots: [{}, {}], size: "gold" },
+  { id: "gold", label: "Gold sponsor", note: "Visibility through event materials and acknowledgements", slots: [{}, {}, {}], size: "silver" },
 ];
 
 // running slot number where each tier starts (SLOT-01, SLOT-02, …)
@@ -18,11 +18,11 @@ const OFFSETS = TIERS.map((_, t) => TIERS.slice(0, t).reduce((sum, tier) => sum 
 const GRID = { title: "grid-cols-1", gold: "sm:grid-cols-2", silver: "grid-cols-2 sm:grid-cols-3", community: "grid-cols-2 sm:grid-cols-4" };
 const HEIGHT = { title: "h-40 sm:h-48", gold: "h-32 sm:h-36", silver: "h-24 sm:h-28", community: "h-20" };
 
-// what's on offer, using only facts already published on the site
+// the legacy of wHACKiest, across previous editions (from the brochure)
 const FACTS = [
-  ["24", "hrs", "non-stop build"],
-  ["04", "", "tracks to back"],
-  ["₹50K", "", "prize pool"],
+  ["3000+", "", "participants"],
+  ["1000+", "", "teams"],
+  ["20+", "", "industry partners"],
 ];
 
 // One sponsor socket: a blueprint frame with corner brackets, a slot code and an "open" light
@@ -112,10 +112,13 @@ export default function Sponsors() {
           <h3 className="display-wide mt-3 text-3xl leading-[1.02] sm:text-5xl">
             Put your name on the next era<span className="text-accent">.</span>
           </h3>
+          <p className="mt-4 max-w-[46ch] text-muted">
+            Contribute to the prize pool, bring your own problem statement, judge the final round, or meet emerging tech talent.
+            Sponsors don&apos;t just support wHACKiest, they enable it.
+          </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {/* TODO: point at the sponsorship contact or deck once it exists */}
             <Link
-              href="/#contact"
+              href="mailto:coderit@msrit.edu?subject=wHACKiest%202026%20sponsorship"
               className="inline-flex items-center gap-2 bg-accent px-5 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-[#050505] transition-transform active:scale-[0.98]"
             >
               Become a sponsor
