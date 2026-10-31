@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { scrollToStory, STORY_HASH } from "./hero/story-scroll";
 
@@ -26,6 +26,12 @@ const EASE = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [away, setAway] = useState(false);
+  // published on <html> so things that stick to the top of the screen (the phone timeline's HUD)
+  // can sit below the nav while it's showing and move up when it tucks away
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-nav-away", away);
+    return () => document.documentElement.removeAttribute("data-nav-away");
+  }, [away]);
   const [hovered, setHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
