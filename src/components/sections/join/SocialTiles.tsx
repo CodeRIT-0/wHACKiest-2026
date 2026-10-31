@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowUpRight, DiscordLogo, EnvelopeSimple, InstagramLogo, LinkedinLogo } from "@phosphor-icons/react";
+import { ArrowUpRight, DiscordLogo, EnvelopeSimple, Globe, InstagramLogo, LinkedinLogo, TelegramLogo } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 
 type Social = { label: string; note: string; href: string; icon: Icon; brand: string; bg: string };
 
-// TODO: the Discord invite and the contact email are placeholders until CodeRIT shares them
+// From the wHACKiest 2026 brochure (Connect with us)
 const SOCIALS: Social[] = [
   {
     label: "Instagram",
@@ -24,16 +24,39 @@ const SOCIALS: Social[] = [
     brand: "#0a66c2",
     bg: "#0a66c2",
   },
-  { label: "Discord", note: "Find a team", href: "#", icon: DiscordLogo, brand: "#5865f2", bg: "#5865f2" },
-  { label: "Email", note: "Say hello", href: "#", icon: EnvelopeSimple, brand: "#ea4335", bg: "linear-gradient(135deg,#ea4335,#fbbc05)" },
+  { label: "Discord", note: "bit.ly/CodeRIT_Discord", href: "https://bit.ly/CodeRIT_Discord", icon: DiscordLogo, brand: "#5865f2", bg: "#5865f2" },
+  {
+    label: "Telegram",
+    note: "bit.ly/CodeRIT_Telegram",
+    href: "https://bit.ly/CodeRIT_Telegram",
+    icon: TelegramLogo,
+    brand: "#229ed9",
+    bg: "linear-gradient(135deg,#2aabee,#229ed9)",
+  },
+  {
+    label: "Email",
+    note: "coderit@msrit.edu",
+    href: "mailto:coderit@msrit.edu",
+    icon: EnvelopeSimple,
+    brand: "#ea4335",
+    bg: "linear-gradient(135deg,#ea4335,#fbbc05)",
+  },
+  {
+    label: "Website",
+    note: "coderit.netlify.app",
+    href: "https://coderit.netlify.app",
+    icon: Globe,
+    brand: "#fd9c36",
+    bg: "linear-gradient(135deg,#fd9c36,#e86a17)",
+  },
 ];
 
-// Socials as four brand-coloured tiles. They rise in one after another as the section arrives;
+// Socials as six brand-coloured tiles. They rise in one after another as the section arrives;
 // on hover the tile lifts on a shadow in its own brand colour, the icon chip tilts and grows,
 // and a wash of the brand colour floods up from the bottom.
 export default function SocialTiles() {
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <ul className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       {SOCIALS.map(({ label, note, href, icon: SocialIcon, brand, bg }, i) => {
         const external = href.startsWith("http");
         return (
