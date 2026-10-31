@@ -83,23 +83,26 @@ export default function Team() {
         </h3>
         <span className="h-px flex-1 bg-ink/25" />
       </div>
-      <ul data-stagger className="mx-auto mt-8 grid max-w-[720px] grid-cols-1 gap-8 min-[480px]:grid-cols-2 sm:gap-10">
+      <ul data-stagger className="mx-auto mt-8 grid max-w-[720px] grid-cols-2 gap-4 sm:gap-10">
         {PATRONS.map((p) => (
           <li key={p.name}>
-            <article className="group/patron relative border-[6px] border-ink bg-ink shadow-[8px_8px_0_var(--fg)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)]">
+            <article
+              data-touch
+              className="group/patron relative border-[3px] border-ink bg-ink shadow-[5px_5px_0_var(--fg)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)] data-[active]:-translate-x-1 data-[active]:-translate-y-1 data-[active]:shadow-[8px_8px_0_var(--accent)] sm:border-[6px] sm:shadow-[8px_8px_0_var(--fg)]"
+            >
               <div className="relative aspect-square overflow-hidden">
                 <Image
                   src={p.photo}
                   alt={`${p.name}, ${p.role}`}
                   fill
                   sizes="(min-width: 640px) 340px, 90vw"
-                  className="object-cover object-top grayscale transition-[filter,scale] duration-500 group-hover/patron:scale-[1.03] group-hover/patron:grayscale-0"
+                  className="object-cover object-top grayscale transition-[filter,scale] duration-500 group-hover/patron:scale-[1.03] group-data-[active]/patron:scale-[1.03] group-hover/patron:grayscale-0 group-data-[active]/patron:grayscale-0"
                 />
-                <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/patron:opacity-0" />
+                <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/patron:opacity-0 group-data-[active]/patron:opacity-0" />
               </div>
-              <div className="bg-panel px-5 pb-5 pt-4">
-                <p className="display-wide text-lg leading-tight transition-colors duration-300 group-hover/patron:text-accent sm:text-xl">{p.name}</p>
-                <p className="mt-2 border-b-2 border-dashed border-ink/40 pb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">{p.role}</p>
+              <div className="bg-panel px-3 pb-3 pt-2.5 sm:px-5 sm:pb-5 sm:pt-4">
+                <p className="display-wide text-sm leading-tight transition-colors duration-300 group-hover/patron:text-accent group-data-[active]/patron:text-accent sm:text-xl">{p.name}</p>
+                <p className="mt-1.5 border-b-2 border-dashed border-ink/40 pb-1.5 font-mono text-[8.5px] uppercase leading-snug tracking-[0.1em] text-muted sm:mt-2 sm:pb-2 sm:text-[11px] sm:tracking-[0.14em]">{p.role}</p>
               </div>
             </article>
           </li>
@@ -123,7 +126,8 @@ export default function Team() {
 
       <figure
         data-trace
-        className="group/team relative mt-8 border-2 border-ink bg-panel shadow-[8px_8px_0_var(--accent)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)]"
+        data-touch
+        className="group/team relative mt-8 border-2 border-ink bg-panel shadow-[6px_6px_0_var(--accent)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)] data-[active]:-translate-x-1 data-[active]:-translate-y-1 data-[active]:shadow-[10px_10px_0_var(--accent)] sm:shadow-[8px_8px_0_var(--accent)]"
       >
         <figcaption className="flex items-center justify-between border-b-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em]">
           <span className="flex items-center gap-2">
@@ -142,9 +146,9 @@ export default function Team() {
                 alt="The CodeRIT organising team"
                 fill
                 sizes="(min-width: 1024px) 1050px, 100vw"
-                className="object-cover grayscale transition-[filter,scale] duration-500 group-hover/team:scale-[1.02] group-hover/team:grayscale-0"
+                className="object-cover grayscale transition-[filter,scale] duration-500 group-hover/team:scale-[1.02] group-data-[active]/team:scale-[1.02] group-hover/team:grayscale-0 group-data-[active]/team:grayscale-0"
               />
-              <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/team:opacity-0" />
+              <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/team:opacity-0 group-data-[active]/team:opacity-0" />
             </>
           ) : (
             <div className="grid h-full place-items-center text-ink/30">

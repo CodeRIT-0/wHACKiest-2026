@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
@@ -128,6 +128,8 @@ function StatusChip() {
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
+  // a tapped print grows on phones, where there is no hover (tap it again, or another, to swap)
+  const [zoomed, setZoomed] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const images = useRef<Record<Seq, HTMLImageElement[]>>({ turn: [], shatter: [] });
   // scroll-driven playhead: `turn` 0-1 plays the turn clip out and back, `shatter` is a frame index
@@ -203,10 +205,20 @@ export default function Hero() {
             const s = stage.getBoundingClientRect();
             return story.getBoundingClientRect().left / 2 - (s.left + s.width / 2) - Number(gsap.getProperty(stage, "x"));
           };
-          const drop = () => (desktop ? 0 : 56);
+          // stacked (phones, tablets): the story takes the top of the screen, so the clock shrinks and
+          // sinks into the bottom of it as it turns, and shatters down there
+          const shrink = () => (desktop ? 1 : Math.min(1, (window.innerHeight * 0.22) / stage.offsetHeight));
+          const drop = () => {
+            if (desktop) return 0;
+            // measured from the hero's own top: that's where the screen's top is while it's pinned,
+            // so the result doesn't depend on where the page happened to be scrolled at setup
+            const s = stage.getBoundingClientRect();
+            const centre = s.top - root.current!.getBoundingClientRect().top + s.height / 2 - Number(gsap.getProperty(stage, "y"));
+            return window.innerHeight * 0.86 - centre;
+          };
           // the clock grows a little as it cracks, but never past the space beside the story (it's
           // sized by viewport height, so in a tall, narrow window it would run into the text)
-          const grow = () => (desktop ? Math.min(1.08, (story.getBoundingClientRect().left - 48) / stage.offsetWidth) : 1.08);
+          const grow = () => (desktop ? Math.min(1.08, (story.getBoundingClientRect().left - 48) / stage.offsetWidth) : shrink() * 1.08);
 
           const tl = gsap.timeline({
             defaults: { ease: "none" },
@@ -215,7 +227,7 @@ export default function Hero() {
           });
 
           // 1. travel right -> left, turning as it goes; the copy, board and dial clear out of its way
-          tl.fromTo(stage, { x: 0, y: 0 }, { x: to, y: drop, duration: 0.4, ease: "power1.inOut" }, 0)
+          tl.fromTo(stage, { x: 0, y: 0, scale: 1 }, { x: to, y: drop, scale: shrink, duration: 0.4, ease: "power1.inOut" }, 0)
             .fromTo(play.current, { turn: 0 }, { turn: 1, duration: 0.4, ease: "power1.inOut" }, 0)
             .to(copies, { opacity: 0, x: desktop ? -50 : 0, y: desktop ? 0 : -30, duration: 0.18, stagger: 0.02 }, 0.04)
                         .to(q("[data-spotlight-wrap]"), { opacity: 0, duration: 0.1 }, 0)
@@ -223,7 +235,7 @@ export default function Hero() {
             .to(q("[data-hero-gears], [data-hero-dial]"), { opacity: 0, scale: 0.85, duration: 0.2 }, 0)
             // 2. the glass cracks and the clock flips to show its gear train
             .fromTo(play.current, { shatter: 0 }, { shatter: SHATTER_STOP, duration: 0.34 }, 0.42)
-            .fromTo(stage, { scale: 1 }, { scale: grow, duration: 0.34, ease: "power1.in" }, 0.42)
+            .fromTo(stage, { scale: shrink }, { scale: grow, duration: 0.34, ease: "power1.in" }, 0.42)
             // 3. burst: the photo gives way to line-art debris that falls into the next era
             .to(canvasRef.current, { opacity: 0, scale: 1.2, duration: 0.05 }, 0.76)
             .set(q("[data-burst]"), { opacity: 1 }, 0.75)
@@ -233,9 +245,9 @@ export default function Hero() {
             .from(q("[data-story-fade]"), { y: 20, opacity: 0, duration: 0.08, stagger: 0.03 }, 0.34)
             .from(q('[data-story-line="b"] .word-inner'), { yPercent: 115, duration: 0.1, stagger: 0.02 }, 0.46);
           // last year's prints drop onto the board as the clock breaks
-          // the board belongs to the resting frame: on desktop it clears for the story; stacked, it
-          // can sit below the fold, so it stays put to be read once the pin lets go
-          if (desktop) tl.to(q("[data-board-wrap]"), { opacity: 0, y: 40, duration: 0.14 }, 0.02);
+          // the board belongs to the resting frame and clears for the story (on phones it would sit
+          // right on top of it)
+          tl.to(q("[data-board-wrap]"), { opacity: 0, y: 40, duration: 0.14 }, 0.02);
           tl.from(q("[data-story-print]"), { y: 60, opacity: 0, duration: 0.1, stagger: 0.06, ease: "back.out(1.6)" }, 0.5);
           tl.to(q("[data-story]"), { autoAlpha: 0, duration: 0.06 }, 0.84);
 
@@ -551,7 +563,7 @@ export default function Hero() {
         <div
           data-story
           aria-hidden
-          className="pointer-events-none invisible absolute inset-x-0 top-[112px] z-20 opacity-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(58%-1.5rem)] lg:items-center lg:pr-[4vw]"
+          className="pointer-events-none invisible absolute inset-x-0 top-[96px] z-20 opacity-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(58%-1.5rem)] lg:items-center lg:pr-[4vw]"
         >
           <div className="w-full">
             <p data-story-fade className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em]">
@@ -563,38 +575,60 @@ export default function Hero() {
               <span data-story-line="a">
                 <Words text="What is" />
               </span>{" "}
-              <span data-story-line="b" className="text-accent">
-                <Words text="wHACKiest?" />
+              {/* the wordmark as in the headline: ink w and iest, HACK in orange on a hard ink shadow */}
+              <span data-story-line="b">
+                <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+                  <span className="word-inner inline-block origin-bottom-left">
+                    w<span className="text-accent [text-shadow:0.045em_0.045em_0_var(--fg)]">HACK</span>iest
+                    <span className="text-accent">?</span>
+                  </span>
+                </span>
               </span>
             </p>
-            <p data-story-fade className="mt-5 hidden max-w-[52ch] text-muted sm:block lg:text-lg">
+            <p data-story-fade className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-muted sm:mt-5 sm:text-lg lg:text-[min(1.375rem,2.5vh)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden">
               wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In one{" "}
-              <span className="font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
+              <span className="whitespace-nowrap font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
               pitch working prototypes for real-world problems.
             </p>
-            <dl data-story-fade className="mt-5 flex flex-wrap gap-x-7 gap-y-2">
+            <dl data-story-fade className="mt-4 grid grid-cols-3 gap-x-3 sm:mt-5 sm:flex sm:flex-wrap sm:gap-x-7 sm:gap-y-2">
               {[
                 ["3000+", "Participants"],
                 ["1000+", "Projects built"],
                 ["20+", "Industry partners"],
               ].map(([n, label]) => (
                 <div key={label} className="flex flex-col-reverse">
-                  <dt className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">{label}</dt>
-                  <dd className="display-wide text-2xl leading-none text-accent">{n}</dd>
+                  <dt className="mt-1.5 font-mono text-[9px] uppercase leading-snug tracking-[0.12em] text-muted sm:text-[11px] sm:tracking-[0.14em] lg:text-xs">{label}</dt>
+                  <dd className="display-wide text-[26px] leading-none text-accent sm:text-3xl lg:text-[min(2.5rem,4.6vh)]">{n}</dd>
                 </div>
               ))}
             </dl>
 
-            <p data-story-fade className="mt-6 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+            <p data-story-fade className="mt-6 font-mono text-xs uppercase tracking-[0.12em] text-muted lg:text-sm">
               From the archive <span className="text-accent">/</span> wHACKiest 2025 drew a packed house
             </p>
-            <ul className="mt-5 flex max-w-[min(680px,64vh)] gap-3 sm:gap-5">
-              {POLAROIDS.map((p) => (
-                <li key={p.caption} data-story-print className={`w-1/3 ${p.tilt} bg-white p-1.5 pb-2.5 shadow-[0_12px_24px_-12px_rgba(60,40,10,0.45)] sm:p-2 sm:pb-3`}>
-                  <div className="relative aspect-square overflow-hidden bg-[#d9d3c4]">
-                    <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 220px, 33vw" className="object-cover" />
+            {/* the only part of the story that takes the pointer: hover a print and it straightens,
+                lifts off the board and grows (GSAP animates the <li>, so the hover lives on the card inside) */}
+            <ul className="pointer-events-auto mt-5 flex max-w-[min(680px,64vh)] gap-3 sm:gap-5">
+              {POLAROIDS.map((p, i) => (
+                <li key={p.caption} data-story-print className={`relative w-1/3 hover:z-20 ${zoomed === i ? "z-20" : "z-0"}`}>
+                  <div
+                    role="button"
+                    tabIndex={-1}
+                    data-zoom={zoomed === i ? "" : undefined}
+                    onClick={() => setZoomed((z) => (z === i ? null : i))}
+                    className={`group/print ${p.tilt} ${["origin-bottom-left", "origin-bottom", "origin-bottom-right"][i]} cursor-zoom-in select-none data-[zoom]:rotate-0 data-[zoom]:scale-[1.6] data-[zoom]:shadow-[0_30px_60px_-20px_rgba(60,40,10,0.55)] sm:data-[zoom]:scale-[1.35] lg:origin-center bg-white p-1.5 pb-2.5 shadow-[0_12px_24px_-12px_rgba(60,40,10,0.45)] transition-[rotate,scale,box-shadow] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:rotate-0 hover:scale-[1.35] hover:shadow-[0_30px_60px_-20px_rgba(60,40,10,0.55)] sm:p-2 sm:pb-3`}
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-[#d9d3c4]">
+                      <Image
+                        src={p.src}
+                        alt={p.alt}
+                        fill
+                        sizes="(min-width: 1024px) 300px, 45vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover/print:scale-110 group-data-[zoom]/print:scale-110"
+                      />
+                    </div>
+                    <p className="mt-2 truncate text-center font-mono text-[10px] text-muted sm:text-xs">{p.caption}</p>
                   </div>
-                  <p className="mt-2 truncate text-center font-mono text-[9px] text-muted sm:text-[11px]">{p.caption}</p>
                 </li>
               ))}
             </ul>
