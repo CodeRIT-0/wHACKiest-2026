@@ -12,7 +12,7 @@ const links = [
   { href: "/#tracks", label: "Tracks" },
   { href: "/#prizes", label: "Prizes" },
   { href: "/#sponsors", label: "Sponsors" },
-  { href: "/#procedure", label: "How to join" },
+  { href: "/#how-to-register", label: "How to join" },
   { href: "/#faqs", label: "FAQs" },
   { href: "/#team", label: "Team" },
   { href: "/#contact", label: "Contact" },

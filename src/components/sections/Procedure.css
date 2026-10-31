@@ -28,7 +28,7 @@
 .journey-stage:nth-child(even) .journey-artwork { grid-column:1; }
 .journey-kicker { font:10px/1.5 var(--font-jetbrains-mono), monospace; letter-spacing:.16em; color:#0357d6; margin:0 0 16px; }
 .journey-copy h3 { font-size:clamp(25px,3vw,38px); font-weight:700; line-height:1.1; letter-spacing:-.045em; margin:0 0 20px; max-width:330px; }
-.journey-copy > p:last-child { font-size:15px; line-height:1.85; color:#514e46; max-width:365px; margin:0; }
+.journey-copy > .journey-description { font-size:15px; line-height:1.85; color:#514e46; max-width:365px; margin:0; }
 .journey-node { position:absolute; left:50%; top:50%; translate:-50% -50%; width:44px; height:44px; display:grid; place-items:center; background:#f7f2e5; border:1px solid #0357d6; font:13px var(--font-jetbrains-mono), monospace; z-index:2; box-shadow:0 0 0 8px #fff9ec; }
 .journey-stage[data-reached=true] .journey-node { background:#fd9c36; border-color:#050505; box-shadow:3px 3px 0 #050505,0 0 0 8px #fff9ec; }
 .journey-art { display:block; width:100%; height:auto; overflow:visible; font-family:var(--font-space-grotesk),sans-serif; }
@@ -65,7 +65,7 @@
   .journey-stage[data-reached=true] .journey-node { box-shadow:2px 2px 0 #050505,0 0 0 5px #fff9ec; }
   .journey-copy,.journey-stage:nth-child(even) .journey-copy { grid-column:2; grid-row:1; padding:0; }
   .journey-copy h3 { font-size:28px; margin-bottom:14px; }
-  .journey-copy > p:last-child { font-size:14px; line-height:1.8; }
+  .journey-copy > .journey-description { font-size:14px; line-height:1.8; }
   .journey-kicker { font-size:9px; margin-bottom:10px; }
   .journey-artwork,.journey-stage:nth-child(even) .journey-artwork { grid-column:2; grid-row:2; width:min(100%,390px); margin:20px auto 0; }
   .journey-art-label { font-size:7px; }
@@ -148,3 +148,36 @@
 @media (min-width: 1024px) { .procedure-heading { grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr); } }
 .procedure-subtitle { color: var(--muted); }
 
+/* Stage 01 instructions expand in flow. The journey ResizeObserver remeasures
+   the route and every stage throughout the transition, including later nodes. */
+.registration-guide { margin-top:22px; width:100%; }
+.registration-guide-toggle { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:44px; width:100%; padding:10px 0; border-top:1px solid #0357d64d; border-bottom:1px solid #0357d64d; background:transparent; color:#050505; text-align:left; font:600 clamp(1.125rem,1.4vw,1.25rem)/1.5 var(--font-space-grotesk),sans-serif; letter-spacing:.035em; cursor:pointer; }
+.registration-guide-toggle > span { color:#0357d6; font-size:20px; line-height:1; }
+.registration-guide-toggle:hover { color:#0357d6; }
+.registration-guide-toggle:focus-visible,.registration-guide a:focus-visible { outline:3px solid #0357d6; outline-offset:4px; }
+.registration-guide-disclosure { display:grid; grid-template-rows:0fr; visibility:hidden; transition:grid-template-rows 220ms ease,visibility 0s 220ms; }
+.registration-guide[data-open=true] .registration-guide-disclosure { grid-template-rows:1fr; visibility:visible; transition:grid-template-rows 220ms ease,visibility 0s; }
+.registration-guide-clip { min-height:0; overflow:hidden; }
+.registration-guide-content { padding:18px 0 2px; }
+.registration-guide-note { margin:0 0 1.5rem; font-size:1.0625rem; line-height:1.65; color:#39372f; }
+.registration-guide-steps { list-style:none; padding:0; margin:0; }
+.registration-guide-steps > li { position:relative; display:grid; grid-template-columns:22px minmax(0,1fr); column-gap:12px; padding:0 0 16px; }
+.registration-guide-steps > li:not(:last-child)::before { content:""; position:absolute; left:7px; top:21px; bottom:4px; width:1px; background:#fd9c3666; }
+.registration-guide-number { color:#c15d00; font:600 10px/20px var(--font-jetbrains-mono), monospace; }
+.registration-guide-steps h4 { margin:0 0 5px; font-size:clamp(1.125rem,1.5vw,1.25rem); font-weight:600; line-height:1.5; }
+.registration-guide-steps p { margin:0; font-size:clamp(1.0625rem,1.3vw,1.125rem); line-height:1.65; color:#39372f; }
+.registration-guide-steps > li:not(:last-child) > div { padding-bottom:14px; border-bottom:1px solid #0357d61c; }
+.registration-guide a { text-decoration:underline; text-decoration-color:#0357d680; text-underline-offset:3px; }
+.registration-guide a:hover { color:#0357d6; }
+.registration-guide[data-open=true] .registration-guide-steps > li { animation:registration-instruction-in 140ms ease both; }
+.registration-guide-steps > li:nth-child(2) { animation-delay:20ms !important; }
+.registration-guide-steps > li:nth-child(3) { animation-delay:40ms !important; }
+.registration-guide-steps > li:nth-child(4) { animation-delay:60ms !important; }
+.registration-guide-steps > li:nth-child(5) { animation-delay:80ms !important; }
+.registration-guide-steps > li:nth-child(6) { animation-delay:100ms !important; }
+.registration-guide-steps > li:nth-child(7) { animation-delay:120ms !important; }
+.registration-guide-steps > li:nth-child(8) { animation-delay:140ms !important; }
+@keyframes registration-instruction-in { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+@media (max-width:760px) { .registration-guide { margin-top:18px; } .registration-guide-steps > li { column-gap:8px; } }
+
+.registration-guide-pending { display:inline; padding:2px 5px; background:#fd9c36; color:#050505; text-decoration:underline; text-underline-offset:3px; cursor:not-allowed; box-decoration-break:clone; }

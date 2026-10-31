@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { FAQ_CATEGORIES, faqContent, faqItems, type FaqCategory } from "@/content/faqs";
+import { faqCategories, faqContent, faqItems, type FaqCategory } from "@/content/faqs";
 import FaqTerminal from "./FaqTerminal";
 import "./Faqs.css";
 import ComputingBackdrop from "./ComputingBackdrop";
@@ -12,19 +12,15 @@ const subscribeToClient = () => () => {};
 
 export default function Faqs() {
   const hydrated = useSyncExternalStore(subscribeToClient, () => true, () => false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [open, setOpen] = useState<number | null>(null);
-  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState<string | null>(null);
   const [filter, setFilter] = useState<FaqCategory | "all">("all");
-  // search matches the question and the answer text
-  const needle = query.trim().toLowerCase();
-  const matches = (index: number) => {
-    const item = faqItems[index];
-    if (filter !== "all" && item.category !== filter) return false;
-    if (!needle) return true;
-    return (item.question + " " + item.answer.map((p) => p.text).join("")).toLowerCase().includes(needle);
+  const categories = faqCategories.filter(category => faqItems.some(item => item.category === category.id));
+  const visibleItems = faqItems.filter(item => filter === "all" || item.category === filter);
+  const activeQuestion = faqItems.find(item => item.id === open);
+  const selectCategory = (category: FaqCategory | "all") => {
+    setFilter(category);
+    if (activeQuestion && category !== "all" && activeQuestion.category !== category) setOpen(null);
   };
-  const shown = faqItems.filter((_, i) => matches(i)).length;
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -35,79 +31,72 @@ export default function Faqs() {
       if (entry.isIntersecting) section.dataset.revealed = "true";
     }, { threshold: 0 });
     observer.observe(section);
-    let frame = 0;
+    let frame = 0, disposed = false;
     const update = () => {
       frame = 0;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       section.style.setProperty("--faq-curve", String(reduced ? 0 : Math.max(0, Math.min(1, (section.getBoundingClientRect().top - window.innerHeight * .25) / (window.innerHeight * .65)))));
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const schedule = () => { if (!disposed && !frame) frame = requestAnimationFrame(update); };
+    const resize = new ResizeObserver(schedule);
+    resize.observe(section);
+    document.fonts.ready.then(schedule);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule); update();
-    return () => { observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
+    return () => { disposed = true; observer.disconnect(); resize.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
   }, []);
 
   return (
     <section id="faqs" data-panel className="faq-section theme-dark dark-panel" ref={sectionRef} aria-labelledby="faq-title">
       <ComputingBackdrop variant="faq" />
       <div className="faq-layout">
+        <header className="faq-heading faq-reveal">
+          <div id="faq-title"><SectionHeader index="08" label="FAQs" title="Got questions?" /></div>
+          <p className="faq-subtitle">{faqContent.subtitle}</p>
+        </header>
+        <div className="faq-tools">
+          <div className="faq-filters" role="group" aria-label="Filter questions by category">
+            {[{ id: "all" as const, label: "All" }, ...categories].map(category => (
+              <button key={category.id} type="button" aria-pressed={filter === category.id} onClick={() => selectCategory(category.id)}>
+                {category.label}
+              </button>
+            ))}
+          </div>
+          <p className="faq-result-count" role="status" aria-live="polite" aria-atomic="true">{visibleItems.length} {visibleItems.length === 1 ? "question" : "questions"}{filter === "all" ? " across all categories" : ` in ${categories.find(category => category.id === filter)?.label}`}</p>
+        </div>
         <div className="faq-intro faq-reveal">
-          <header>
-            <div id="faq-title"><SectionHeader index="08" label="FAQs" title="Got questions?" /></div>
-            <p className="faq-subtitle">{faqContent.subtitle}</p>
-          </header>
-          <FaqTerminal requestKey={open} category={open === null ? null : faqItems[open].category} />
+          <FaqTerminal requestKey={open} category={activeQuestion?.signalCategory ?? null} />
         </div>
         <div className="faq-right faq-reveal">
           <div className="faq-window">
-            <div className="faq-titlebar">
-              <span>help_center</span>
-              <button className="faq-menu-button" type="button" aria-expanded={menuOpen} aria-controls="faq-index" onClick={() => setMenuOpen(value => !value)}>MENU <span aria-hidden="true">{menuOpen ? "−" : "+"}</span></button>
-            </div>
-            {/* search + category filter */}
-            <div className="faq-tools">
-              <label className="faq-search">
-                <span aria-hidden>&gt;</span>
-                <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search_questions" aria-label="Search FAQs" />
-                <span className="faq-count" aria-live="polite">{String(shown).padStart(2, "0")}/{String(faqItems.length).padStart(2, "0")}</span>
-              </label>
-              <div className="faq-chips" role="group" aria-label="Filter by topic">
-                {(["all", ...FAQ_CATEGORIES] as const).map((c) => (
-                  <button key={c} type="button" aria-pressed={filter === c} onClick={() => setFilter(c)}>
-                    {c}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div id="faq-index" className="faq-index" hidden={!menuOpen} onKeyDown={event => { if (event.key === "Escape") { setMenuOpen(false); sectionRef.current?.querySelector<HTMLButtonElement>(".faq-menu-button")?.focus(); } }}>
-              {faqItems.map((item, index) => <button type="button" key={item.question} onClick={() => { setOpen(index); setMenuOpen(false); document.getElementById(`faq-question-${index + 1}`)?.focus(); }}>{String(index + 1).padStart(2, "0")} / {item.question}</button>)}
-            </div>
-            {faqItems.map((item, index) => {
-              const expanded = !hydrated || open === index;
-              const answerId = `faq-answer-${index + 1}`;
-              const questionId = `faq-question-${index + 1}`;
-              return (
-                <div className="faq-item" key={item.question} data-open={expanded} hidden={!matches(index)}>
-                  <h3>
-                    <button type="button" id={questionId} aria-expanded={expanded} aria-controls={answerId} onClick={() => setOpen(current => current === index ? null : index)}>
-                      <span className="faq-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                      <span>{item.question}</span>
-                      <span className="faq-toggle" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" focusable="false">
-                          <path d="m7 10 5 5 5-5" />
-                        </svg>
-                      </span>
-                    </button>
-                  </h3>
-                  <div id={answerId} className="faq-answer" role="region" aria-labelledby={questionId} aria-hidden={!expanded} inert={!expanded}>
-                    <div className="faq-answer-inner">
-                      <p>{item.answer.map((part, partIndex) => part.href ? <Link key={partIndex} href={part.href}>{part.text}</Link> : <span key={partIndex}>{part.text}</span>)}</p>
+            <div className="faq-titlebar">HELP CENTER</div>
+            <div className="faq-results" key={filter}>
+              {visibleItems.map((item, index) => {
+                const expanded = !hydrated || open === item.id;
+                const answerId = `faq-answer-${item.id}`;
+                const questionId = `faq-question-${item.id}`;
+                return (
+                  <div className="faq-item" key={item.id} data-open={expanded}>
+                    <h3>
+                      <button type="button" id={questionId} aria-expanded={expanded} aria-controls={answerId} onClick={() => setOpen(current => current === item.id ? null : item.id)}>
+                        <span className="faq-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                        <span>{item.question}</span>
+                        <span className="faq-toggle" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                            <path d="m7 10 5 5 5-5" />
+                          </svg>
+                        </span>
+                      </button>
+                    </h3>
+                    <div id={answerId} className="faq-answer" role="region" aria-labelledby={questionId} aria-hidden={!expanded} inert={!expanded}>
+                      <div className="faq-answer-inner">
+                        <p>{item.answer.map((part, partIndex) => part.href ? <Link key={partIndex} href={part.href}>{part.text}</Link> : <span key={partIndex}>{part.text}</span>)}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-            {shown === 0 && <p className="faq-empty">No questions match. Try another word, or ask the organisers below.</p>}
+                );
+              })}
+            </div>
           </div>
           <div className="faq-contact">
             <p>Still have a question?</p>

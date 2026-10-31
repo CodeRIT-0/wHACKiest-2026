@@ -58,4 +58,3 @@ export const TOTAL = PRIZES.reduce((sum, p) => sum + p.amount, 0);
 export const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 /** the amount with every digit masked, for a place that has not been decrypted yet */
 export const masked = (n: number) => inr(n).replace(/\d/g, "?");
-

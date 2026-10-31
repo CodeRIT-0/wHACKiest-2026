@@ -1,6 +1,6 @@
-import type { FaqCategory } from "@/content/faqs";
+import type { FaqSignalCategory } from "@/content/faqs";
 
-const knowledgeNodes: { category: FaqCategory; x: number; y: number; connection: string; symbol: string }[] = [
+const knowledgeNodes: { category: FaqSignalCategory; x: number; y: number; connection: string; symbol: string }[] = [
   { category: "registration", x: 22, y: 205, connection: "M22 205H85V190H210", symbol: "M-8-6H8V6H-8Z M-3-2h-2v3h2z M1-2H5 M1 2H5" },
   { category: "submission", x: 388, y: 86, connection: "M388 86V146H325L280 190H210", symbol: "M-6-8H3L7-4V8H-6Z M0 5V-3 M-3 0 0-3 3 0" },
   { category: "selection", x: 395, y: 250, connection: "M395 250H335V210H210", symbol: "m-7-4 2 2 3-4 M1-4H7 m-14 8 2 2 3-4 M1 4H7" },
@@ -8,7 +8,7 @@ const knowledgeNodes: { category: FaqCategory; x: number; y: number; connection:
 ];
 
 // Local information sources feed the existing decorative help terminal.
-export default function FaqTerminal({ category, requestKey }: { category: FaqCategory | null; requestKey: number | null }) {
+export default function FaqTerminal({ category, requestKey }: { category: FaqSignalCategory | null; requestKey: string | null }) {
   return (
     <div className="faq-terminal" aria-hidden="true">
       <svg className="faq-terminal-artboard" viewBox="0 0 420 430" focusable="false"><foreignObject width="420" height="430"><div className="faq-terminal-scene">
