@@ -95,11 +95,6 @@ section[id] {
   animation-direction: reverse;
   animation-duration: 16s;
 }
-.badge-spin {
-  transform-box: view-box;
-  transform-origin: 50px 50px;
-  animation: spin 18s linear infinite;
-}
 .clock-seconds {
   transform-box: view-box;
   animation: spin 60s steps(60) infinite;
@@ -256,7 +251,6 @@ section[id] {
   .clock-orbit-reverse,
   .clock-gear,
   .clock-gear-reverse,
-  .badge-spin,
   .clock-seconds {
     animation: none;
   }

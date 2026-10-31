@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState, type MouseEvent } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
+import { scrollToStory, STORY_HASH } from "./hero/story-scroll";
 
 // every homepage section in page order, then the announcements page
 const links = [
-  { href: "/#home", label: "About" },
+  { href: `/${STORY_HASH}`, label: "About" },
   { href: "/#timeline", label: "Timeline" },
   { href: "/#tracks", label: "Tracks" },
   { href: "/#prizes", label: "Prizes" },
@@ -27,6 +29,16 @@ export default function Navbar() {
   const [hovered, setHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const pathname = usePathname();
+
+  // About points into the pinned hero, which needs a measured scroll, not an anchor. Without the
+  // pin (reduced motion) the story never plays, so it falls back to the timeline
+  const onLink = (e: MouseEvent, href: string) => {
+    setMenuOpen(false);
+    if (pathname !== "/" || href !== `/${STORY_HASH}`) return;
+    e.preventDefault();
+    if (!scrollToStory()) document.getElementById("timeline")?.scrollIntoView();
+  };
 
   // only re-render when crossing a threshold, not on every scroll frame. Scrolling down tucks
   // the nav out of the way so it never sits on a heading; any upward scroll brings it back.
@@ -94,7 +106,7 @@ export default function Navbar() {
           <ul className="hidden items-center gap-4 whitespace-nowrap pl-5 pr-4 text-[13px] xl:flex">
             {links.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="transition-colors hover:text-accent">
+                <Link href={l.href} onClick={(e) => onLink(e, l.href)} className="transition-colors hover:text-accent">
                   {l.label}
                 </Link>
               </li>
@@ -128,7 +140,7 @@ export default function Navbar() {
             <li key={l.href}>
               <Link
                 href={l.href}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => onLink(e, l.href)}
                 className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-ink hover:text-bg"
               >
                 <span className="font-mono text-[10px] text-accent">{String(i + 1).padStart(2, "0")}</span>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, Camera } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -13,6 +14,7 @@ import Words from "../motion/Words";
 import FlipBoard from "../hero/FlipBoard";
 import SecondsDial from "../hero/SecondsDial";
 import { phaseAt, STATUS } from "../hero/hero-status";
+import { HERO_TRIGGER_ID, scrollToStory, STORY_HASH } from "../hero/story-scroll";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -27,11 +29,11 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // The frames are transparent, so the paper stays one flat colour. The shatter clip is cut before
 // its smoke. Reduced motion: no pin, no scrub, just the clock beside the copy.
 
-// TODO: swap in real photos from wHACKiest 2025 (add `src` and render with next/image)
+// photos from wHACKiest 2025, cropped square in public/assets/about
 const POLAROIDS = [
-  { caption: "Kick-off, 2025", tilt: "-rotate-6" },
-  { caption: "3am debugging", tilt: "rotate-3" },
-  { caption: "Final demos", tilt: "-rotate-2" },
+  { caption: "Kick-off, 2025", src: "/assets/about/kickoff.webp", alt: "The wHACKiest 2025 crew with the event banner", tilt: "-rotate-6" },
+  { caption: "3am debugging", src: "/assets/about/debugging.webp", alt: "Teams heads-down at their laptops in the lab", tilt: "rotate-3" },
+  { caption: "Final demos", src: "/assets/about/demos.webp", alt: "Teams presenting their projects to the judges", tilt: "-rotate-2" },
 ];
 
 const TURN_END = FRAMES.turn.count - 1;
@@ -163,7 +165,7 @@ export default function Hero() {
     let cancelled = false;
     const load = (seq: Seq, count: number) =>
       Array.from({ length: count }, (_, i) => {
-        const img = new Image();
+        const img = new window.Image();
         img.decoding = "async";
         img.onload = () => !cancelled && draw(true);
         img.src = frameSrc(seq, i);
@@ -191,23 +193,25 @@ export default function Hero() {
           const q = gsap.utils.selector(root);
           const [stage] = q("[data-stage]") as HTMLElement[];
           const copies = q("[data-copy]") as HTMLElement[];
-          const [headline] = copies;
+          const [story] = q("[data-story] > div") as HTMLElement[];
 
-          // desktop: across into the centre of the copy's column, measured without the stage's own
-          // shift so a mid-scroll refresh still lands it in the right place. Stacked: the copy above
-          // makes way for the story, so the clock settles a little lower instead
+          // desktop: across into the middle of the space the story leaves on its left, measured
+          // without the stage's own shift so a mid-scroll refresh still lands it in the right place.
+          // Stacked: the copy above makes way for the story, so the clock settles a little lower instead
           const to = () => {
             if (!desktop) return 0;
-            const c = headline.getBoundingClientRect();
             const s = stage.getBoundingClientRect();
-            return c.left + c.width / 2 - (s.left + s.width / 2) - Number(gsap.getProperty(stage, "x"));
+            return story.getBoundingClientRect().left / 2 - (s.left + s.width / 2) - Number(gsap.getProperty(stage, "x"));
           };
           const drop = () => (desktop ? 0 : 56);
+          // the clock grows a little as it cracks, but never past the space beside the story (it's
+          // sized by viewport height, so in a tall, narrow window it would run into the text)
+          const grow = () => (desktop ? Math.min(1.08, (story.getBoundingClientRect().left - 48) / stage.offsetWidth) : 1.08);
 
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             onUpdate: () => draw(),
-            scrollTrigger: { trigger: root.current, start: "top top", end: "+=170%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
+            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: "+=170%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
           });
 
           // 1. travel right -> left, turning as it goes; the copy, board and dial clear out of its way
@@ -216,10 +220,10 @@ export default function Hero() {
             .to(copies, { opacity: 0, x: desktop ? -50 : 0, y: desktop ? 0 : -30, duration: 0.18, stagger: 0.02 }, 0.04)
                         .to(q("[data-spotlight-wrap]"), { opacity: 0, duration: 0.1 }, 0)
             .to(q("[data-dims]"), { opacity: 0, duration: 0.12 }, 0)
-            .to(q("[data-hero-gears], [data-hero-badge], [data-hero-dial]"), { opacity: 0, scale: 0.85, duration: 0.2 }, 0)
+            .to(q("[data-hero-gears], [data-hero-dial]"), { opacity: 0, scale: 0.85, duration: 0.2 }, 0)
             // 2. the glass cracks and the clock flips to show its gear train
             .fromTo(play.current, { shatter: 0 }, { shatter: SHATTER_STOP, duration: 0.34 }, 0.42)
-            .fromTo(stage, { scale: 1 }, { scale: 1.08, duration: 0.34, ease: "power1.in" }, 0.42)
+            .fromTo(stage, { scale: 1 }, { scale: grow, duration: 0.34, ease: "power1.in" }, 0.42)
             // 3. burst: the photo gives way to line-art debris that falls into the next era
             .to(canvasRef.current, { opacity: 0, scale: 1.2, duration: 0.05 }, 0.76)
             .set(q("[data-burst]"), { opacity: 1 }, 0.75)
@@ -248,6 +252,14 @@ export default function Hero() {
               0.75,
             ).to(el, { opacity: 0, duration: 0.05 }, 0.95);
           });
+
+          // arriving from another page through the nav's About link: wait for the load to settle the
+          // pin's measurements (SmoothScroll refreshes them 150ms after the page reflows)
+          if (window.location.hash === STORY_HASH) {
+            const go = () => gsap.delayedCall(0.4, scrollToStory);
+            if (document.readyState === "complete") go();
+            else window.addEventListener("load", go, { once: true });
+          }
         },
       );
     },
@@ -276,8 +288,7 @@ export default function Hero() {
           .from(q("[data-intro-fade]"), { y: 24, opacity: 0, duration: 0.9, stagger: 0.08 }, 0.45)
           .from(q("[data-board]"), { y: 48, opacity: 0, duration: 1.1 }, 0.6)
           .from(q("[data-flap]"), { rotateX: -90, opacity: 0, transformPerspective: 400, duration: 0.7, stagger: 0.035, ease: "back.out(2.2)" }, 0.8)
-          .fromTo(dims, { strokeDasharray: "1 1", strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.4, stagger: 0.06, ease: "power2.inOut" }, 0.5)
-          .from(q("[data-hero-badge]"), { scale: 0, rotate: -90, opacity: 0, duration: 1.2 }, 0.7);
+          .fromTo(dims, { strokeDasharray: "1 1", strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.4, stagger: 0.06, ease: "power2.inOut" }, 0.5);
       });
 
       mm.add("(prefers-reduced-motion: no-preference) and (pointer: fine)", () => {
@@ -383,7 +394,7 @@ export default function Hero() {
             </p>
 
             {/* the wordmark is the headline: HACK in orange on a hard ink shadow that deepens on
-                hover, then a blinking terminal cursor; 2026 below at the same size on counter drums */}
+                hover; 2026 below at the same size on counter drums */}
             <h1 aria-label="wHACKiest 2026. Every second counts." className="group/word mt-4 sm:mt-5">
               <span
                 data-hero-words
@@ -397,7 +408,6 @@ export default function Hero() {
                       HACK
                     </span>
                     iest
-                    <span className="ml-[0.06em] inline-block h-[0.62em] w-[0.15em] translate-y-[0.02em] bg-accent motion-safe:animate-[blink_1s_steps(1)_infinite]" />
                   </span>
                 </span>
               </span>
@@ -456,24 +466,6 @@ export default function Hero() {
               <Gear teeth={10} speed={0.14} className="bottom-[22%] right-[30%] w-[16%]" />
             </div>
 
-            {/* rotating badge */}
-            <div data-hero-badge aria-hidden className="pointer-events-none absolute -right-1 -top-4 z-10 w-20 sm:w-24 lg:right-1 lg:-top-6 lg:w-28 xl:-right-4">
-              <svg viewBox="0 0 100 100" className="h-full w-full">
-                <defs>
-                  <path id="hero-badge-ring" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0" />
-                </defs>
-                <circle cx={50} cy={50} r={48} className="fill-bg stroke-ink" strokeWidth={1} />
-                <g className="badge-spin">
-                  <text className="fill-ink font-mono" fontSize={8.6} textLength={236} lengthAdjust="spacing">
-                    <textPath href="#hero-badge-ring">EVERY SECOND COUNTS · WHACKIEST 2026 · </textPath>
-                  </text>
-                </g>
-                <circle cx={50} cy={50} r={20} className="fill-accent" />
-                <path d="M50 50V36M50 50l9 6" className="stroke-ink" strokeWidth={2.2} strokeLinecap="round" />
-                <circle cx={50} cy={50} r={2.4} className="fill-ink" />
-              </svg>
-            </div>
-
             <div data-stage className="relative will-change-transform">
               <div data-tilt className="[transform-style:preserve-3d] [transform:perspective(900px)]">
                 <div data-intro-clock>
@@ -497,9 +489,6 @@ export default function Hero() {
                   <path d="M96 -1 l7 -3 v6 Z M314 -1 l-7 -3 v6 Z" className="fill-ink/40" />
                   <text x={205} y={-10} textAnchor="middle" className="fill-ink/55 stroke-none">
                     Ø 256
-                  </text>
-                  <text x={0} y={340} className="fill-ink/55 stroke-none">
-                    FIG. 01 / ESCAPEMENT CLOCK, 1946
                   </text>
                 </g>
                 <g data-burst opacity={0} transform="translate(5 -30)">
@@ -538,7 +527,11 @@ export default function Hero() {
                 <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/cta:translate-x-1" />
               </Link>
               <Link
-                href="/#timeline"
+                href={`/${STORY_HASH}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!scrollToStory()) document.getElementById("timeline")?.scrollIntoView();
+                }}
                 className="group/ex inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
               >
                 Explore<span className="-ml-1 hidden sm:inline">the hackathon</span>
@@ -558,7 +551,7 @@ export default function Hero() {
         <div
           data-story
           aria-hidden
-          className="pointer-events-none invisible absolute inset-x-0 top-[112px] z-20 opacity-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(50%-1.5rem)] lg:items-center"
+          className="pointer-events-none invisible absolute inset-x-0 top-[112px] z-20 opacity-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:flex lg:w-[calc(58%-1.5rem)] lg:items-center lg:pr-[4vw]"
         >
           <div className="w-full">
             <p data-story-fade className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em]">
@@ -566,15 +559,15 @@ export default function Hero() {
               <span className="text-muted">/</span>
               About
             </p>
-            <p className="display-wide mt-3 text-[34px] leading-[1] sm:text-5xl xl:text-6xl">
+            <p className="display-wide mt-3 text-[34px] leading-[1] sm:text-5xl xl:text-[min(4.5rem,9vh)]">
               <span data-story-line="a">
-                <Words text="Where it all" />
+                <Words text="What is" />
               </span>{" "}
               <span data-story-line="b" className="text-accent">
-                <Words text="began." />
+                <Words text="wHACKiest?" />
               </span>
             </p>
-            <p data-story-fade className="mt-4 hidden max-w-[46ch] text-muted sm:block">
+            <p data-story-fade className="mt-5 hidden max-w-[52ch] text-muted sm:block lg:text-lg">
               wHACKiest is the flagship hackathon of CodeRIT, the official coding club of Ramaiah Institute of Technology. In one{" "}
               <span className="font-semibold text-ink">24-hour</span> sprint, undergraduate teams from across India ideate, build, test and
               pitch working prototypes for real-world problems.
@@ -595,13 +588,13 @@ export default function Hero() {
             <p data-story-fade className="mt-6 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
               From the archive <span className="text-accent">/</span> wHACKiest 2025 drew a packed house
             </p>
-            <ul className="mt-4 flex max-w-[460px] gap-3 sm:gap-4">
+            <ul className="mt-5 flex max-w-[min(680px,64vh)] gap-3 sm:gap-5">
               {POLAROIDS.map((p) => (
                 <li key={p.caption} data-story-print className={`w-1/3 ${p.tilt} bg-white p-1.5 pb-2.5 shadow-[0_12px_24px_-12px_rgba(60,40,10,0.45)] sm:p-2 sm:pb-3`}>
-                  <div className="grid aspect-square place-items-center bg-[linear-gradient(135deg,#d9d3c4,#b8b09e)] text-ink/30 grayscale">
-                    <Camera size={24} weight="duotone" />
+                  <div className="relative aspect-square overflow-hidden bg-[#d9d3c4]">
+                    <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 220px, 33vw" className="object-cover" />
                   </div>
-                  <p className="mt-1.5 truncate text-center font-mono text-[9px] text-muted sm:text-[10px]">{p.caption}</p>
+                  <p className="mt-2 truncate text-center font-mono text-[9px] text-muted sm:text-[11px]">{p.caption}</p>
                 </li>
               ))}
             </ul>

@@ -9,10 +9,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 let active: Lenis | null = null;
 
-// scroll to a page position through Lenis when it's running, natively otherwise
+// scroll to a page position through Lenis when it's running, natively otherwise. Lenis clamps to
+// the page height it last measured, which lags right after a route change, so re-measure first
 export function scrollToPosition(top: number, reducedMotion = false) {
-  if (active && !reducedMotion) active.scrollTo(top, { lerp: 0.12 });
-  else window.scrollTo({ top, behavior: reducedMotion ? "instant" : "smooth" });
+  if (active && !reducedMotion) {
+    active.resize();
+    active.scrollTo(top, { lerp: 0.12 });
+  } else window.scrollTo({ top, behavior: reducedMotion ? "instant" : "smooth" });
 }
 
 // Lenis smooth scrolling, driven from GSAP's ticker so ScrollTrigger and Lenis share one frame.

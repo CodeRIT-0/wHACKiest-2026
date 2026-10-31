@@ -32,7 +32,6 @@
 .journey-node { position:absolute; left:50%; top:50%; translate:-50% -50%; width:44px; height:44px; display:grid; place-items:center; background:#f7f2e5; border:1px solid #0357d6; font:13px var(--font-jetbrains-mono), monospace; z-index:2; box-shadow:0 0 0 8px #fff9ec; }
 .journey-stage[data-reached=true] .journey-node { background:#fd9c36; border-color:#050505; box-shadow:3px 3px 0 #050505,0 0 0 8px #fff9ec; }
 .journey-art { display:block; width:100%; height:auto; overflow:visible; font-family:var(--font-space-grotesk),sans-serif; }
-.journey-art-label { font:7px var(--font-jetbrains-mono), monospace; letter-spacing:.08em; }
 .journey-object-connection { stroke-dasharray:1; stroke-dashoffset:calc(1 - var(--stage-action,1)); }
 .procedure-section[data-journey-ready=true]:not([data-journey-static=true]) .journey-id { translate:calc((1 - var(--stage-action,1)) * -18px) calc((1 - var(--stage-action,1)) * 12px); }
 .procedure-section[data-journey-ready=true]:not([data-journey-static=true]) .journey-artwork { translate:0 calc(var(--stage-emphasis,0) * -5px); }
@@ -68,7 +67,6 @@
   .journey-copy > .journey-description { font-size:14px; line-height:1.8; }
   .journey-kicker { font-size:9px; margin-bottom:10px; }
   .journey-artwork,.journey-stage:nth-child(even) .journey-artwork { grid-column:2; grid-row:2; width:min(100%,390px); margin:20px auto 0; }
-  .journey-art-label { font-size:7px; }
   .journey-route::before { left:21px; }
   .journey-branch-base,.journey-branch-live { display:none; }
   .procedure-cta-slot { width:auto; margin:12px 0 0 64px; min-height:150px; }
@@ -151,7 +149,7 @@
 /* Stage 01 instructions expand in flow. The journey ResizeObserver remeasures
    the route and every stage throughout the transition, including later nodes. */
 .registration-guide { margin-top:22px; width:100%; }
-.registration-guide-toggle { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:44px; width:100%; padding:10px 0; border-top:1px solid #0357d64d; border-bottom:1px solid #0357d64d; background:transparent; color:#050505; text-align:left; font:600 clamp(1.125rem,1.4vw,1.25rem)/1.5 var(--font-space-grotesk),sans-serif; letter-spacing:.035em; cursor:pointer; }
+.registration-guide-toggle { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:44px; width:100%; padding:10px 0; border-top:1px solid #0357d64d; border-bottom:1px solid #0357d64d; background:transparent; color:#050505; text-align:left; font:600 12px/1.5 var(--font-jetbrains-mono), monospace; letter-spacing:.14em; cursor:pointer; }
 .registration-guide-toggle > span { color:#0357d6; font-size:20px; line-height:1; }
 .registration-guide-toggle:hover { color:#0357d6; }
 .registration-guide-toggle:focus-visible,.registration-guide a:focus-visible { outline:3px solid #0357d6; outline-offset:4px; }
@@ -159,13 +157,13 @@
 .registration-guide[data-open=true] .registration-guide-disclosure { grid-template-rows:1fr; visibility:visible; transition:grid-template-rows 220ms ease,visibility 0s; }
 .registration-guide-clip { min-height:0; overflow:hidden; }
 .registration-guide-content { padding:18px 0 2px; }
-.registration-guide-note { margin:0 0 1.5rem; font-size:1.0625rem; line-height:1.65; color:#39372f; }
+.registration-guide-note { margin:0 0 1.25rem; font-size:14px; line-height:1.7; color:#514e46; }
 .registration-guide-steps { list-style:none; padding:0; margin:0; }
 .registration-guide-steps > li { position:relative; display:grid; grid-template-columns:22px minmax(0,1fr); column-gap:12px; padding:0 0 16px; }
 .registration-guide-steps > li:not(:last-child)::before { content:""; position:absolute; left:7px; top:21px; bottom:4px; width:1px; background:#fd9c3666; }
 .registration-guide-number { color:#c15d00; font:600 10px/20px var(--font-jetbrains-mono), monospace; }
-.registration-guide-steps h4 { margin:0 0 5px; font-size:clamp(1.125rem,1.5vw,1.25rem); font-weight:600; line-height:1.5; }
-.registration-guide-steps p { margin:0; font-size:clamp(1.0625rem,1.3vw,1.125rem); line-height:1.65; color:#39372f; }
+.registration-guide-steps h4 { margin:0 0 4px; font-size:15px; font-weight:600; line-height:1.5; }
+.registration-guide-steps p { margin:0; font-size:14px; line-height:1.7; color:#514e46; }
 .registration-guide-steps > li:not(:last-child) > div { padding-bottom:14px; border-bottom:1px solid #0357d61c; }
 .registration-guide a { text-decoration:underline; text-decoration-color:#0357d680; text-underline-offset:3px; }
 .registration-guide a:hover { color:#0357d6; }
@@ -181,3 +179,24 @@
 @media (max-width:760px) { .registration-guide { margin-top:18px; } .registration-guide-steps > li { column-gap:8px; } }
 
 .registration-guide-pending { display:inline; padding:2px 5px; background:#fd9c36; color:#050505; text-decoration:underline; text-underline-offset:3px; cursor:not-allowed; box-decoration-break:clone; }
+
+/* tighter steps on desktop: each one is as tall as its artwork, and copy and art hug the centre line */
+@media (min-width: 761px) {
+  .journey-stage { min-height: 0; padding: 0; grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); }
+  .journey-stage + .journey-stage { margin-top: -24px; }
+  .journey-copy { justify-self: end; max-width: 400px; padding-right: 20px; }
+  .journey-stage:nth-child(even) .journey-copy { justify-self: start; padding: 0 0 0 20px; }
+  .journey-artwork { justify-self: start; width: min(100%, 470px); }
+  .journey-stage:nth-child(even) .journey-artwork { justify-self: end; }
+  .journey-copy h3 { margin-bottom: 14px; }
+  .journey-kicker { margin-bottom: 10px; }
+  /* the art's drawing starts ~50px into its box, so the first step can tuck up under the heading */
+  .procedure-heading { margin-bottom: 0; align-items: start; }
+  .procedure-subtitle { padding-top: 44px; }
+  .journey-route { margin-top: -56px; }
+  /* step 1 carries the registration guide, so its copy is taller than the art: top-align it
+     below the heading instead of centring it up into it (the guide then opens downward) */
+  .journey-stage:first-child { align-items: start; }
+  .journey-stage:first-child .journey-copy { padding-top: 96px; }
+  .journey-stage:first-child .journey-artwork { align-self: center; }
+}

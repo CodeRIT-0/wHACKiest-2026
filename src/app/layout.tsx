@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Archivo, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-import CornerClock from "@/components/CornerClock";
 import EraRail from "@/components/EraRail";
 import BackgroundMotion from "@/components/system/BackgroundMotion";
 import Marquee from "@/components/Marquee";
@@ -43,7 +42,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar />
         <BackgroundMotion />
         <EraRail />
-        <CornerClock />
         <main className="relative pt-8">
           <MotionProvider>{children}</MotionProvider>
         </main>

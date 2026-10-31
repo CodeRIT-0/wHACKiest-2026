@@ -24,7 +24,12 @@ function build(main: HTMLElement): Geometry | null {
   const box = main.getBoundingClientRect();
   const w = main.clientWidth;
   const desktop = w >= 1024;
-  const tx = desktop ? Math.max(14, (w - CONTENT) / 2 - 36) : 9;
+  // some sections run wider than CONTENT (prizes, the procedure), so keep clear of the leftmost
+  // section heading too, not just the standard column
+  const headLeft = Math.min(
+    ...[...main.querySelectorAll("section h2")].map((el) => el.getBoundingClientRect().left - box.left).filter((l) => l > 0),
+  );
+  const tx = desktop ? Math.max(6, Math.min((w - CONTENT) / 2 - 36, headLeft - 28)) : 9;
   const rect = (el: Element) => {
     const r = el.getBoundingClientRect();
     return { left: r.left - box.left, top: r.top - box.top, width: r.width, height: r.height };
@@ -61,9 +66,9 @@ function build(main: HTMLElement): Geometry | null {
   const branches = anchors.slice(1, -1).map((el): Branch => {
     const r = rect(el);
     if (desktop) {
-      // across the gap just above the illustration, then a short drop into it, so the trace
-      // never runs through the text stacked above
-      const y = r.top - 32;
+      // across the gap just above the illustration, then the chamfer drops straight into it, so
+      // the trace hugs the art and never runs through the text stacked above (prizes sits tight)
+      const y = r.top - C;
       const x = r.left + r.width / 2;
       return { d: `M${tx} ${y} H${x - C} L${x} ${y + C} V${r.top}`, from: y, junction: [tx, y], end: [x, r.top] };
     }

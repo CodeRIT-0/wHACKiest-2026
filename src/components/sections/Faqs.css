@@ -281,7 +281,6 @@
 .faq-keyboard > span { display: block; height: 6px; width: 50%; margin: auto; background: #494949; border: 1px solid #050505; }
 .faq-mouse { position: absolute; right: 9%; bottom: 12%; width: 9%; aspect-ratio: .7; border: 1px solid #050505; background: #292929; border-radius: 45% 45% 40% 40%; transform: rotate(-10deg); box-shadow: 3px 4px 0 #05050520; }
 .faq-mouse > i { display: block; height: 40%; width: 1px; background: #050505; margin: auto; }
-.faq-terminal-caption { position: absolute; bottom: 0; left: 8%; font: 8px var(--font-jetbrains-mono), monospace; letter-spacing: .06em; }
 
 .faq-section[data-revealed="true"] .faq-reveal { animation: faq-reveal 550ms ease both; }
 .faq-section[data-revealed="true"] .faq-right { animation-delay: 0ms; }
@@ -304,7 +303,6 @@
   .faq-computer { top:25%; width:72%; left:14%; }
   .faq-keyboard { bottom:11%; }
   .faq-mouse { bottom:12%; }
-  .faq-terminal-caption { bottom: 4%; font-size: 7px; }
   .faq-item h3 > button { padding: 22px 18px; grid-template-columns: 25px minmax(0, 1fr) 30px; gap: 10px; font-size: 16px; }
   .faq-answer p { margin:0 18px 22px; padding:16px 18px; }
   .faq-contact { margin-top: 28px; }
@@ -381,3 +379,7 @@
 }
 
 @media (max-width:760px) { .faq-titlebar { font-size:clamp(1.5rem,4vw,1.75rem); padding:1rem 0; } }
+
+/* the heading and filters now run across the top, right where the backdrop's handoff trace
+   would come in from the section above, so it stays out */
+.faq-section .computing-backdrop-handoff { display: none; }

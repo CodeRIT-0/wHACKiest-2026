@@ -74,7 +74,6 @@ export default function FaqTerminal({ category, requestKey }: { category: FaqSig
       </div>
       <div className="faq-keyboard"><i /><i /><i /><span /></div>
       <div className="faq-mouse"><i /></div>
-      <p className="faq-terminal-caption">FIG. 02 / ANSWERS ON DEMAND.</p>
       </div></foreignObject></svg>
     </div>
   );
