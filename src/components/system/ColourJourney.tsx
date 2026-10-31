@@ -18,6 +18,11 @@ const REDUCED_CSS = `@media (prefers-reduced-motion: reduce){${ERAS.map(
   (e) => `:where(#${e.id}){${PALETTE_KEYS.map((k) => `--${k}:${e.palette[k]};`).join("")}background-color:var(--bg)}`,
 ).join("")}}`;
 
+// what each variable was last set to: a variable on <html> is inherited by every element, so even
+// re-setting it to the same value can send the browser restyling the whole page, on every scroll
+// frame. Only real changes are written (with today's single palette, that's never after the first)
+const written = new Map<string, string>();
+
 function apply(target: HTMLElement, a: Palette, b: Palette, t: number) {
   const eased = smoothstep(0, 1, t);
   // crossing between light and dark paper, the text flips over a short stretch in the middle
@@ -25,7 +30,10 @@ function apply(target: HTMLElement, a: Palette, b: Palette, t: number) {
   const ink = a.dark === b.dark ? eased : smoothstep(0.42, 0.58, t);
   for (const key of PALETTE_KEYS) {
     const k = key === "fg" || key === "muted" ? ink : eased;
-    target.style.setProperty(`--${key}`, mixHex(a[key], b[key], k));
+    const value = mixHex(a[key], b[key], k);
+    if (written.get(key) === value) continue;
+    written.set(key, value);
+    target.style.setProperty(`--${key}`, value);
   }
 }
 
@@ -36,6 +44,7 @@ export default function ColourJourney() {
     const root = document.documentElement;
     if (pathname !== "/") {
       for (const key of PALETTE_KEYS) root.style.removeProperty(`--${key}`);
+      written.clear();
       return;
     }
 

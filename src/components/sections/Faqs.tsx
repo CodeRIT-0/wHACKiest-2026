@@ -26,18 +26,22 @@ export default function Faqs() {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
+    // the curve only changes while the section is on screen, so the scroll work (a layout read per
+    // frame) only runs then, not all the way down the page
+    let frame = 0, disposed = false, onScreen = false;
     const observer = new IntersectionObserver(([entry]) => {
       section.dataset.visible = String(entry.isIntersecting);
       if (entry.isIntersecting) section.dataset.revealed = "true";
+      onScreen = entry.isIntersecting;
+      schedule();
     }, { threshold: 0 });
     observer.observe(section);
-    let frame = 0, disposed = false;
     const update = () => {
       frame = 0;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       section.style.setProperty("--faq-curve", String(reduced ? 0 : Math.max(0, Math.min(1, (section.getBoundingClientRect().top - window.innerHeight * .25) / (window.innerHeight * .65)))));
     };
-    const schedule = () => { if (!disposed && !frame) frame = requestAnimationFrame(update); };
+    function schedule() { if (onScreen && !disposed && !frame) frame = requestAnimationFrame(update); }
     const resize = new ResizeObserver(schedule);
     resize.observe(section);
     document.fonts.ready.then(schedule);

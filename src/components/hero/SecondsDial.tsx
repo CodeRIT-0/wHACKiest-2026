@@ -33,22 +33,36 @@ export default function SecondsDial({ className }: { className?: string }) {
     <svg viewBox="0 0 200 200" aria-hidden className={className} fill="none" strokeLinecap="round">
       <circle cx={100} cy={100} r={98.5} className="stroke-ink/20" strokeWidth={0.6} />
       <circle cx={100} cy={100} r={81} className="stroke-ink/10" strokeWidth={0.5} strokeDasharray="0.6 2.4" />
-      {TICKS.map((t, i) => {
-        const head = i === sec;
-        const lit = i < sec;
-        return (
-          <line
-            key={i}
-            x1={t.x1}
-            y1={t.y1}
-            x2={t.x2}
-            y2={t.y2}
-            strokeWidth={t.major ? 1.5 : 0.8}
-            className={`transition-[stroke,opacity] duration-500 ${head ? "stroke-accent" : lit ? "stroke-accent/55" : t.major ? "stroke-ink/35" : "stroke-ink/20"}`}
-            style={head ? { filter: "drop-shadow(0 0 2.5px var(--accent))" } : undefined}
-          />
-        );
-      })}
+      {/* each tick is two lines: the unlit ink one underneath, and an orange copy on top that only
+          ever changes opacity. Fading opacity runs on the GPU; changing the stroke colour every
+          second didn't, and made the page do paint work on every tick */}
+      {TICKS.map((t, i) => (
+        <line key={`base-${i}`} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} strokeWidth={t.major ? 1.5 : 0.8} className={t.major ? "stroke-ink/35" : "stroke-ink/20"} />
+      ))}
+      {TICKS.map((t, i) => (
+        <line
+          key={`lit-${i}`}
+          x1={t.x1}
+          y1={t.y1}
+          x2={t.x2}
+          y2={t.y2}
+          strokeWidth={t.major ? 1.5 : 0.8}
+          className="stroke-accent transition-opacity duration-500"
+          style={{ opacity: i === sec ? 1 : i < sec ? 0.55 : 0 }}
+        />
+      ))}
+      {/* the live second's glow, as one blurred dot that moves (transform) rather than a filter that
+          has to be redrawn on a different tick each second */}
+      {sec >= 0 && (
+        <circle
+          cx={100}
+          cy={100 - 90}
+          r={3.2}
+          // (no transition on the minute, or it would spin backwards all the way round from 59 to 0)
+          className={`fill-accent opacity-50 blur-[2px] ${sec === 0 ? "" : "transition-transform duration-500"}`}
+          style={{ transform: `rotate(${sec * 6}deg)`, transformOrigin: "100px 100px" }}
+        />
+      )}
       {NUMERALS.map((n) => (
         <text key={n.s} x={n.x} y={n.y} textAnchor="middle" fontSize={7} className="fill-ink/35 font-mono" stroke="none">
           {String(n.s).padStart(2, "0")}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { AppWindow, ArrowDownRight, Brain, Cpu, GlobeHemisphereEast } from "@phosphor-icons/react";
 import { useTrack } from "./TrackContext";
+import { useNear } from "@/hooks/useNear";
 import type { Track } from "./track-data";
 
 const ICONS = { brain: Brain, window: AppWindow, globe: GlobeHemisphereEast, cpu: Cpu };
@@ -20,6 +21,9 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
   const { track: active, setTrack: setActive } = useTrack();
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tabs = useRef<(HTMLDivElement | null)[]>([]);
+  // the photos load as the gallery approaches, not with the first screen
+  const rootRef = useRef<HTMLDivElement>(null);
+  const near = useNear(rootRef);
 
   // a short delay, so sweeping the pointer across the row doesn't flick through every panel
   const hoverTo = (i: number) => {
@@ -49,6 +53,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
 
   return (
     <div
+      ref={rootRef}
       role="tablist"
       aria-label="Tracks"
       onPointerLeave={() => clearTimeout(hoverTimer.current)}
@@ -86,18 +91,19 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             }}
           >
             {/* ---- the photo, printed in the track's colour ---- */}
-            <Image
+            {near && <Image
               src={t.image.src}
               alt=""
               fill
-              sizes="(min-width: 1024px) 760px, 100vw"
+              sizes="(min-width: 1024px) 680px, calc(100vw - 48px)"
+              quality={60}
               className={`object-cover transition-transform duration-[1400ms] motion-reduce:transition-none ${on ? "scale-100" : "scale-[1.18]"}`}
               style={{
                 objectPosition: t.image.position,
                 transitionTimingFunction: EASE,
                 filter: `grayscale(1) contrast(1.15) brightness(${t.image.lift ?? 1})`,
               }}
-            />
+            />}
             <span aria-hidden className="absolute inset-0 mix-blend-multiply" style={{ backgroundColor: t.hue }} />
             {/* halftone screen, like a print */}
             <span aria-hidden className="absolute inset-0 bg-[radial-gradient(rgba(5,5,5,0.7)_0.9px,transparent_1.3px)] bg-[length:5px_5px] opacity-40" />

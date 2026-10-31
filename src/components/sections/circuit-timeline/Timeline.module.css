@@ -14,6 +14,12 @@
 .timeline[data-enhanced="true"] {
   height: 650svh;
 }
+/* phones: about one screen of scroll per stage, so a flick moves you a stage, not a fraction of one */
+@media (max-width: 800px) {
+  .timeline[data-enhanced="true"] {
+    height: 480svh;
+  }
+}
 .pinnedScene {
   position: relative;
   background: var(--paper);

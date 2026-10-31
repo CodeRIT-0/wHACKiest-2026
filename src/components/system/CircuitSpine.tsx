@@ -90,13 +90,21 @@ export default function CircuitSpine() {
   useEffect(() => {
     const main = ref.current?.parentElement;
     if (!main) return;
-    const rebuild = () => setGeo(build(main));
-    rebuild();
+    // refreshes happen often (fonts, images, accordions); most don't move any anchor, and
+    // re-rendering a page-tall SVG for nothing is expensive, so keep the old geometry if it matches
+    const rebuild = () => {
+      const next = build(main);
+      setGeo((prev) => (prev && next && prev.trunk === next.trunk && prev.h === next.h ? prev : next));
+    };
+    // the spine starts below the hero, so the first build (a layout read of the whole page) waits
+    // for an idle moment instead of adding to the work of the first screen. ScrollTrigger refreshes
+    // on window load, so the refresh listener covers load too
+    const idle = typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(rebuild, { timeout: 2000 }) : window.setTimeout(rebuild, 300);
     ScrollTrigger.addEventListener("refresh", rebuild);
-    window.addEventListener("load", rebuild);
     return () => {
+      if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idle);
+      window.clearTimeout(idle);
       ScrollTrigger.removeEventListener("refresh", rebuild);
-      window.removeEventListener("load", rebuild);
     };
   }, []);
 
@@ -109,7 +117,7 @@ export default function CircuitSpine() {
     const total = trunk.getTotalLength();
     // y -> length lookup along the trunk (it only ever runs down or sideways)
     const samples: [number, number][] = [];
-    for (let l = 0; l <= total; l += 6) samples.push([trunk.getPointAtLength(l).y, l]);
+    for (let l = 0; l <= total; l += 18) samples.push([trunk.getPointAtLength(l).y, l]);
     samples.push([trunk.getPointAtLength(total).y, total]);
     const lengthAt = (y: number) => {
       let best = 0;
@@ -134,21 +142,34 @@ export default function CircuitSpine() {
       trunk.style.strokeDashoffset = String(total - shown);
     };
 
-    const update = () => {
+    // main's offset from the top of the page, read once here rather than on every scroll frame
+    // (a getBoundingClientRect per frame forced the browser to lay the page out mid-scroll)
+    const mainTop = main.getBoundingClientRect().top + window.scrollY;
+    const lastBranch: number[] = [];
+    // the scroll position comes from ScrollTrigger, which reads it once per frame for every effect;
+    // reading scrollY here as well, after other effects had written styles, forced a style pass a frame
+    const update = (scroll = window.scrollY) => {
       // in main's coordinates
-      const tipY = reduce ? Infinity : window.innerHeight * TIP - main.getBoundingClientRect().top;
+      const tipY = reduce ? Infinity : window.innerHeight * TIP + scroll - mainTop;
       target = reduce ? total : lengthAt(tipY);
       branches.forEach((b, i) => {
         const p = reduce ? 1 : Math.min(1, Math.max(0, (tipY - b.from) / (window.innerHeight * 0.3)));
-        if (b.el) b.el.style.strokeDashoffset = String(b.len * (1 - p));
+        // write only when it moved a whole pixel: every write repaints the page-tall SVG
+        const offset = Math.round(b.len * (1 - p));
+        if (lastBranch[i] === offset) return;
+        lastBranch[i] = offset;
+        if (b.el) b.el.style.strokeDashoffset = String(offset);
         padRefs.current[i]?.classList.toggle("is-lit", p >= 1);
       });
     };
 
     // ease the trunk toward its target so the jump across a sideways run reads as current flowing
+    let drawn = -1;
     const tick = () => {
       if (Math.abs(target - shown) < 0.5) return;
       shown += (target - shown) * 0.16;
+      if (Math.round(shown) === drawn) return;
+      drawn = Math.round(shown);
       draw();
     };
 
@@ -156,7 +177,7 @@ export default function CircuitSpine() {
     shown = target;
     draw();
     if (reduce) return;
-    const trigger = ScrollTrigger.create({ start: 0, end: "max", onUpdate: update });
+    const trigger = ScrollTrigger.create({ start: 0, end: "max", onUpdate: (self) => update(self.scroll()) });
     gsap.ticker.add(tick);
     return () => {
       trigger.kill();

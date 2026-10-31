@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // The paper behind every page: a blueprint grid that drifts at its own speed, and faint line-art
 // props from the history of computing (gears, clock faces, vacuum tubes, punch cards, chips,
@@ -108,9 +111,11 @@ export default function BackgroundMotion() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // the position comes from ScrollTrigger, which reads it once per frame for every scroll effect.
+    // Reading scrollY here too (every frame, or in a scroll listener) came after other effects had
+    // written styles, so the browser had to recalculate the page's styles first, every frame
     let last = -1;
-    const tick = () => {
-      const y = window.scrollY;
+    const tick = (y: number) => {
       if (y === last) return;
       last = y;
       const band = window.innerHeight + 400; // props wrap through a band taller than the screen
@@ -122,9 +127,9 @@ export default function BackgroundMotion() {
         el.style.transform = `translate3d(0, ${pos}px, 0) rotate(${y * p.spin}deg)`;
       });
     };
-    tick();
-    gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
+    tick(window.scrollY);
+    const trigger = ScrollTrigger.create({ start: 0, end: "max", onUpdate: (self) => tick(self.scroll()) });
+    return () => trigger.kill();
   }, []);
 
   return (

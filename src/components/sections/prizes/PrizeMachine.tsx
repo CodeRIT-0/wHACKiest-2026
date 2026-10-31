@@ -70,7 +70,7 @@ export default function PrizeMachine() {
   const ids = revealed.map((p) => p.id);
 
   return (
-    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[320vh]"}`}>
+    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[240vh] lg:h-[320vh]"}`}>
       {/* the room warms up as the pool comes out */}
       <motion.div
         aria-hidden
@@ -103,7 +103,7 @@ export default function PrizeMachine() {
                     src="/assets/prizes/retro-computer.webp"
                     alt=""
                     fill
-                    sizes="(min-width: 1024px) 640px, 155vw"
+                    sizes="(min-width: 1024px) 640px, 92vw"
                     className="pointer-events-none select-none object-contain"
                   />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type CSSProperties, type ReactNode } from "react";
+import { useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -72,7 +72,10 @@ export default function Timeline({
     worldSize,
     goToStep,
   } = useCircuitProgress(reducedMotion);
-  const [readout, setReadout] = useState({ percent: 0, activeIndex: 0 });
+  // React state only changes at a checkpoint (5 times) and at the end; the running percentage is
+  // written straight to the DOM. Re-rendering the whole section on every 1% made scrolling it janky
+  const [readout, setReadout] = useState({ complete: false, activeIndex: 0 });
+  const meterRef = useRef<HTMLDivElement>(null);
   const percentText = useTransform(
     progress,
     (value) =>
@@ -87,10 +90,12 @@ export default function Timeline({
       timelineStations.filter((station) => value + 0.000001 >= station.progress)
         .length - 1,
     );
+    meterRef.current?.setAttribute("aria-valuenow", String(percent));
+    const complete = percent === 100;
     setReadout((previous) =>
-      previous.percent === percent && previous.activeIndex === activeIndex
+      previous.complete === complete && previous.activeIndex === activeIndex
         ? previous
-        : { percent, activeIndex },
+        : { complete, activeIndex },
     );
   });
 
@@ -99,7 +104,6 @@ export default function Timeline({
       ref={sectionRef}
       id={id}
       className={styles.timeline}
-      data-progress={readout.percent}
       data-stage={readout.activeIndex}
       data-enhanced={hydrated}
       data-compact={worldSize.compact}
@@ -228,15 +232,16 @@ export default function Timeline({
         <footer className={styles.navigationBar}>
           <div
             className={styles.signalStatus}
+            ref={meterRef}
             role="progressbar"
             aria-label="Circuit journey progress"
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={readout.percent}
+            aria-valuenow={0}
           >
             <i />
             <span>
-              {readout.percent === 100
+              {readout.complete
                 ? "CIRCUIT COMPLETE"
                 : `SIGNAL 00${readout.activeIndex + 1}`}
             </span>

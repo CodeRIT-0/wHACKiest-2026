@@ -27,9 +27,15 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
     const pointerCapable = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 761px)");
     let pointerX = 0, pointerY = 0, uploadLength = 1;
     let nodeYs: number[] = [], start = 0, length = 1, finalLength = 1, spineX = 0;
+    // the route's offset from the top of the page, measured with everything else, so a scroll frame
+    // needs no layout read (one per frame forced the browser to lay the page out mid-scroll)
+    let routeTop = 0;
+    // only work while the section is on (or about to come on) screen
+    let near = false;
     const reveal = () => { if (!latched) { latched = true; setRevealed(true); } };
     const measure = () => {
       const bounds = route.getBoundingClientRect();
+      routeTop = bounds.top + window.scrollY;
       const mobile = window.matchMedia("(max-width: 760px)").matches;
       spineX = mobile ? 21 : bounds.width / 2;
       nodeYs = stages.map(stage => { const b = stage.querySelector("[data-node]")!.getBoundingClientRect(); return b.top + b.height / 2 - bounds.top; });
@@ -73,7 +79,7 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
         if (dirty) measure();
         const isReduced = reduced.matches;
         section.dataset.journeyStatic = String(isReduced);
-        const bounds = route.getBoundingClientRect();
+        const bounds = { top: routeTop - window.scrollY };
         const signalY = clamp(window.innerHeight*.65 + (isReduced || !pointerCapable.matches ? 0 : pointerY * 24) - bounds.top, start, start+length+finalLength);
         const progress = clamp((signalY-start)/Math.max(1,length+finalLength));
         const distance = progress * (length+finalLength);
@@ -110,7 +116,7 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
         }
       } catch { failOpen(); }
     };
-    const schedule = () => { if (!disposed && !failed && !frame) frame = requestAnimationFrame(update); };
+    const schedule = () => { if (near && !disposed && !failed && !frame) frame = requestAnimationFrame(update); };
     const pointer = (event: PointerEvent) => {
       if (!pointerCapable.matches || reduced.matches) return;
       pointerX = clamp(event.clientX / window.innerWidth * 2 - 1, -1, 1);
@@ -119,9 +125,13 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
     const leave = () => { pointerX = pointerY = 0; schedule(); };
     const resize = () => { dirty = true; schedule(); };
     let observer: ResizeObserver | undefined;
+    let visibility: IntersectionObserver | undefined;
     try {
       observer = new ResizeObserver(resize);
-      observer.observe(route); stages.forEach(stage=>observer!.observe(stage));
+      // the body too: anything above changing height (pins, accordions) moves the route
+      observer.observe(route); observer.observe(document.body); stages.forEach(stage=>observer!.observe(stage));
+      visibility = new IntersectionObserver(([entry]) => { near = entry.isIntersecting; if (near) { dirty = true; schedule(); } }, { rootMargin: "50% 0px" });
+      visibility.observe(section);
       window.addEventListener("scroll",schedule,{passive:true});
       section.addEventListener("pointermove",pointer,{passive:true}); section.addEventListener("pointerleave",leave);
       window.addEventListener("resize",resize); reduced.addEventListener("change",resize);
@@ -129,7 +139,7 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
       schedule();
     } catch { queueMicrotask(()=>{if(!disposed) failOpen();}); }
     return () => {
-      disposed = true; cancelAnimationFrame(frame); observer?.disconnect();
+      disposed = true; cancelAnimationFrame(frame); observer?.disconnect(); visibility?.disconnect();
       window.removeEventListener("scroll",schedule); window.removeEventListener("resize",resize); reduced.removeEventListener("change",resize);
       section.removeEventListener("pointermove",pointer); section.removeEventListener("pointerleave",leave);
       delete section.dataset.journeyStatic;

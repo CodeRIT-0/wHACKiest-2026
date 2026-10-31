@@ -1,6 +1,7 @@
 import { ArrowUpRight, EnvelopeSimple, MapPin, Phone } from "@phosphor-icons/react/dist/ssr";
 import Reveal from "../../motion/Reveal";
 import SocialTiles from "./SocialTiles";
+import LazyMap from "./LazyMap";
 import { CopyAddress, VenueClock } from "./VenueTools";
 
 // From the wHACKiest 2026 brochure (Coordinators / Connect with us)
@@ -108,7 +109,7 @@ export default function FindUs() {
               className="group/map relative overflow-hidden rounded-[18px] border-2 border-accent shadow-[0_24px_48px_-28px_var(--accent)] transition-transform duration-500 hover:scale-[1.015] data-[active]:scale-[1.015]"
             >
               <div className="relative h-64 sm:h-72">
-                <iframe
+                <LazyMap
                   title={`Map: ${VENUE.name}`}
                   src={mapSrc}
                   loading="lazy"

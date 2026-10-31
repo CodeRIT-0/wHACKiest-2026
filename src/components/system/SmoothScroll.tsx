@@ -6,6 +6,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
+// a phone's address bar sliding in and out resizes the window; re-measuring every pin for that
+// makes the page jump mid-scroll, so only real resizes (width, rotation) trigger a refresh
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 let active: Lenis | null = null;
 
@@ -26,7 +29,9 @@ export default function SmoothScroll() {
     let timer: ReturnType<typeof setTimeout>;
     const observer = new ResizeObserver(() => {
       clearTimeout(timer);
-      timer = setTimeout(() => ScrollTrigger.refresh(), 150);
+      // a full re-measure is expensive (hundreds of ms on a phone), and while the page hydrates the
+      // sections change height one after another; waiting for things to settle does it once, not per section
+      timer = setTimeout(() => ScrollTrigger.refresh(), 400);
     });
     observer.observe(document.body);
 

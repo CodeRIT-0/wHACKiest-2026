@@ -95,7 +95,7 @@ export default function Team() {
                   src={p.photo}
                   alt={`${p.name}, ${p.role}`}
                   fill
-                  sizes="(min-width: 640px) 340px, 90vw"
+                  sizes="(min-width: 640px) 340px, 46vw"
                   className="object-cover object-top grayscale transition-[filter,scale] duration-500 group-hover/patron:scale-[1.03] group-data-[active]/patron:scale-[1.03] group-hover/patron:grayscale-0 group-data-[active]/patron:grayscale-0"
                 />
                 <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/patron:opacity-0 group-data-[active]/patron:opacity-0" />

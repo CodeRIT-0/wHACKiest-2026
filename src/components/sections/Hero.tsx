@@ -101,11 +101,12 @@ function gearPath(teeth: number, outer: number, inner: number) {
   return `M${pts.join("L")}Z`;
 }
 
+type Frame = HTMLImageElement | ImageBitmap;
 const ready = (img?: HTMLImageElement) => (img?.complete && img.naturalWidth > 0 ? img : undefined);
 // closest frame that has finished loading, so a slow network shows a nearby angle, not a gap
-function nearest(list: HTMLImageElement[], i: number) {
-  for (let d = 0; d < list.length; d++) {
-    const img = ready(list[i - d]) ?? ready(list[i + d]);
+function nearest(pick: (i: number) => Frame | undefined, count: number, i: number) {
+  for (let d = 0; d < count; d++) {
+    const img = pick(i - d) ?? pick(i + d);
     if (img) return img;
   }
 }
@@ -130,8 +131,16 @@ export default function Hero() {
   const root = useRef<HTMLElement>(null);
   // a tapped print grows on phones, where there is no hover (tap it again, or another, to swap)
   const [zoomed, setZoomed] = useState<number | null>(null);
+  // last year's prints only show once you scroll into the story, so they load with the clock's
+  // frames (when the page is idle, or on the first scroll) rather than with the first screen
+  const [prints, setPrints] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const images = useRef<Record<Seq, HTMLImageElement[]>>({ turn: [], shatter: [] });
+  // phones: every frame decoded once, up front, at half size. Drawing a plain <img> decodes the
+  // WebP again on every scroll frame (the browser doesn't keep 120 decoded frames around), which
+  // was most of the hero's jank on a phone. While it plays the clock is shrunk to a fifth of the
+  // screen, so half size is plenty; the resting frame still draws from the full-size image
+  const bitmaps = useRef<Record<Seq, (ImageBitmap | undefined)[]>>({ turn: [], shatter: [] });
   // scroll-driven playhead: `turn` 0-1 plays the turn clip out and back, `shatter` is a frame index
   const play = useRef({ turn: 0, shatter: 0 });
   const drawn = useRef("");
@@ -146,16 +155,17 @@ export default function Hero() {
     const key = `${seq}:${frame.toFixed(2)}`;
     if (key === drawn.current && !force) return;
     const list = images.current[seq];
+    const pick = (i: number): Frame | undefined => (seq === "turn" && i === 0 ? undefined : bitmaps.current[seq][i]) ?? ready(list[i]);
     const base = Math.floor(frame);
     // the shatter clip loads second; until it has, hold the turn's opening frame (same shot)
-    const a = nearest(list, base) ?? ready(images.current.turn[0]);
+    const a = nearest(pick, list.length, base) ?? ready(images.current.turn[0]);
     if (!a) return;
     drawn.current = key;
     const { width, height } = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
     ctx.globalAlpha = 1;
     ctx.drawImage(a, 0, 0, width, height);
-    const next = frame - base > 0.02 ? ready(list[base + 1]) : undefined;
+    const next = frame - base > 0.02 ? pick(base + 1) : undefined;
     if (next) {
       ctx.globalAlpha = frame - base;
       ctx.drawImage(next, 0, 0, width, height);
@@ -165,23 +175,76 @@ export default function Hero() {
   // load the turn first; the shatter is further into the scroll, so it can follow after
   useEffect(() => {
     let cancelled = false;
+    const small = window.matchMedia("(max-width: 1023px)").matches && "createImageBitmap" in window;
+    // a newly arrived frame only needs painting if the clock is mid-animation (at rest it shows frame 0)
+    const repaint = () => {
+      if (!cancelled && (play.current.turn > 0 || play.current.shatter > 0)) draw(true);
+    };
     const load = (seq: Seq, count: number) =>
-      Array.from({ length: count }, (_, i) => {
+      Array.from({ length: count }, () => {
         const img = new window.Image();
         img.decoding = "async";
-        img.onload = () => !cancelled && draw(true);
-        img.src = frameSrc(seq, i);
+        img.onload = repaint;
         return img;
       });
+    // phones: fetched as files and decoded straight to half-size bitmaps. Made from a Blob, the
+    // decode runs off the main thread (made from an <img>, it ran on it: seconds of blocked time)
+    const halfSize = (seq: Seq, i: number) =>
+      fetch(frameSrc(seq, i))
+        .then((r) => r.blob())
+        .then((blob) => createImageBitmap(blob, { resizeWidth: FRAMES[seq].width >> 1, resizeHeight: FRAMES[seq].height >> 1, resizeQuality: "medium" }))
+        .then((bmp) => {
+          if (cancelled) return bmp.close();
+          bitmaps.current[seq][i] = bmp;
+          repaint();
+        })
+        .catch(() => {});
+    const fetchAll = (seq: Seq, list: HTMLImageElement[]): Promise<unknown> => {
+      if (small) return Promise.allSettled(list.map((_, i) => (seq === "turn" && i === 0 ? undefined : halfSize(seq, i))));
+      list.forEach((img, i) => {
+        if (!img.getAttribute("src")) img.src = frameSrc(seq, i);
+      });
+      return Promise.allSettled(list.map((img) => img.decode()));
+    };
     const turn = load("turn", FRAMES.turn.count);
     images.current.turn = turn;
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      Promise.allSettled(turn.map((img) => img.decode())).then(() => {
-        if (!cancelled) images.current.shatter = load("shatter", SHATTER_STOP + 1);
+    // only the resting frame is needed to paint the hero. The other ~120 frames (several MB) only
+    // play once you scroll, so they wait until the page has loaded and the main thread is idle
+    // rather than competing with the page's scripts, fonts and first paint on a phone connection
+    turn[0].onload = () => !cancelled && draw(true);
+    turn[0].src = frameSrc("turn", 0);
+    let started = false;
+    let idle = 0;
+    const rest = () => {
+      if (cancelled || started) return;
+      started = true;
+      setPrints(true);
+      const turnDone = fetchAll("turn", turn);
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      turnDone.then(() => {
+        if (cancelled) return;
+        images.current.shatter = load("shatter", SHATTER_STOP + 1);
+        fetchAll("shatter", images.current.shatter);
       });
-    }
+    };
+    const whenIdle = () => {
+      idle = typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(rest, { timeout: 2500 }) : window.setTimeout(rest, 400);
+    };
+    // someone who starts scrolling straight away needs them now
+    window.addEventListener("scroll", rest, { passive: true, once: true });
+    if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle, { once: true });
+    const held = bitmaps.current;
     return () => {
       cancelled = true;
+      window.removeEventListener("load", whenIdle);
+      window.removeEventListener("scroll", rest);
+      if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idle);
+      window.clearTimeout(idle);
+      for (const seq of ["turn", "shatter"] as const) {
+        held[seq].forEach((b) => b?.close());
+        held[seq] = [];
+      }
     };
   }, [draw]);
 
@@ -192,6 +255,9 @@ export default function Hero() {
         { desktop: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)", mobile: "(max-width: 1023px) and (prefers-reduced-motion: no-preference)" },
         (ctx) => {
           const { desktop } = ctx.conditions as { desktop: boolean };
+          // the section after the hero tucks up into its scroll room ([data-hero-pinned] in page.tsx);
+          // only now does that room exist, so only now is the tuck allowed (no shift on load)
+          document.documentElement.setAttribute("data-hero-pinned", "");
           const q = gsap.utils.selector(root);
           const [stage] = q("[data-stage]") as HTMLElement[];
           const copies = q("[data-copy]") as HTMLElement[];
@@ -223,7 +289,7 @@ export default function Hero() {
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             onUpdate: () => draw(),
-            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: "+=170%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
+            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: desktop ? "+=170%" : "+=150%", pin: true, scrub: desktop ? true : 0.45, invalidateOnRefresh: true, refreshPriority: 1 },
           });
 
           // 1. travel right -> left, turning as it goes; the copy, board and dial clear out of its way
@@ -272,6 +338,12 @@ export default function Hero() {
             if (document.readyState === "complete") go();
             else window.addEventListener("load", go, { once: true });
           }
+
+          // the tuck moved everything below the hero, so the page's other scroll effects need measuring
+          // again. ScrollTrigger re-measures everything on window load anyway, so only force it if the
+          // page has already loaded (an extra full re-measure is expensive layout work)
+          if (document.readyState === "complete") ScrollTrigger.refresh();
+          return () => document.documentElement.removeAttribute("data-hero-pinned");
         },
       );
     },
@@ -295,7 +367,10 @@ export default function Hero() {
           .from(q("[data-intro-clock]"), { scale: 0.7, rotate: -25, opacity: 0, duration: 1.6 }, 0)
           .from(q("[data-hero-dial]"), { scale: 0.6, rotate: -70, opacity: 0, duration: 1.9 }, 0.05)
           .from(q("[data-hero-gears] > *"), { scale: 0, opacity: 0, duration: 1.2, stagger: 0.12 }, 0.1)
-          .from(q("[data-hero-words] .word-inner"), { yPercent: 115, rotate: 6, duration: 1.1, stagger: 0.09 }, 0.15)
+          // the headline is the page's largest content: it must be on screen from the very first paint,
+          // or the browser only counts it as painted once this script has run (a slow LCP). So it rises
+          // the last part of the way, from half out of its mask, instead of from fully hidden
+          .from(q("[data-hero-words] .word-inner"), { yPercent: 45, rotate: 3, opacity: 0.35, duration: 1.1, stagger: 0.09 }, 0.15)
           .from(q("[data-year-strip]"), { yPercent: (-(STRIP_LEN - 1) / STRIP_LEN) * 100, duration: 1.8, stagger: 0.12, ease: "power4.out" }, 0.25)
           .from(q("[data-intro-fade]"), { y: 24, opacity: 0, duration: 0.9, stagger: 0.08 }, 0.45)
           .from(q("[data-board]"), { y: 48, opacity: 0, duration: 1.1 }, 0.6)
@@ -319,9 +394,19 @@ export default function Hero() {
         const dx = gsap.quickTo(dial, "x", { duration: 1, ease: "power3.out" });
         const dy = gsap.quickTo(dial, "y", { duration: 1, ease: "power3.out" });
 
-        const move = (e: PointerEvent) => {
+        // the pointer events fire many times a frame: batch to one update per frame, and measure the
+        // section before anything is written, so the browser never has to lay out mid-handler
+        let last: PointerEvent | null = null;
+        let frame = 0;
+        const apply = () => {
+          frame = 0;
+          const e = last;
+          if (!e) return;
+          const r = section.getBoundingClientRect();
           const nx = e.clientX / window.innerWidth - 0.5;
           const ny = e.clientY / window.innerHeight - 0.5;
+          section.style.setProperty("--mx", `${Math.round(e.clientX - r.left)}px`);
+          section.style.setProperty("--my", `${Math.round(e.clientY - r.top)}px`);
           ry(nx * 18);
           rx(-ny * 14);
           tx(nx * 18);
@@ -330,9 +415,10 @@ export default function Hero() {
           gy(-ny * 24);
           dx(nx * 8);
           dy(ny * 6);
-          const r = section.getBoundingClientRect();
-          section.style.setProperty("--mx", `${Math.round(e.clientX - r.left)}px`);
-          section.style.setProperty("--my", `${Math.round(e.clientY - r.top)}px`);
+        };
+        const move = (e: PointerEvent) => {
+          last = e;
+          if (!frame) frame = requestAnimationFrame(apply);
         };
         const enter = () => section.style.setProperty("--spot", "1");
         const leave = () => section.style.setProperty("--spot", "0");
@@ -362,6 +448,7 @@ export default function Hero() {
         });
 
         return () => {
+          cancelAnimationFrame(frame);
           window.removeEventListener("pointermove", move);
           section.removeEventListener("pointerenter", enter);
           section.removeEventListener("pointerleave", leave);
@@ -619,13 +706,13 @@ export default function Hero() {
                     className={`group/print ${p.tilt} ${["origin-bottom-left", "origin-bottom", "origin-bottom-right"][i]} cursor-zoom-in select-none data-[zoom]:rotate-0 data-[zoom]:scale-[1.6] data-[zoom]:shadow-[0_30px_60px_-20px_rgba(60,40,10,0.55)] sm:data-[zoom]:scale-[1.35] lg:origin-center bg-white p-1.5 pb-2.5 shadow-[0_12px_24px_-12px_rgba(60,40,10,0.45)] transition-[rotate,scale,box-shadow] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:rotate-0 hover:scale-[1.35] hover:shadow-[0_30px_60px_-20px_rgba(60,40,10,0.55)] sm:p-2 sm:pb-3`}
                   >
                     <div className="relative aspect-square overflow-hidden bg-[#d9d3c4]">
-                      <Image
+                      {prints && <Image
                         src={p.src}
                         alt={p.alt}
                         fill
                         sizes="(min-width: 1024px) 300px, 45vw"
                         className="object-cover transition-transform duration-700 ease-out group-hover/print:scale-110 group-data-[zoom]/print:scale-110"
-                      />
+                      />}
                     </div>
                     <p className="mt-2 truncate text-center font-mono text-[10px] text-muted sm:text-xs">{p.caption}</p>
                   </div>

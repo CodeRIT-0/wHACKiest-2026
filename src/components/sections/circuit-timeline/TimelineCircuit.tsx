@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { motion, useTransform, type MotionValue } from "motion/react";
 import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
 import { clamp } from "./useCircuitProgress";
@@ -204,8 +204,9 @@ function CircuitCluster({
         className={styles.componentGlow}
         fill={`url(#${id}-warmth)`}
       />
+      {/* href is set by TimelineCircuit once the timeline is near (an SVG <image> can't lazy-load) */}
       <image
-        href={`/images/circuit/retro-${asset}.webp`}
+        data-src={`/images/circuit/retro-${asset}.webp`}
         x={-imageSize.w / 2}
         y={cy - imageSize.h / 2}
         width={imageSize.w}
@@ -283,8 +284,36 @@ export function TimelineCircuit({
   const tail = useTransform(draw, (value) => Math.min(0.065, value));
   const offset = useTransform(draw, (value) => Math.max(0, value - 0.065));
   const axisPath = `M${first} ${axis}H${last}`;
+
+  // the component photos (~230 KB) load once the timeline is within a couple of screens. An SVG
+  // <image> ignores lazy loading, and before the page has hydrated it is short enough that these
+  // were fetched alongside the hero, slowing its first paint on a phone connection
+  const svgRef = useRef<SVGSVGElement>(null);
+  const near = useRef(false);
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const show = () =>
+      svg.querySelectorAll<SVGImageElement>("image[data-src]").forEach((img) => {
+        if (!img.getAttribute("href")) img.setAttribute("href", img.dataset.src!);
+      });
+    if (near.current) return show();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        near.current = true;
+        show();
+        observer.disconnect();
+      },
+      { rootMargin: "200% 0px" },
+    );
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, [designHeight]);
+
   return (
     <svg
+      ref={svgRef}
       className={styles.circuit}
       viewBox={`0 0 ${CIRCUIT_WIDTH} ${designHeight}`}
       role="img"
