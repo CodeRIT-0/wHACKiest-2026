@@ -28,7 +28,6 @@ export type Era = {
 
 export const ERAS: Era[] = [
   { id: "home", year: 1946, tagline: "Gears & clockwork", palette: IVORY, at: 0 },
-  { id: "about", year: 1951, tagline: "Vacuum tubes", palette: IVORY },
   { id: "timeline", year: 1960, tagline: "The transistor age", palette: IVORY, at: 0.5 },
   { id: "tracks", year: 2010, tagline: "Pick your stack", palette: IVORY },
   { id: "problems", year: 2016, tagline: "Real problems", palette: IVORY, at: 0.1 },

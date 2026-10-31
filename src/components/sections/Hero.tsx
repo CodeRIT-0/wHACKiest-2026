@@ -538,7 +538,7 @@ export default function Hero() {
                 <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/cta:translate-x-1" />
               </Link>
               <Link
-                href="/#about"
+                href="/#timeline"
                 className="group/ex inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
               >
                 Explore<span className="-ml-1 hidden sm:inline">the hackathon</span>
