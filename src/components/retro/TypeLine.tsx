@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import { useHydrated } from "@/hooks/useHydrated";
 
 // Types `text` out one character at a time once `start` is true. Remount (change `key`) to retype.
 export default function TypeLine({
@@ -21,7 +22,11 @@ export default function TypeLine({
   onDone?: () => void;
   className?: string;
 }) {
-  const reduce = useReducedMotion();
+  // `useReducedMotion` is already true on the first client render but false on the server; it only
+  // counts once hydration is done, or the two render different markup (a hydration error)
+  const prefersReduced = useReducedMotion();
+  const hydrated = useHydrated();
+  const reduce = hydrated && !!prefersReduced;
   const [count, setCount] = useState(0);
 
   useEffect(() => {
