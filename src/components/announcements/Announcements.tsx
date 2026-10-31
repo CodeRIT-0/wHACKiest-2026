@@ -99,33 +99,19 @@ export default function Announcements() {
     [active, list],
   );
 
-  const lastUpdated = useMemo(() => {
-    if (list.length > 0 && list[0]?.date) {
-      return list[0].date;
-    }
-    return "29 Oct 2026 · 10:00 AM";
-  }, [list]);
-
   return (
     <section className="relative overflow-hidden border-b border-line px-6 py-12 md:py-16">
       <div className="pointer-events-none absolute -right-28 top-0 h-72 w-72 rounded-full border-[32px] border-accent/10 md:h-96 md:w-96" />
       <p aria-hidden="true" className="pointer-events-none absolute left-1/2 top-14 hidden -translate-x-1/2 whitespace-nowrap text-[11vw] font-black uppercase leading-none tracking-[-0.1em] text-ink/[0.035] lg:block">Dispatch</p>
       <div className="relative mx-auto max-w-[1100px]">
-        <div className="flex flex-col justify-between gap-7 border-b border-line pb-8 md:flex-row md:items-end">
-          <div>
-            <p className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.16em] text-muted"><span className="h-px w-8 bg-accent" /> Dispatch / 2026</p>
-            <h1 className="mt-2 text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-6xl">
-              The latest <span className="text-accent">word.</span>
-            </h1>
-            <p className="mt-5 max-w-xl text-sm leading-6 text-muted md:text-base">
-              Problem statements, deadlines, results, and every important detail in one place.
-            </p>
-          </div>
-          <div className="relative border border-ink bg-bg px-4 py-3 text-right shadow-[4px_4px_0_0_var(--color-accent)]">
-            <span aria-hidden="true" className="absolute left-0 top-0 h-2 w-2 bg-accent" />
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.15em] text-muted">Last updated</p>
-            <p className="mt-1 text-sm font-bold">{lastUpdated}</p>
-          </div>
+        <div className="border-b border-line pb-8">
+          <p className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.16em] text-muted"><span className="h-px w-8 bg-accent" /> Dispatch / 2026</p>
+          <h1 className="mt-2 text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-6xl">
+            The latest <span className="text-accent">word.</span>
+          </h1>
+          <p className="mt-5 max-w-xl text-sm leading-6 text-muted md:text-base">
+            Problem statements, deadlines, results, and every important detail in one place.
+          </p>
         </div>
 
         <div className="mt-6 flex gap-2 overflow-x-auto border-y border-line py-3 [scrollbar-width:none]">
