@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { AppWindow, ArrowDownRight, Brain, Cpu, GlobeHemisphereEast } from "@phosphor-icons/react";
+import { AppWindow, Brain, Cpu, GlobeHemisphereEast } from "@phosphor-icons/react";
 import { useTrack } from "./TrackContext";
 import { useNear } from "@/hooks/useNear";
 import type { Track } from "./track-data";
@@ -71,7 +71,6 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             role="tab"
             id={`track-tab-${t.id}`}
             aria-selected={on}
-            aria-controls="track-problems"
             tabIndex={on ? 0 : -1}
             onClick={() => setActive(i)}
             onKeyDown={(e) => onKey(e, i)}
@@ -131,19 +130,6 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#fff9ec]/70">{pad(i + 1)}</span>
             </div>
 
-            {/* ---- folded, wide screens: how many statements wait inside, so a spine reads as something to open ---- */}
-            <span
-              aria-hidden
-              className={`absolute left-5 top-[68px] hidden font-mono text-[10px] uppercase leading-snug tracking-[0.14em] transition-opacity duration-300 lg:block ${
-                on ? "opacity-0" : "opacity-100 delay-200"
-              }`}
-              style={{ color: t.hue }}
-            >
-              {pad(t.problems.length)}
-              <br />
-              PS
-            </span>
-
             {/* ---- folded: the title runs up the spine (across, on phones) ---- */}
             <div
               aria-hidden={on}
@@ -177,21 +163,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
                 <span style={{ color: t.hue }}>.</span>
               </h3>
               <p className="mt-3 max-w-[42ch] text-[#fff9ec]/75 sm:text-lg">{t.blurb}</p>
-              <p className="mt-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: t.hue }}>
-                {pad(t.problems.length)} problem statements below
-                <ArrowDownRight size={14} weight="bold" className="motion-safe:animate-bounce" />
-              </p>
-            </div>
-
-            {/* photo credit, small, only on the open panel */}
-            <span
-              className={`absolute bottom-6 right-6 hidden font-mono text-[9px] uppercase tracking-[0.12em] text-[#fff9ec]/35 transition-opacity duration-500 md:block lg:bottom-8 lg:right-8 ${
-                on ? "opacity-100 delay-500" : "opacity-0"
-              }`}
-            >
-              Photo: {t.image.credit}
-            </span>
-          </motion.div>
+            </div>          </motion.div>
         );
       })}
     </div>
