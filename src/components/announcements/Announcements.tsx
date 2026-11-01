@@ -77,15 +77,12 @@ export default function Announcements({
   initialAnnouncements?: Announcement[];
 }) {
   const [active, setActive] = useState<Category>("All");
-  const [list, setList] = useState<Announcement[]>(
-    initialAnnouncements.length > 0 ? initialAnnouncements : fallbackAnnouncements
-  );
+  // the server's list when it sent one; otherwise whatever the client fetches, then the built-in fallback
+  const [fetched, setFetched] = useState<Announcement[] | null>(null);
+  const list = initialAnnouncements.length > 0 ? initialAnnouncements : fetched ?? fallbackAnnouncements;
 
   useEffect(() => {
-    if (initialAnnouncements.length > 0) {
-      setList(initialAnnouncements);
-      return;
-    }
+    if (initialAnnouncements.length > 0) return;
 
     let isMounted = true;
     async function loadData() {
@@ -93,7 +90,7 @@ export default function Announcements({
         const res = await fetch("/api/announcements");
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0 && isMounted) {
-          setList(json.data);
+          setFetched(json.data);
         }
       } catch (err) {
         console.error("Failed to load live announcements:", err);
