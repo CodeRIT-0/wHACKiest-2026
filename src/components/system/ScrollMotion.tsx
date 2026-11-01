@@ -51,10 +51,13 @@ export default function ScrollMotion() {
       gsap.from(el.querySelectorAll(".word-inner"), {
         yPercent: 110,
         rotate: 4,
-        duration: 0.8,
+        // starts the moment the heading's top enters the screen and is short, so the words have
+        // landed while the heading is still low on screen (at "top 85%" with 0.8s + 0.06s per word,
+        // headings were only readable once halfway up)
+        duration: 0.55,
         ease: "power3.out",
-        stagger: 0.06,
-        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" },
+        stagger: 0.035,
+        scrollTrigger: { trigger: el, start: "top bottom", toggleActions: "play none none reverse" },
       });
     }));
 
