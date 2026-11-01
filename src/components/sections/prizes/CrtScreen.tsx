@@ -88,7 +88,9 @@ export default function CrtScreen({
   const left = PRIZES.length - mounted.length;
 
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ containerType: "size" }}>
+    // (strict containment: the tube is a fixed-size box, and its text changes on almost every scroll
+    // frame while a place decrypts; this keeps each change inside it instead of laying out the page)
+    <div className="absolute inset-0 overflow-hidden" style={{ containerType: "size", contain: "strict" }}>
       <motion.div
         initial={false}
         animate={{ opacity: on ? 1 : 0 }}

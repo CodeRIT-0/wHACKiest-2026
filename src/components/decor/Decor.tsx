@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 // Faint line-art props scattered behind sections, like the sketchy gears in the reference.
 // Gears turn with the page scroll; pass a negative `speed` to mesh two gears together.
@@ -36,11 +37,19 @@ export function Gear({
   className?: string;
 }) {
   const reduce = useReducedMotion();
+  const ref = useRef<SVGSVGElement>(null);
+  // off screen the angle holds still, so the gear isn't restyled on every scroll frame for nothing
+  // (the hero's seven of them kept turning all the way down the page)
+  const visible = useInView(ref, { margin: "25% 0px" });
+  const held = useRef(0);
   const { scrollY } = useScroll();
-  const rotate = useTransform(scrollY, (y) => (reduce ? 0 : y * speed));
+  const rotate = useTransform(scrollY, (y) => {
+    if (visible && !reduce) held.current = y * speed;
+    return reduce ? 0 : held.current;
+  });
 
   return (
-    <motion.svg aria-hidden viewBox="0 0 100 100" style={{ rotate }} className={`pointer-events-none absolute ${className}`} fill="none" stroke="currentColor" strokeWidth={1}>
+    <motion.svg ref={ref} aria-hidden viewBox="0 0 100 100" style={{ rotate }} className={`pointer-events-none absolute ${className}`} fill="none" stroke="currentColor" strokeWidth={1}>
       <path d={gearPath(teeth, 48, 41)} />
       <circle cx="50" cy="50" r="31" />
       <circle cx="50" cy="50" r="7" />

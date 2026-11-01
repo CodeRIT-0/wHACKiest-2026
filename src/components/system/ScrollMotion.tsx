@@ -46,6 +46,10 @@ export default function ScrollMotion() {
       collect();
       schedule();
     };
+    // Phones and tablets keep the reveals (they play once, as a heading or group arrives) but not
+    // the effects tied to every pixel of scroll (line art drawing, parallax, the era years sliding):
+    // each one is work on every scroll frame, and together they were what made a flick feel heavy
+    const phone = window.matchMedia("(max-width: 1023px)").matches;
     const collect = () => {
     gsap.utils.toArray<HTMLElement>("[data-words]").forEach((el) => later(() => {
       gsap.from(el.querySelectorAll(".word-inner"), {
@@ -57,7 +61,9 @@ export default function ScrollMotion() {
         duration: 0.55,
         ease: "power3.out",
         stagger: 0.035,
-        scrollTrigger: { trigger: el, start: "top bottom", toggleActions: "play none none reverse" },
+        // (on phones they play once and their trigger is dropped: every live trigger is checked on
+        // every scroll frame, and reversing them on the way back up is a nicety a phone can skip)
+        scrollTrigger: { trigger: el, start: "top bottom", ...(phone ? { once: true } : { toggleActions: "play none none reverse" }) },
       });
     }));
 
@@ -68,11 +74,11 @@ export default function ScrollMotion() {
         duration: 0.7,
         ease: "power3.out",
         stagger: 0.08,
-        scrollTrigger: { trigger: el, start: "top 82%", toggleActions: "play none none reverse" },
+        scrollTrigger: { trigger: el, start: "top 82%", ...(phone ? { once: true } : { toggleActions: "play none none reverse" }) },
       });
     }));
 
-    gsap.utils.toArray<SVGElement>("[data-draw]").forEach((el) => later(() => {
+    if (!phone) gsap.utils.toArray<SVGElement>("[data-draw]").forEach((el) => later(() => {
       const shapes = [...el.querySelectorAll<SVGGeometryElement>(SHAPES)].filter((s) => !s.closest(".wire-pulse, .flow"));
       shapes.forEach((s) => s.setAttribute("pathLength", "1"));
       gsap.fromTo(
@@ -87,7 +93,7 @@ export default function ScrollMotion() {
       );
     }));
 
-    gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => later(() => {
+    if (!phone) gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => later(() => {
       const speed = Number(el.dataset.parallax) || 0.15;
       gsap.fromTo(
         el,
@@ -96,7 +102,7 @@ export default function ScrollMotion() {
       );
     }));
 
-    gsap.utils.toArray<HTMLElement>("[data-era-year]").forEach((el) => later(() => {
+    if (!phone) gsap.utils.toArray<HTMLElement>("[data-era-year]").forEach((el) => later(() => {
       const dir = el.dataset.eraYear === "left" ? -1 : 1;
       gsap.fromTo(
         el,
@@ -106,7 +112,9 @@ export default function ScrollMotion() {
     }));
 
     gsap.utils.toArray<HTMLElement>("[data-era-rule]").forEach((el) => later(() => {
-      gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: el, start: "top 90%", end: "top 45%", scrub: true } });
+      // (on phones it draws across once as it arrives, instead of following the scroll)
+      if (phone) gsap.from(el, { scaleX: 0, duration: 1.1, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 85%", once: true } });
+      else gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: el, start: "top 90%", end: "top 45%", scrub: true } });
     }));
     };
     window.addEventListener(HYDRATED_EVENT, start);

@@ -65,9 +65,25 @@ const subscribePhone = (onChange: () => void) => {
   return () => mq.removeEventListener("change", onChange);
 };
 
+// The server can't know the screen, so its HTML carries both versions, each hidden by CSS on the
+// other kind of screen. A phone then never lays out (or paints) the wide circuit, and hydrates
+// its own timeline instead of building it from scratch once the page is already up; before, the
+// HTML held only the circuit, so a phone laid that out, hydrated it and then swapped it for the
+// phone version, one of the bigger chunks of work while the page loaded. Straight after
+// hydration only the version that fits is kept (the two wrappers stay put, so the one kept is not
+// rebuilt; only the other is dropped).
 export default function Timeline(props: TimelineProps) {
-  const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia(PHONE).matches, () => false);
-  return phone ? <TimelineMobile id={props.id} checkpoints={props.checkpoints} /> : <CircuitTimeline {...props} />;
+  const phone = useSyncExternalStore(
+    subscribePhone,
+    () => window.matchMedia(PHONE).matches,
+    () => null,
+  );
+  return (
+    <>
+      <div className="max-[800px]:hidden">{phone !== true && <CircuitTimeline {...props} />}</div>
+      <div className="min-[801px]:hidden">{phone !== false && <TimelineMobile id={props.id} checkpoints={props.checkpoints} />}</div>
+    </>
+  );
 }
 
 function CircuitTimeline({

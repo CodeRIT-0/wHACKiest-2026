@@ -9,7 +9,9 @@ gsap.registerPlugin(ScrollTrigger);
 // The paper behind every page: a blueprint grid that drifts at its own speed, and faint line-art
 // props from the history of computing (gears, clock faces, vacuum tubes, punch cards, chips,
 // orbits) floating past at different depths and turning with the scroll. Everything moves with
-// transforms on a fixed layer, so scrolling never repaints it. Static with reduced motion.
+// transforms on a fixed layer, so scrolling never repaints it. Static with reduced motion, and on
+// phones and tablets: there it was 15 style writes on every scroll frame for a backdrop nobody
+// watches while flicking through, and the page scrolls noticeably smoother without it.
 
 const GRID = 120; // the heavy grid square; the layer slides one square and wraps
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -110,7 +112,7 @@ export default function BackgroundMotion() {
   const propRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 1023px)").matches) return;
     // the position comes from ScrollTrigger, which reads it once per frame for every scroll effect.
     // Reading scrollY here too (every frame, or in a scroll listener) came after other effects had
     // written styles, so the browser had to recalculate the page's styles first, every frame
@@ -136,7 +138,7 @@ export default function BackgroundMotion() {
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div
         ref={gridRef}
-        className="absolute inset-x-0 -top-[120px] h-[calc(100%+240px)] will-change-transform"
+        className="absolute inset-x-0 -top-[120px] h-[calc(100%+240px)] lg:will-change-transform"
         style={{
           backgroundImage: [
             "linear-gradient(to right, color-mix(in srgb, var(--fg) 8%, transparent) 1px, transparent 1px)",
@@ -153,7 +155,7 @@ export default function BackgroundMotion() {
           ref={(el) => {
             propRefs.current[i] = el;
           }}
-          className={`absolute top-0 will-change-transform ${TONE[p.tone]} ${p.mobile ? "" : "hidden md:block"}`}
+          className={`absolute top-0 lg:will-change-transform ${TONE[p.tone]} ${p.mobile ? "" : "hidden md:block"}`}
           style={{ left: `${p.x}%`, width: p.size, height: p.size, transform: `translate3d(0, ${p.y * 100}vh, 0)` }}
         >
           <svg viewBox="0 0 100 100" className="line-art h-full w-full overflow-visible" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">

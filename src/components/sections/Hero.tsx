@@ -8,7 +8,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import FRAMES from "@/lib/clock-frames.json";
-import { useNow } from "@/hooks/useNow";
+import { setNowPaused, useNow } from "@/hooks/useNow";
 import { Gear } from "../decor/Decor";
 import Words from "../motion/Words";
 import FlipBoard from "../hero/FlipBoard";
@@ -128,6 +128,18 @@ function StatusChip() {
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
+  // the live readouts (countdown board, seconds dial, status chip) only tick while the hero is on
+  // screen; further down the page their once-a-second re-render is work nobody sees
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setNowPaused(!e.isIntersecting), { rootMargin: "25% 0px" });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      setNowPaused(false);
+    };
+  }, []);
   // a tapped print grows on phones, where there is no hover (tap it again, or another, to swap)
   const [zoomed, setZoomed] = useState<number | null>(null);
   // last year's prints only show once you scroll into the story, so they load with the clock's
@@ -447,7 +459,7 @@ export default function Hero() {
           <div data-copy className="min-w-0 lg:self-end">
             <p
               data-intro-fade
-              className="inline-flex max-w-full items-center gap-2.5 rounded-full border border-ink/15 bg-panel/80 p-1 pr-3.5 font-mono text-[10px] uppercase tracking-[0.14em] backdrop-blur sm:text-[11px]"
+              className="inline-flex max-w-full items-center gap-2.5 rounded-full border border-ink/15 bg-panel/80 p-1 pr-3.5 font-mono text-[10px] uppercase tracking-[0.14em] backdrop-blur max-lg:backdrop-blur-none sm:text-[11px]"
             >
               <StatusChip />
               <span className="truncate text-muted">
@@ -597,7 +609,7 @@ export default function Hero() {
                   e.preventDefault();
                   if (!scrollToStory()) document.getElementById("timeline")?.scrollIntoView();
                 }}
-                className="group/ex inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
+                className="group/ex inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur max-lg:backdrop-blur-none transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
               >
                 Explore<span className="-ml-1 hidden sm:inline">the hackathon</span>
                 <ArrowDown size={15} weight="bold" className="transition-transform duration-300 group-hover/ex:translate-y-0.5" />

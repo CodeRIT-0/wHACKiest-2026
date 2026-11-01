@@ -191,6 +191,14 @@ export default function PrizeMachine() {
             </div>
           </div>
 
+          {/* A ₹ in the CRT's typeface, drawn (invisibly) from the first render. The sign lives in the
+              font's latin-ext file, which a browser only fetches once a ₹ is drawn in that face; the
+              tube shows none until the first prize decrypts, and the face arriving then made the
+              browser lay the whole page out again mid-scroll. This way it loads with the other fonts */}
+          <span aria-hidden className="pointer-events-none absolute left-0 top-0 select-none font-mono text-[1px] opacity-0">
+            ₹
+          </span>
+
           <p aria-live="polite" className="sr-only">
             {active
               ? `Decrypting ${active.file}`

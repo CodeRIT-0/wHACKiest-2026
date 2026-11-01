@@ -113,7 +113,9 @@ export default function CircuitSpine() {
     const main = ref.current?.parentElement;
     if (!geo || !trunk || !main) return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Phones and tablets get the whole circuit drawn, as with reduced motion: tracing it along with
+    // the scroll repainted a page-tall SVG on most scroll frames, one of the bigger costs there
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 1023px)").matches;
     const total = trunk.getTotalLength();
     // y -> length lookup along the trunk (it only ever runs down or sideways)
     const samples: [number, number][] = [];

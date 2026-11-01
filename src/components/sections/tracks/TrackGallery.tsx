@@ -122,7 +122,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             {/* ---- always: number and icon ---- */}
             <div className="absolute left-4 top-4 flex items-center gap-2.5 lg:left-5 lg:top-5">
               <span
-                className="grid h-9 w-9 place-items-center rounded-full border backdrop-blur-sm transition-colors duration-500"
+                className="grid h-9 w-9 place-items-center rounded-full border backdrop-blur-sm max-lg:backdrop-blur-none transition-colors duration-500"
                 style={{ borderColor: on ? t.hue : "rgba(255,249,236,0.25)", color: on ? t.hue : "#fff9ec", backgroundColor: "rgba(5,5,5,0.45)" }}
               >
                 <Icon size={17} weight="duotone" />
@@ -151,7 +151,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
                 {t.tags.map((tag) => (
                   <li
                     key={tag}
-                    className="rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#fff9ec]/85 backdrop-blur-sm"
+                    className="rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#fff9ec]/85 backdrop-blur-sm max-lg:backdrop-blur-none"
                     style={{ borderColor: `${t.hue}66`, backgroundColor: "rgba(5,5,5,0.4)" }}
                   >
                     {tag}

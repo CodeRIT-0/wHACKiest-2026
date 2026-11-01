@@ -13,6 +13,7 @@ import ScrollMotion from "@/components/system/ScrollMotion";
 import HydrationMark from "@/components/system/HydrationMark";
 import EraDivider from "@/components/EraDivider";
 import SheetStack from "@/components/system/SheetStack";
+import OffscreenPause from "@/components/system/OffscreenPause";
 
 // One scroll through computing history: 1946 (Hero) to 2026 (Join). Order matters: each section
 // is a stop in src/lib/eras.ts, which sets its colours and the era rail's year.
@@ -22,6 +23,10 @@ import SheetStack from "@/components/system/SheetStack";
 // handing the main thread back in between, instead of in one long block that freezes a phone for
 // a second or two after load (and lets the hero, the only thing on screen, come alive first).
 // HydrationMark tells ScrollMotion when a boundary has hydrated, so it never styles server HTML early.
+// (wide screens, where a section holds while the next sheet slides over it) a stretch of paper
+// after a section's last content, so it is seen whole before the next sheet starts to cover it
+const HOLD_ROOM = "[@media(min-width:1024px)_and_(hover:hover)]:pb-[28svh]";
+
 const Lazy = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={null}>
     <HydrationMark />
@@ -34,6 +39,7 @@ export default function Home() {
     <>
       <CircuitSpine />
       <ScrollMotion />
+      <OffscreenPause />
       <Hero />
       {/* the circuit spine starts where the hero's shards land */}
       <div data-trace aria-hidden className="relative mx-auto h-px w-px" />
@@ -52,7 +58,7 @@ export default function Home() {
       </SheetStack>
       <SheetStack
         under={
-          <div className="sheet sheet-light">
+          <div className={`sheet sheet-light ${HOLD_ROOM}`}>
             <EraDivider era="tracks" direction="left" />
             <Lazy>
               <TrackLab />
@@ -66,7 +72,7 @@ export default function Home() {
       </SheetStack>
       <SheetStack
         under={
-          <div className="sheet sheet-light">
+          <div className={`sheet sheet-light ${HOLD_ROOM}`}>
             <Lazy>
               <Sponsors />
             </Lazy>
@@ -83,7 +89,7 @@ export default function Home() {
       </SheetStack>
       <SheetStack
         under={
-          <div className="sheet sheet-light">
+          <div className={`sheet sheet-light ${HOLD_ROOM}`}>
             <Lazy>
               <Team />
             </Lazy>

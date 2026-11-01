@@ -22,7 +22,9 @@ export function scrollToPosition(top: number, reducedMotion = false) {
 }
 
 // Lenis smooth scrolling, driven from GSAP's ticker so ScrollTrigger and Lenis share one frame.
-// Skipped entirely for reduced motion. Also re-measures every ScrollTrigger when the page
+// Skipped entirely for reduced motion, and on touch screens: a phone's own scrolling is already
+// smooth (Lenis leaves touch alone anyway), while Lenis still cost a callback on every frame and
+// sent every scroll through ScrollTrigger a second time. Also re-measures every ScrollTrigger when the page
 // reflows (fonts, images, accordions), since their start/end points are cached.
 export default function SmoothScroll() {
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function SmoothScroll() {
     });
     observer.observe(document.body);
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce), (hover: none) and (pointer: coarse)").matches;
     if (reduce) {
       return () => {
         observer.disconnect();

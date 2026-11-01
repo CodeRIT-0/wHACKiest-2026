@@ -83,9 +83,9 @@ export default function Navbar() {
       onKeyDown={(e) => {
         if (e.key === "Escape") setMenuOpen(false);
       }}
-      className={`fixed left-[max(1rem,calc((100vw-1100px)/2))] z-50 flex h-[62px] items-center rounded-full border border-line bg-bg/85 pl-[5px] pr-1.5 backdrop-blur transition-[top,translate,opacity] duration-500 ${EASE} ${
-        scrolled ? "top-3" : "top-11"
-      } ${hidden ? "pointer-events-none -translate-y-[140%] opacity-0" : ""}`}
+      className={`fixed left-[max(1rem,calc((100vw-1100px)/2))] z-50 flex h-[62px] items-center rounded-full border border-line bg-bg/85 pl-[5px] pr-1.5 max-lg:bg-bg/95 lg:backdrop-blur top-3 transition-[translate,opacity] duration-500 ${EASE} ${
+        hidden ? "pointer-events-none -translate-y-[140%] opacity-0" : scrolled ? "" : "translate-y-8"
+      }`}
     >
       {/* the full CodeRIT logo, always */}
       {/* from another page it routes home; already on the landing page, it scrolls back to the top

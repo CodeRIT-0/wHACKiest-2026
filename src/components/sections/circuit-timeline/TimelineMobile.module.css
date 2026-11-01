@@ -80,6 +80,8 @@
   position: sticky;
   top: 10px;
   z-index: 5;
+  /* its text changes as the live checkpoint does; containment keeps that from laying out the page */
+  contain: layout paint;
   margin: 4px -4px 26px;
   overflow: hidden;
   border: 1px solid #4c4436;
@@ -191,6 +193,8 @@
   position: relative;
   isolation: isolate; /* keeps the glow layer (::after, z-index -1) above the section background */
   padding-left: 52px;
+  /* a card changing state (live, passed, its countdown ticking) lays out only itself */
+  contain: layout style;
 }
 
 /* the pad on the rail and the branch out to the card */

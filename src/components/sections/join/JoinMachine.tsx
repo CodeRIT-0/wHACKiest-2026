@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "motion/react";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -9,6 +10,9 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 // floats over a brown glow and its own shadow, and leans toward the pointer. Reduced motion (the
 // MotionConfig in the layout) drops every transform, so it simply fades in and stays put.
 export default function JoinMachine() {
+  // the three loops below only run while it's on screen (each is work on every frame)
+  const root = useRef<HTMLDivElement>(null);
+  const live = useInView(root, { margin: "20% 0px" });
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-9, 9]), { stiffness: 120, damping: 18 });
@@ -26,13 +30,13 @@ export default function JoinMachine() {
   };
 
   return (
-    <div onPointerMove={onMove} onPointerLeave={onLeave} className="relative mx-auto w-[min(620px,88vw)] [perspective:1100px]">
+    <div ref={root} onPointerMove={onMove} onPointerLeave={onLeave} className="relative mx-auto w-[min(620px,88vw)] [perspective:1100px]">
       {/* a brown glow from behind the brass, breathing slowly */}
       <motion.div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(176,104,46,0.5),rgba(122,70,30,0.2)_55%,transparent)]"
-        animate={{ opacity: [0.65, 1, 0.65], scale: [0.96, 1.04, 0.96] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        animate={live ? { opacity: [0.65, 1, 0.65], scale: [0.96, 1.04, 0.96] } : { opacity: 0.65, scale: 0.96 }}
+        transition={live ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
       />
 
       <motion.div
@@ -46,10 +50,10 @@ export default function JoinMachine() {
         <motion.div
           aria-hidden
           className="absolute inset-x-[12%] -bottom-[6%] h-[12%] rounded-[50%] bg-black/70 blur-xl"
-          animate={{ scaleX: [1, 0.86, 1], opacity: [0.75, 0.5, 0.75] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          animate={live ? { scaleX: [1, 0.86, 1], opacity: [0.75, 0.5, 0.75] } : { scaleX: 1, opacity: 0.75 }}
+          transition={live ? { duration: 5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
         />
-        <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
+        <motion.div animate={live ? { y: [0, -12, 0] } : { y: 0 }} transition={live ? { duration: 5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}>
           <motion.div style={{ rotateX, rotateY }} className="[transform-style:preserve-3d]">
             <Image
               src="/assets/join/machine.webp"

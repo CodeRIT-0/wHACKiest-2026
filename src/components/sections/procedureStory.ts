@@ -32,6 +32,25 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
     let routeTop = 0;
     // only work while the section is on (or about to come on) screen
     let near = false;
+    // Every write below is skipped unless the value really changed, and the continuous ones are
+    // rounded first. A custom property set on an element restyles everything inside it, and data-
+    // attributes re-match selectors, so writing them all on every scroll frame (most of them
+    // unchanged) was the bulk of this section's cost on a phone
+    const last = new WeakMap<Element, Record<string, string>>();
+    const put = (el: Element, key: string, value: string, write: () => void) => {
+      let seen = last.get(el);
+      if (!seen) last.set(el, (seen = {}));
+      if (seen[key] === value) return;
+      seen[key] = value;
+      write();
+    };
+    const prop = (el: HTMLElement | SVGElement, name: string, value: string) => put(el, name, value, () => el.style.setProperty(name, value));
+    const data = (el: HTMLElement, name: "active" | "reached" | "journeyStatic", value: string) => put(el, "data-" + name, value, () => (el.dataset[name] = value));
+    const attr = (el: Element, name: string, value: string) => put(el, name, value, () => el.setAttribute(name, value));
+    const r2 = (n: number) => (Math.round(n * 100) / 100).toString();
+    // looked up once, not on every frame
+    const branchLive = stages.map((_, i) => section.querySelector<SVGPathElement>(`[data-branch-live="${i}"]`)!);
+    const leds = Array.from(stages[1]?.querySelectorAll<SVGCircleElement>("[data-server-led]") ?? []);
     const reveal = () => { if (!latched) { latched = true; setRevealed(true); } };
     const measure = () => {
       const bounds = route.getBoundingClientRect();
@@ -78,36 +97,35 @@ export function useProcedureJourney(sectionRef: RefObject<HTMLElement | null>) {
       try {
         if (dirty) measure();
         const isReduced = reduced.matches;
-        section.dataset.journeyStatic = String(isReduced);
+        data(section, "journeyStatic", String(isReduced));
         const bounds = { top: routeTop - window.scrollY };
         const signalY = clamp(window.innerHeight*.65 + (isReduced || !pointerCapable.matches ? 0 : pointerY * 24) - bounds.top, start, start+length+finalLength);
         const progress = clamp((signalY-start)/Math.max(1,length+finalLength));
         const distance = progress * (length+finalLength);
-        section.style.setProperty("--clock-angle", `${-120 + clamp((signalY-nodeYs[0]) / Math.max(1,nodeYs[4]-nodeYs[0])) * 240}deg`);
-        section.style.setProperty("--pointer-x", `${isReduced || !pointerCapable.matches ? 0 : pointerX * 3}deg`);
-        section.style.setProperty("--pointer-y", `${isReduced || !pointerCapable.matches ? 0 : -pointerY * 3}deg`);
-        spine.style.strokeDashoffset = String(isReduced ? 0 : 1-clamp(distance/length));
+        // (the tilt only ever moves with a mouse; on touch it stays at 0)
+        prop(section, "--pointer-x", `${isReduced || !pointerCapable.matches ? 0 : r2(pointerX * 3)}deg`);
+        prop(section, "--pointer-y", `${isReduced || !pointerCapable.matches ? 0 : r2(-pointerY * 3)}deg`);
+        prop(spine, "stroke-dashoffset", isReduced ? "0" : (Math.round((1 - clamp(distance / length)) * 1000) / 1000).toString());
         const point = distance <= length ? spine.getPointAtLength(distance) : final.getPointAtLength(distance-length);
-        signal.setAttribute("cx",String(point.x)); signal.setAttribute("cy",String(point.y));
+        attr(signal, "cx", point.x.toFixed(1)); attr(signal, "cy", point.y.toFixed(1));
         stages.forEach((stage,i) => {
           const state = journeyState(signalY,nodeYs[i]);
-          stage.dataset.active = String(!isReduced && state.emphasis > .35);
-          stage.dataset.reached = String(isReduced || state.reached);
-          stage.style.setProperty("--stage-action",String(isReduced ? 1 : state.action));
-          stage.style.setProperty("--stage-emphasis",String(isReduced ? 0 : state.emphasis));
+          data(stage, "active", String(!isReduced && state.emphasis > .35));
+          data(stage, "reached", String(isReduced || state.reached));
+          prop(stage, "--stage-action", isReduced ? "1" : r2(state.action));
+          prop(stage, "--stage-emphasis", isReduced ? "0" : r2(state.emphasis));
           if (i === 1 && uploadPath && uploadCopy) {
             const t = isReduced ? 1 : state.action;
             const point = uploadPath.getPointAtLength(t * uploadLength);
-            uploadCopy.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${-12 + t * 24})`);
-            uploadCopy.style.opacity = String(t > .02 && t < .98 && !isReduced ? 1 : 0);
-            uploadPath.style.strokeDashoffset = String(1-t);
-            stage.querySelectorAll<SVGCircleElement>("[data-server-led]").forEach((led, index) => led.style.fill = t >= .55+index*.15 ? "#fd9c36" : "#0357d6");
+            attr(uploadCopy, "transform", `translate(${point.x.toFixed(1)} ${point.y.toFixed(1)}) rotate(${(-12 + t * 24).toFixed(1)})`);
+            prop(uploadCopy, "opacity", t > .02 && t < .98 && !isReduced ? "1" : "0");
+            prop(uploadPath, "stroke-dashoffset", r2(1 - t));
+            leds.forEach((led, index) => prop(led, "fill", t >= .55+index*.15 ? "#fd9c36" : "#0357d6"));
           }
-          const branch = section.querySelector<SVGPathElement>(`[data-branch-live="${i}"]`)!;
           const branchProgress = clamp((signalY-nodeYs[i])/Math.max(1,branchLengths[i])*2);
-          branch.style.strokeDashoffset = String(isReduced ? 0 : 1-branchProgress);
+          prop(branchLive[i], "stroke-dashoffset", isReduced ? "0" : r2(1 - branchProgress));
         });
-        final.style.strokeDashoffset = String(isReduced ? 0 : 1-clamp((distance-length)/Math.max(1,finalLength)));
+        prop(final, "stroke-dashoffset", isReduced ? "0" : r2(1 - clamp((distance - length) / Math.max(1, finalLength))));
         if (signalY >= nodeYs[4] || isReduced) reveal();
         if (!initialized) {
           initialized = true;

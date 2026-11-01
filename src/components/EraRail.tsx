@@ -8,23 +8,42 @@ import { subscribePosition } from "@/lib/journey";
 const LAST = ERAS.length - 1;
 
 // "Computing eras" rail on the right edge: a dot rides down the line as you scroll, and the ticks
-// double as jump links to each era. The dot moves straight in the DOM; only the active tick
-// re-renders, when the era changes.
+// double as jump links to each era. The dot and the fill move with transforms set straight in
+// the DOM (setting top/height instead laid the page out on every scroll frame); only the active
+// tick re-renders, when the era changes.
 export default function EraRail() {
   const pathname = usePathname();
   const dotRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     if (pathname !== "/") return;
-    return subscribePosition((pos) => {
+    const line = lineRef.current;
+    if (!line) return;
+    // the line's length, measured when it changes rather than read on every frame
+    let length = line.offsetHeight;
+    let at = 0;
+    const place = () => {
+      if (dotRef.current) dotRef.current.style.transform = `translateY(${(at * length).toFixed(1)}px)`;
+      if (fillRef.current) fillRef.current.style.transform = `scaleY(${at.toFixed(4)})`;
+    };
+    const ro = new ResizeObserver(() => {
+      length = line.offsetHeight;
+      place();
+    });
+    ro.observe(line);
+    const off = subscribePosition((pos) => {
       const p = Math.min(LAST, Math.max(0, pos));
-      const pct = `${(p / LAST) * 100}%`;
-      if (dotRef.current) dotRef.current.style.top = pct;
-      if (fillRef.current) fillRef.current.style.height = pct;
+      at = p / LAST;
+      place();
       setActive(Math.round(p));
     });
+    return () => {
+      off();
+      ro.disconnect();
+    };
   }, [pathname]);
 
   if (pathname !== "/") return null;
@@ -35,8 +54,8 @@ export default function EraRail() {
         Computing eras
       </p>
 
-      <div className="relative w-px flex-1 bg-ink/20">
-        <div ref={fillRef} className="absolute inset-x-0 top-0 bg-accent" />
+      <div ref={lineRef} className="relative w-px flex-1 bg-ink/20">
+        <div ref={fillRef} className="absolute inset-0 origin-top scale-y-0 bg-accent" />
 
         {ERAS.map((e, i) => (
           <a

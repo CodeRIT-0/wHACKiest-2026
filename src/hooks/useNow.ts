@@ -10,14 +10,29 @@ import { useSyncExternalStore } from "react";
 const listeners = new Set<() => void>();
 let timer: ReturnType<typeof setTimeout> | undefined;
 let current = 0;
+// While nothing that shows the time is on screen (the hero has scrolled away), the ticks carry on
+// but tell nobody, so the board and dial aren't re-rendered every second for no one to see.
+// Coming back on screen catches them up at once.
+let paused = false;
+
+export function setNowPaused(next: boolean) {
+  if (paused === next) return;
+  paused = next;
+  if (!paused) {
+    current = read();
+    listeners.forEach((notify) => notify());
+  }
+}
 
 const read = () => Math.floor(Date.now() / 1000);
 
 function schedule() {
   timer = setTimeout(
     () => {
-      current = read();
-      listeners.forEach((notify) => notify());
+      if (!paused) {
+        current = read();
+        listeners.forEach((notify) => notify());
+      }
       schedule();
     },
     1000 - (Date.now() % 1000) + 5,
