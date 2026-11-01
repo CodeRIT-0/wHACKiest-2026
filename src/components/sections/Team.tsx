@@ -88,7 +88,7 @@ export default function Team() {
           <li key={p.name}>
             <article
               data-touch
-              className="group/patron relative border-[3px] border-ink bg-ink shadow-[5px_5px_0_var(--fg)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)] data-[active]:-translate-x-1 data-[active]:-translate-y-1 data-[active]:shadow-[8px_8px_0_var(--accent)] sm:border-[6px] sm:shadow-[8px_8px_0_var(--fg)]"
+              className="group/patron relative flex h-full flex-col border-[3px] border-ink bg-ink shadow-[5px_5px_0_var(--fg)] transition-[translate,box-shadow] duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0_var(--accent)] data-[active]:-translate-x-1 data-[active]:-translate-y-1 data-[active]:shadow-[8px_8px_0_var(--accent)] sm:border-[6px] sm:shadow-[8px_8px_0_var(--fg)]"
             >
               <div className="relative aspect-square overflow-hidden">
                 <Image
@@ -100,7 +100,7 @@ export default function Team() {
                 />
                 <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-15 transition-opacity duration-500 group-hover/patron:opacity-0 group-data-[active]/patron:opacity-0" />
               </div>
-              <div className="bg-panel px-3 pb-3 pt-2.5 sm:px-5 sm:pb-5 sm:pt-4">
+              <div className="flex-1 bg-panel px-3 pb-3 pt-2.5 sm:px-5 sm:pb-5 sm:pt-4">
                 <p className="display-wide text-sm leading-tight transition-colors duration-300 group-hover/patron:text-accent group-data-[active]/patron:text-accent sm:text-xl">{p.name}</p>
                 <p className="mt-1.5 border-b-2 border-dashed border-ink/40 pb-1.5 font-mono text-[8.5px] uppercase leading-snug tracking-[0.1em] text-muted sm:mt-2 sm:pb-2 sm:text-[11px] sm:tracking-[0.14em]">{p.role}</p>
               </div>
