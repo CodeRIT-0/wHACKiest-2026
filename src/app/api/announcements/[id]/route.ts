@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/mongodb";
 import Announcement from "@/models/Announcement";
 import { isAuthorized } from "@/lib/auth";
@@ -33,6 +34,9 @@ export async function PATCH(
         { status: 404 }
       );
     }
+
+    revalidatePath("/announcements");
+    revalidatePath("/api/announcements");
 
     return NextResponse.json({
       success: true,
@@ -73,6 +77,9 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    revalidatePath("/announcements");
+    revalidatePath("/api/announcements");
 
     return NextResponse.json({
       success: true,

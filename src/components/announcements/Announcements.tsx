@@ -71,11 +71,22 @@ function Arrow() {
   return <span aria-hidden="true" className="text-lg leading-none">↗</span>;
 }
 
-export default function Announcements() {
+export default function Announcements({
+  initialAnnouncements = [],
+}: {
+  initialAnnouncements?: Announcement[];
+}) {
   const [active, setActive] = useState<Category>("All");
-  const [list, setList] = useState<Announcement[]>(fallbackAnnouncements);
+  const [list, setList] = useState<Announcement[]>(
+    initialAnnouncements.length > 0 ? initialAnnouncements : fallbackAnnouncements
+  );
 
   useEffect(() => {
+    if (initialAnnouncements.length > 0) {
+      setList(initialAnnouncements);
+      return;
+    }
+
     let isMounted = true;
     async function loadData() {
       try {
@@ -92,7 +103,7 @@ export default function Announcements() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [initialAnnouncements]);
 
   const visibleAnnouncements = useMemo(
     () => list.filter((item) => active === "All" || item.category === active),

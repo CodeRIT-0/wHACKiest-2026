@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/mongodb";
 import Announcement from "@/models/Announcement";
 import { isAuthorized } from "@/lib/auth";
@@ -25,10 +26,17 @@ export async function GET() {
       .sort({ featured: -1, createdAt: -1 })
       .lean();
 
-    return NextResponse.json({
-      success: true,
-      data: announcements,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: announcements,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
     console.error("Failed to fetch announcements:", error);
@@ -77,6 +85,9 @@ export async function POST(request: Request) {
       featured: Boolean(featured),
       closed: Boolean(closed),
     });
+
+    revalidatePath("/announcements");
+    revalidatePath("/api/announcements");
 
     return NextResponse.json(
       {
