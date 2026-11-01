@@ -31,7 +31,6 @@ export const ERAS: Era[] = [
   { id: "timeline", year: 1960, tagline: "The transistor age", palette: IVORY, at: 0.5 },
   { id: "tracks", year: 2010, tagline: "Pick your stack", palette: IVORY },
   { id: "prizes", year: 2024, tagline: "Personal computing", palette: IVORY, at: 0.08 },
-  { id: "sponsors", year: 2025, tagline: "Networked together", palette: IVORY },
   { id: "faqs", year: 2025, tagline: "Ask the network", palette: IVORY },
   { id: "team", year: 2026, tagline: "People behind the code", palette: IVORY },
   { id: "join", year: 2026, tagline: "The AI era", palette: IVORY, at: 0.5 },

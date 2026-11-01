@@ -3,15 +3,17 @@
 import { useEffect, useReducer, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import TypeLine from "../../retro/TypeLine";
-import { inr, PRIZES, TOTAL, type Prize } from "./prize-data";
+import { inr, TOTAL } from "./prize-data";
 
-export type Stage = "off" | "boot" | "idle" | "reading" | "done";
+export type Stage = "off" | "boot" | "reading" | "done";
 
 const AMBER = "#ffb35c";
 const BAR_CELLS = 16;
 const GLYPHS = "0123456789ABCDEF#%&@$*?/\\<>";
 const HEX = "0123456789ABCDEF";
 const NOISE_LEN = 20;
+// the files that stay locked, whatever the scroll does (no figures here: see prize-data)
+const LOCKED = ["split", "awards"];
 
 // Everything on the tube is sized in em off this, so the same screen reads correctly whether it
 // is 230px wide on a phone or 420px on a big desktop. It follows the tube's width, capped by its
@@ -23,7 +25,7 @@ const glyph = (i: number, churn: number) => GLYPHS[(Math.imul(i * 2654435761 + c
 
 // Random-glyph decode. `locked` comes from scroll position: characters settle left to right as
 // the page moves, so scrolling back up scrambles them again.
-function Scramble({ text, locked }: { text: string; locked: number }) {
+export function Scramble({ text, locked }: { text: string; locked: number }) {
   const [churn, next] = useReducer((n: number) => n + 1, 0);
   useEffect(() => {
     if (locked >= text.length) return;
@@ -38,7 +40,7 @@ function Scramble({ text, locked }: { text: string; locked: number }) {
   return <span aria-hidden>{out}</span>;
 }
 
-// A still-encrypted row of the payload: hex that keeps churning so it never settles.
+// A row that stays encrypted: hex that keeps churning so it never settles, and never decodes.
 function Noise({ live }: { live: boolean }) {
   const [out, setOut] = useState("·".repeat(NOISE_LEN));
   useEffect(() => {
@@ -61,35 +63,29 @@ function Noise({ live }: { live: boolean }) {
   );
 }
 
-// The CRT's contents: a boot log, then the prize pool as three rows of ciphertext. PrizeMachine
-// reads the scroll position and hands down which row is decrypting and how far through it is.
+// The CRT's contents: a boot log, the pool decoding big as the page scrolls, and the rest of the
+// file refusing to open: the split and the awards stay ciphertext, to be announced.
 export default function CrtScreen({
   stage,
-  active,
   t,
-  mounted,
+  live,
   reduce,
 }: {
   stage: Stage;
-  /** the place currently being decrypted, if any */
-  active: Prize | null;
-  /** how far through that decrypt the scroll has got, 0-1 */
+  /** how far through decoding the pool the scroll has got, 0-1 */
   t: number;
-  /** ids of the places already decrypted */
-  mounted: string[];
+  /** on screen: the ciphertext churns only then */
+  live: boolean;
   reduce: boolean;
 }) {
-  const [line, setLine] = useState(0);
   const on = stage !== "off";
-  // scrolling fast past the boot log should not strand it half-typed
-  const past = on && stage !== "boot";
-  const shown = reduce || past ? 1 : line;
   const done = stage === "done";
-  const left = PRIZES.length - mounted.length;
+  const reading = stage === "reading";
+  const total = inr(TOTAL);
 
   return (
     // (strict containment: the tube is a fixed-size box, and its text changes on almost every scroll
-    // frame while a place decrypts; this keeps each change inside it instead of laying out the page)
+    // frame while the pool decodes; this keeps each change inside it instead of laying out the page)
     <div className="absolute inset-0 overflow-hidden" style={{ containerType: "size", contain: "strict" }}>
       <motion.div
         initial={false}
@@ -108,123 +104,63 @@ export default function CrtScreen({
           <span className="shrink-0">mem 640K ok</span>
         </div>
 
-        {/* boot log */}
         <p className="phosphor shrink-0 truncate">
-          <TypeLine text="C:\WHACKIEST> prizes.exe" start={on} onDone={() => setLine((l) => Math.max(l, 1))} />
+          <TypeLine text="C:\WHACKIEST> prizes.exe" start={on} />
         </p>
 
-        {/* the payload: one row per place, ciphertext until the scroll decrypts it */}
-        {shown >= 1 && (
-          <motion.div
-            initial={reduce ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="mt-auto shrink-0 border px-[0.7em] py-[0.55em]"
-            style={{ borderColor: `${AMBER}44`, backgroundColor: "rgba(255,179,92,0.05)" }}
-          >
-            <p className="mb-[0.5em] flex items-center justify-between gap-2 text-[0.82em] uppercase tracking-[0.14em] opacity-70">
-              <span className="truncate">prize_pool.img</span>
-              <span className="shrink-0">
-                {mounted.length}/{PRIZES.length} ok
-              </span>
-            </p>
-            <div className="grid gap-[0.45em]">
-              {PRIZES.map((p) => {
-                const ok = mounted.includes(p.id);
-                const reading = active?.id === p.id && stage === "reading";
-                return (
-                  <div key={p.id} className="flex min-w-0 items-center gap-[0.55em]">
-                    <span className="w-[2.9em] shrink-0 text-[0.86em] uppercase tracking-[0.1em] opacity-75">{p.short}</span>
-                    {reading ? (
-                      <>
-                        {/* the progress bar is the scroll bar: each cell lights as the page moves */}
-                        <span aria-hidden className="flex min-w-0 flex-1 gap-[1px]">
-                          {Array.from({ length: BAR_CELLS }, (_, i) => (
-                            <span
-                              key={i}
-                              className="h-[0.75em] flex-1 rounded-[1px] transition-opacity duration-150"
-                              style={{ backgroundColor: p.hue, opacity: (i + 1) / BAR_CELLS <= t ? 1 : 0.16 }}
-                            />
-                          ))}
-                        </span>
-                        <span className="phosphor shrink-0 font-bold tabular-nums" style={{ color: p.hue }}>
-                          <Scramble text={inr(p.amount)} locked={Math.round(t * inr(p.amount).length)} />
-                        </span>
-                      </>
-                    ) : ok ? (
-                      <>
-                        <span
-                          aria-hidden
-                          className="mb-[0.35em] min-w-0 flex-1 self-end border-b border-dotted"
-                          style={{ borderColor: `${p.hue}66` }}
-                        />
-                        <motion.span
-                          initial={reduce ? false : { opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ type: "spring", stiffness: 420, damping: 18 }}
-                          className="phosphor shrink-0 font-bold tabular-nums"
-                          style={{ color: p.hue }}
-                        >
-                          {inr(p.amount)}
-                        </motion.span>
-                      </>
-                    ) : (
-                      <>
-                        <Noise live={on && !reduce} />
-                        <span aria-hidden className="shrink-0 text-[0.86em] opacity-35">
-                          [lock]
-                        </span>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
+        {/* the file: the pool is the only part of it that opens (too tight to read on the smallest tubes,
+            which show just the pool; the cards beside the machine carry the rest) */}
+        <div className="mt-auto shrink-0 border px-[0.7em] py-[0.55em] @max-[140px]:hidden" style={{ borderColor: `${AMBER}44`, backgroundColor: "rgba(255,179,92,0.05)" }}>
+          <p className="mb-[0.5em] flex items-center justify-between gap-2 text-[0.82em] uppercase tracking-[0.14em] opacity-70">
+            <span className="truncate">prize_pool.img</span>
+            <span className="shrink-0">{done ? "1/3 open" : reading ? `${Math.round(t * 100)}%` : "0/3 open"}</span>
+          </p>
+          <div className="grid gap-[0.45em]">
+            {LOCKED.map((name) => (
+              <div key={name} className="flex min-w-0 items-center gap-[0.55em]">
+                <span className="w-[4.4em] shrink-0 text-[0.86em] uppercase tracking-[0.1em] opacity-75">{name}</span>
+                <Noise live={on && live && !reduce} />
+                <span aria-hidden className="shrink-0 text-[0.86em] opacity-45">
+                  [lock]
+                </span>
+              </div>
+            ))}
+            <div className="flex h-[1.45em] min-w-0 items-center gap-[0.55em]">
+              {done ? (
+                <motion.p
+                  initial={reduce ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="phosphor truncate font-bold uppercase tracking-[0.14em] motion-safe:animate-pulse"
+                  style={{ color: "#fd9c36" }}
+                >
+                  to be announced
+                </motion.p>
+              ) : (
+                // the progress bar is the scroll bar: each cell lights as the page moves
+                <span aria-hidden className="flex min-w-0 flex-1 gap-[1px]">
+                  {Array.from({ length: BAR_CELLS }, (_, i) => (
+                    <span key={i} className="h-[0.75em] flex-1 rounded-[1px] transition-opacity duration-150" style={{ backgroundColor: AMBER, opacity: reading && (i + 1) / BAR_CELLS <= t ? 1 : 0.16 }} />
+                  ))}
+                </span>
+              )}
             </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
 
-        {/* prompt line */}
-        <div className="mt-[0.4em] min-h-[4.1em] shrink-0">
-          <AnimatePresence mode="wait">
-            {stage === "reading" && active ? (
-              <motion.div
-                key={`read-${active.id}`}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                className="min-w-0"
-                style={{ color: active.hue }}
-              >
-                <span className="block truncate text-[0.82em] uppercase tracking-[0.14em] opacity-80">
-                  &gt; {active.file} · <Scramble text="key 0x9C04 ok" locked={Math.round(t * 13)} />
-                </span>
-                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums @max-[240px]:text-[2.3em]">
-                  <Scramble text={inr(active.amount)} locked={Math.round(t * inr(active.amount).length)} />
-                </span>
-              </motion.div>
-            ) : done ? (
-              <motion.div
-                key="done"
-                initial={reduce ? false : { opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 240, damping: 18 }}
-                className="min-w-0"
-              >
-                <span className="block text-[0.82em] uppercase tracking-[0.16em] opacity-60">total prize pool</span>
-                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums @max-[240px]:text-[2.3em]" style={{ color: AMBER }}>
-                  {inr(TOTAL)}
-                </span>
-              </motion.div>
-            ) : stage === "idle" ? (
-              <motion.p
-                key="idle"
-                initial={reduce ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                className="phosphor truncate uppercase tracking-[0.12em]"
-              >
-                <TypeLine key={left} text={`▾ keep scrolling · ${left} of ${PRIZES.length} left`} speed={20} caret />
+        {/* the pool, big */}
+        <div className="mt-[0.4em] min-h-[4.1em] shrink-0 @max-[140px]:mt-auto">
+          <AnimatePresence mode="wait" initial={false}>
+            {on && stage === "boot" ? (
+              <motion.p key="boot" exit={{ opacity: 0, transition: { duration: 0.12 } }} className="phosphor truncate uppercase tracking-[0.12em]">
+                <TypeLine text="▾ keep scrolling to decrypt" speed={20} caret />
               </motion.p>
+            ) : reading || done ? (
+              <motion.div key="pool" initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="min-w-0">
+                <span className="block truncate text-[0.82em] uppercase tracking-[0.16em] opacity-70">{done ? "total prize pool" : "> decrypting pool"}</span>
+                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums @max-[240px]:text-[2.3em]">
+                  <Scramble text={total} locked={done ? total.length : Math.round(t * total.length)} />
+                </span>
+              </motion.div>
             ) : null}
           </AnimatePresence>
         </div>
@@ -240,9 +176,9 @@ export default function CrtScreen({
           transition={{ duration: 0.8, times: [0, 0.35, 0.6, 1], ease: "easeOut" }}
         />
       )}
-      {!reduce && mounted.length > 0 && (
+      {/* a flash across the tube the moment the pool opens */}
+      {!reduce && done && (
         <motion.span
-          key={mounted.length}
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[#fff1d6] mix-blend-overlay"
           initial={{ opacity: 0.85 }}

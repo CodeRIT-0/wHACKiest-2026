@@ -164,6 +164,16 @@ section[id] {
   background-size: 14px 14px;
 }
 
+/* the scan line sweeping a sealed track card (SealedTracks) */
+@keyframes seal-scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(300%);
+  }
+}
+
 @keyframes marquee {
   to {
     transform: translateX(-50%);

@@ -16,7 +16,7 @@ export default function Join() {
         </div>
         <Reveal>
           <p className="mt-16 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
-            <span className="text-accent">10</span> / Register
+            <span className="text-accent">09</span> / Register
           </p>
           <h2 data-words className="display-wide mx-auto mt-4 max-w-[14ch] text-[40px] uppercase leading-[0.95] sm:text-6xl md:text-7xl">
             <Words text="The next era starts with you" tail={<span className="text-accent">.</span>} />

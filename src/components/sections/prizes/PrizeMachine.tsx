@@ -1,49 +1,37 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { motion, useInView, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
-import { SquaresFour } from "@phosphor-icons/react";
+import { ArrowUpRight, LockSimple, X } from "@phosphor-icons/react";
 import SectionHeader from "../../SectionHeader";
 import { useHydrated } from "@/hooks/useHydrated";
-import CrtScreen, { type Stage } from "./CrtScreen";
-import PrizeWindow from "./PrizeWindow";
-import { inr, masked, PRIZES, TOTAL, type Prize } from "./prize-data";
+import CrtScreen, { Scramble, type Stage } from "./CrtScreen";
+import { inr, TOTAL } from "./prize-data";
 
-// The prize reveal, driven entirely by scroll. The section is a tall stretch with a pinned stage:
-// the machine boots as it arrives, reports the pool as encrypted, and then each further half
-// screen or so of scrolling decrypts one place — the progress bar on the tube *is* the scroll bar, and the figure
-// resolves out of random glyphs as the page moves. Scrolling back up re-encrypts it.
+// The prize tease, driven by scroll. The section is a tall stretch with a pinned stage: the machine
+// boots as it arrives, the pool decodes out of random glyphs as the page moves (the progress bar on
+// the tube *is* the scroll bar), and then the rest of the file refuses to open. The split and the
+// awards stay encrypted and a TO BE ANNOUNCED stamp lands on them. Scrolling back up re-encrypts.
 
-/** [start, end] of each place's decrypt, as fractions of the pinned stretch */
-const BEATS: [number, number][] = [
-  [0.08, 0.28],
-  [0.34, 0.54],
-  [0.6, 0.8],
-];
-const BOOT_END = 0.06;
+const BOOT_END = 0.08;
+const READ_END = 0.62;
 const STEP = 1 / 24; // the scroll position is quantised to this, so React re-renders stay cheap
 
-type View = { stage: Stage; index: number; t: number };
-const REVEALED: View = { stage: "done", index: -1, t: 1 };
+type View = { stage: Stage; t: number };
 
-// where the scroll position sits in the story
 function read(v: number): View {
-  if (v < BOOT_END) return { stage: "boot", index: -1, t: 0 };
-  for (let i = 0; i < BEATS.length; i++) {
-    const [start, end] = BEATS[i];
-    if (v < start) return { stage: "idle", index: i, t: 0 };
-    if (v < end) return { stage: "reading", index: i, t: Math.round(((v - start) / (end - start)) / STEP) * STEP };
-  }
-  return REVEALED;
+  if (v < BOOT_END) return { stage: "boot", t: 0 };
+  if (v >= READ_END) return { stage: "done", t: 1 };
+  return { stage: "reading", t: Math.round((v - BOOT_END) / (READ_END - BOOT_END) / STEP) * STEP };
 }
-
-const decrypted = (v: number) => PRIZES.filter((_, i) => v >= BEATS[i][1]);
 
 export default function PrizeMachine() {
   const ref = useRef<HTMLElement>(null);
   // the tube snaps on the first time the section comes into view, and stays on from then
   const powered = useInView(ref, { amount: 0.05, once: true });
+  const live = useInView(ref, { margin: "20% 0px" });
   // `useReducedMotion` is already true on the first client render but false on the server, so it
   // only takes effect once hydration is done — otherwise the markup the two produce disagrees
   const prefersReduced = useReducedMotion();
@@ -52,25 +40,20 @@ export default function PrizeMachine() {
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [view, setView] = useState<View>(() => read(0));
-  const [mounted, setMounted] = useState<Prize[]>([]);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     const next = read(v);
-    setView((prev) => (prev.stage === next.stage && prev.index === next.index && prev.t === next.t ? prev : next));
-    const ids = decrypted(v);
-    setMounted((prev) => (prev.length === ids.length ? prev : ids));
+    setView((prev) => (prev.stage === next.stage && prev.t === next.t ? prev : next));
   });
 
-  // with reduced motion the section is a normal block and everything is simply already decrypted
+  // with reduced motion the section is a normal block and the pool is simply already open
   const stage: Stage = reduce ? "done" : powered ? view.stage : "off";
-  const revealed = reduce ? PRIZES : mounted;
-  const active = view.stage === "reading" ? PRIZES[view.index] : null;
   const done = stage === "done";
-  const runningTotal = revealed.reduce((sum, p) => sum + p.amount, 0);
-  const ids = revealed.map((p) => p.id);
+  const reading = stage === "reading";
+  const total = inr(TOTAL);
 
   return (
-    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[190vh] lg:h-[210vh]"}`}>
+    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[170vh] lg:h-[180vh]"}`}>
       {/* the room warms up as the pool comes out */}
       <motion.div
         aria-hidden
@@ -86,49 +69,35 @@ export default function PrizeMachine() {
           <div className="grid shrink-0 gap-4 lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
             <SectionHeader index="05" label="Prizes" title="Big ideas. Bigger rewards." />
             <p className="hidden max-w-[44ch] text-muted sm:block lg:text-lg">
-              The pool ships encrypted. Keep scrolling and the machine decrypts it one place at a time — {inr(TOTAL)} across the
-              top three, plus special awards.
+              The pool is out. Who takes home what is still locked on this machine, and it stays locked until the reveal.
             </p>
           </div>
 
           {/* ---------------- the stage ---------------- */}
           <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:contents">
             {/* the machine */}
-            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_330px))] min-w-0 sm:w-[min(100%,calc(100svh_-_470px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
-              {/* On phones the frame crops in on the tube, so the screen stays readable; from lg up the
-                  whole machine is in shot and sized to whatever height the pinned stage has. */}
+            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_450px))] min-w-0 sm:w-[min(100%,calc(100svh_-_500px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
               <div className="relative aspect-square w-full overflow-hidden">
                 <div className="absolute inset-0">
-                  <Image
-                    src="/assets/prizes/retro-computer.webp"
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 780px, 92vw"
-                    className="pointer-events-none select-none object-contain"
-                  />
+                  <Image src="/assets/prizes/retro-computer.webp" alt="" fill sizes="(min-width: 1024px) 780px, 92vw" className="pointer-events-none select-none object-contain" />
 
                   {/* the tube's glow spilling onto the bezel once it's on (opacity only, so it's cheap) */}
                   <span
                     aria-hidden
                     className={`absolute rounded-[12%] bg-[radial-gradient(closest-side,rgba(255,179,92,0.4),transparent)] blur-xl transition-opacity duration-700 ${
-                      stage === "off" ? "opacity-0" : active ? "opacity-100" : "opacity-60"
+                      stage === "off" ? "opacity-0" : reading ? "opacity-100" : "opacity-60"
                     }`}
                     style={{ left: "19%", top: "4%", width: "61%", height: "50%" }}
                   />
                   {/* the live tube, sat inside the bezel (percentages measured off the photo) */}
-                  <div
-                    className="absolute overflow-hidden rounded-[7%/9%] bg-[#060f0c] shadow-[inset_0_0_70px_rgba(0,0,0,0.95)]"
-                    style={{ left: "25.4%", top: "11.2%", width: "48.4%", height: "35%" }}
-                  >
-                    <CrtScreen stage={stage} active={active} t={view.t} mounted={ids} reduce={reduce} />
+                  <div className="absolute overflow-hidden rounded-[7%/9%] bg-[#060f0c] shadow-[inset_0_0_70px_rgba(0,0,0,0.95)]" style={{ left: "25.4%", top: "11.2%", width: "48.4%", height: "35%" }}>
+                    <CrtScreen stage={stage} t={view.t} live={live} reduce={reduce} />
                   </div>
 
-                  {/* drive light, over the amber LED on the case: lit while a place is decrypting */}
+                  {/* drive light, over the amber LED on the case: lit while the pool is decoding */}
                   <span
                     aria-hidden
-                    className={`absolute rounded-[1px] transition-opacity duration-150 ${
-                      active ? "opacity-100 motion-safe:animate-[flicker_0.25s_linear_infinite]" : "opacity-0"
-                    }`}
+                    className={`absolute rounded-[1px] transition-opacity duration-150 ${reading ? "opacity-100 motion-safe:animate-[flicker_0.25s_linear_infinite]" : "opacity-0"}`}
                     style={{ left: "80.2%", top: "66.2%", width: "2.4%", height: "1.3%", backgroundColor: "#ff8a3d", boxShadow: "0 0 14px 4px rgba(255,138,61,0.85)" }}
                   />
 
@@ -138,76 +107,68 @@ export default function PrizeMachine() {
                     className="absolute rounded-full"
                     style={{ left: "75.2%", top: "50.4%", width: "1.2%", height: "1.2%" }}
                     initial={false}
-                    animate={{
-                      backgroundColor: stage === "off" ? "#8a826f" : "#5dff9a",
-                      boxShadow: stage === "off" ? "0 0 0 transparent" : "0 0 10px 2px rgba(93,255,154,0.8)",
-                    }}
+                    animate={{ backgroundColor: stage === "off" ? "#8a826f" : "#5dff9a", boxShadow: stage === "off" ? "0 0 0 transparent" : "0 0 10px 2px rgba(93,255,154,0.8)" }}
                   />
                 </div>
               </div>
             </div>
 
-            {/* the desktop: a window lands as each place comes out of the payload */}
-            <div className="min-w-0 lg:col-start-2 lg:row-start-2 lg:self-start">
-              <div className="mb-3 flex items-center justify-between gap-3 border-b border-ink/15 pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted lg:text-[11px]">
-                <span className="flex items-center gap-2">
-                  <SquaresFour size={13} weight="bold" className="text-accent" />
-                  My prizes
-                </span>
-                <span className={done ? "text-accent" : ""}>
-                  {revealed.length} of {PRIZES.length} objects
-                </span>
-              </div>
+            {/* the desktop: the pool's window, and the sealed one with the stamp on it */}
+            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
+              <article className="border-2 border-ink bg-panel shadow-[5px_5px_0_var(--fg)]">
+                <div className="flex items-center gap-2 border-b-2 border-ink bg-[linear-gradient(90deg,var(--color-trace),color-mix(in_srgb,var(--color-trace)_55%,var(--bg)))] px-2 py-1">
+                  <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#fff9ec]">PRIZE_POOL.DAT</span>
+                  <span aria-hidden className="ml-auto grid h-3.5 w-3.5 shrink-0 place-items-center border border-ink bg-panel text-ink">
+                    <X size={7} weight="bold" />
+                  </span>
+                </div>
+                <div className="px-3 py-2.5 lg:py-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Total prize pool</p>
+                  <p className="display-wide mt-1 text-[clamp(28px,3vw,46px)] leading-none tabular-nums text-accent">
+                    <Scramble text={total} locked={done || !live ? total.length : reading ? Math.round(view.t * total.length) : 0} />
+                    <span className="sr-only">{total}</span>
+                  </p>
+                </div>
+              </article>
 
-              <div className="hidden gap-3 lg:grid lg:grid-cols-3 xl:gap-4">
-                {PRIZES.map((p, i) => (
-                  <PrizeWindow key={p.id} prize={p} slot={i + 1} open={ids.includes(p.id)} reduce={reduce} />
-                ))}
-              </div>
-              <ul className="grid grid-cols-3 gap-2 sm:gap-3 lg:hidden">
-                {PRIZES.map((p) => {
-                  const open = ids.includes(p.id);
-                  const Icon = p.icon;
-                  return (
-                    <li
-                      key={p.id}
-                      className={`relative overflow-hidden border-2 px-2 py-2 text-center transition-[border-color,box-shadow,translate] duration-500 ${
-                        open ? "-translate-y-0.5 border-ink bg-panel shadow-[3px_3px_0_var(--fg)]" : "border-dashed border-ink/25 bg-panel/40"
-                      }`}
-                    >
-                      <span className="flex items-center justify-center gap-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
-                        <Icon size={12} weight="duotone" style={{ color: open ? p.hue : undefined }} />
-                        {p.short}
-                      </span>
-                      <span className={`display-wide mt-1 block text-[15px] leading-none tabular-nums ${open ? "" : "text-ink/25"}`}>
-                        {open ? inr(p.amount) : masked(p.amount)}
-                      </span>
-                      <span className="sr-only">{`${p.place}: ${p.name}, ${inr(p.amount)}`}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <article className="relative flex flex-col justify-center overflow-hidden border-2 border-dashed border-ink/30 bg-panel/40 px-3 py-2.5 lg:py-4">
+                <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                  <LockSimple size={13} weight="duotone" className="shrink-0 text-accent" />
+                  Who wins what
+                </p>
+                {/* redaction bars, so not even the number of digits gives anything away */}
+                <span aria-hidden className="mt-2 grid gap-1.5">
+                  <span className="h-2 w-[85%] bg-ink/25" />
+                  <span className="h-2 w-[60%] bg-ink/25" />
+                </span>
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">Split + special awards</p>
+                <motion.p
+                  initial={false}
+                  animate={done ? { opacity: 1, scale: 1, rotate: -5 } : { opacity: 0, scale: reduce ? 1 : 1.9, rotate: reduce ? -5 : -14 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                  className="pointer-events-none absolute inset-0 m-auto h-fit w-fit whitespace-nowrap border-[3px] border-accent bg-bg/90 px-2.5 py-1 text-center font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-accent shadow-[0_0_24px_rgba(253,156,54,0.45)] sm:text-[13px]"
+                >
+                  To be announced
+                </motion.p>
+              </article>
 
+              <Link href="/announcements" className="group/ann inline-flex w-fit items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-accent sm:col-span-2 max-lg:[@media(max-height:720px)]:hidden">
+                Be first to know
+                <ArrowUpRight size={13} weight="bold" className="transition-transform duration-300 group-hover/ann:-translate-y-0.5 group-hover/ann:translate-x-0.5" />
+              </Link>
             </div>
           </div>
 
+          <p aria-live="polite" className="sr-only">
+            {done ? `Total prize pool ${total}. How it is split, and the special awards, are to be announced.` : ""}
+          </p>
           {/* A ₹ in the CRT's typeface, drawn (invisibly) from the first render. The sign lives in the
               font's latin-ext file, which a browser only fetches once a ₹ is drawn in that face; the
-              tube shows none until the first prize decrypts, and the face arriving then made the
-              browser lay the whole page out again mid-scroll. This way it loads with the other fonts */}
+              face arriving mid-scroll made the browser lay the whole page out again. This way it
+              loads with the other fonts */}
           <span aria-hidden className="pointer-events-none absolute left-0 top-0 select-none font-mono text-[1px] opacity-0">
             ₹
           </span>
-
-          <p aria-live="polite" className="sr-only">
-            {active
-              ? `Decrypting ${active.file}`
-              : done
-                ? `All three prizes revealed. Total prize pool ${inr(TOTAL)}, plus special awards to be announced.`
-                : revealed.length
-                  ? `${revealed.length} of ${PRIZES.length} prizes revealed. Running total ${inr(runningTotal)}.`
-                  : ""}
-          </p>
         </div>
       </div>
     </section>

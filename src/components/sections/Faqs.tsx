@@ -85,7 +85,7 @@ export default function Faqs() {
       <ComputingBackdrop variant="faq" />
       <div className="faq-layout">
         <header className="faq-heading faq-reveal">
-          <div id="faq-title"><SectionHeader index="08" label="FAQs" title="Got questions?" /></div>
+          <div id="faq-title"><SectionHeader index="07" label="FAQs" title="Got questions?" /></div>
           <p className="faq-subtitle">{faqContent.subtitle}</p>
         </header>
         <div className="faq-tools">

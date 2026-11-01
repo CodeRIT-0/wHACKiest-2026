@@ -50,7 +50,7 @@ export default function Procedure() {
   return <section id="how-to-register" ref={root} className="procedure-section" aria-labelledby="participation-title" data-journey-ready={ready}>
     <div className="journey-background" aria-hidden="true"><div className="journey-grid" /><svg className="journey-clock" viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="110" /><circle cx="120" cy="120" r="102" /><path d="M120 42v78l46 29" />{Array.from({length:12},(_,i)=><path key={i} d="M120 18v12" transform={`rotate(${i*30} 120 120)`} />)}</svg></div>
     <div className="procedure-inner">
-      <header className="procedure-heading" id="participation-title"><SectionHeader index="07" label="How to participate" title="Your next move." /><p className="procedure-subtitle">{participation.subtitle}</p></header>
+      <header className="procedure-heading" id="participation-title"><SectionHeader index="06" label="How to participate" title="Your next move." /><p className="procedure-subtitle">{participation.subtitle}</p></header>
       <div className="journey-route">
         <svg className="journey-circuit" aria-hidden="true" focusable="false" fill="none">
           <path className="journey-spine-base" data-spine-base /><path className="journey-spine-live" data-spine-live pathLength="1" />

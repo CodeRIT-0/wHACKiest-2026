@@ -3,7 +3,6 @@ import Hero from "@/components/sections/Hero";
 import Timeline from "@/components/sections/circuit-timeline/Timeline";
 import TrackLab from "@/components/sections/TrackLab";
 import Prizes from "@/components/sections/Prizes";
-import Sponsors from "@/components/sections/Sponsors";
 import Procedure from "@/components/sections/Procedure";
 import Faqs from "@/components/sections/Faqs";
 import Team from "@/components/sections/Team";
@@ -73,9 +72,6 @@ export default function Home() {
       <SheetStack
         under={
           <div className={`sheet sheet-light ${HOLD_ROOM}`}>
-            <Lazy>
-              <Sponsors />
-            </Lazy>
             {/* how to register (from the roopinwork branch) */}
             <Lazy>
               <Procedure />

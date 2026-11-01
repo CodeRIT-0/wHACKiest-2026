@@ -14,7 +14,6 @@ const links = [
   { href: "/#timeline", label: "Timeline" },
   { href: "/#tracks", label: "Tracks" },
   { href: "/#prizes", label: "Prizes" },
-  { href: "/#sponsors", label: "Sponsors" },
   { href: "/#how-to-register", label: "How to join" },
   { href: "/#faqs", label: "FAQs" },
   { href: "/#team", label: "Team" },

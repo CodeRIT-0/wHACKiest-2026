@@ -68,7 +68,7 @@ export default function Team() {
       }
     >
       <div className="grid items-end gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.6fr)]">
-        <SectionHeader index="09" label="Team" title="Meet the minds behind the heist" />
+        <SectionHeader index="08" label="Team" title="Meet the minds behind the heist" />
         <p className="max-w-[40ch] text-muted">
           The CodeRIT crew wiring wHACKiest together: problem setters, designers, developers and the people who keep the lights on for 24
           hours.
