@@ -14,8 +14,9 @@ const HEX = "0123456789ABCDEF";
 const NOISE_LEN = 20;
 
 // Everything on the tube is sized in em off this, so the same screen reads correctly whether it
-// is 230px wide on a phone or 330px on a desktop. 3.05cqw of the tube, clamped at both ends.
-const ROOT_SIZE = "clamp(7.5px, 3.05cqw, 12px)";
+// is 230px wide on a phone or 420px on a big desktop. It follows the tube's width, capped by its
+// height (the full readout is about 18em tall), and is clamped at both ends.
+const ROOT_SIZE = "clamp(7.5px, min(3.3cqw, 5.1cqh), 18px)";
 
 // a scrambled-looking but pure glyph, so the churn survives a re-render and never trips hydration
 const glyph = (i: number, churn: number) => GLYPHS[(Math.imul(i * 2654435761 + churn * 40503, 2246822519) >>> 0) % GLYPHS.length];
@@ -54,7 +55,7 @@ function Noise({ live }: { live: boolean }) {
     return () => clearInterval(id);
   }, [live]);
   return (
-    <span aria-hidden className="min-w-0 flex-1 truncate opacity-45">
+    <span aria-hidden className="min-w-0 flex-1 truncate opacity-60">
       {out}
     </span>
   );
@@ -87,7 +88,7 @@ export default function CrtScreen({
   const left = PRIZES.length - mounted.length;
 
   return (
-    <div className="absolute inset-0 overflow-hidden" style={{ containerType: "inline-size" }}>
+    <div className="absolute inset-0 overflow-hidden" style={{ containerType: "size" }}>
       <motion.div
         initial={false}
         animate={{ opacity: on ? 1 : 0 }}
@@ -98,7 +99,7 @@ export default function CrtScreen({
         {/* status strip burned into the top of the tube. Everything on the tube is shrink-0: a
             flex item that compresses below its line height is what makes lines overlap. */}
         <div
-          className="flex shrink-0 items-center justify-between gap-2 border-b border-dashed pb-[0.3em] text-[0.82em] uppercase tracking-[0.12em] opacity-70 @max-[240px]:hidden"
+          className="flex shrink-0 items-center justify-between gap-2 border-b border-dashed pb-[0.3em] text-[0.82em] uppercase tracking-[0.12em] opacity-80 @max-[240px]:hidden"
           style={{ borderColor: `${AMBER}55` }}
         >
           <span className="truncate">wHACKiest OS 26.1</span>
@@ -119,7 +120,7 @@ export default function CrtScreen({
             className="mt-auto shrink-0 border px-[0.7em] py-[0.55em]"
             style={{ borderColor: `${AMBER}44`, backgroundColor: "rgba(255,179,92,0.05)" }}
           >
-            <p className="mb-[0.5em] flex items-center justify-between gap-2 text-[0.82em] uppercase tracking-[0.14em] opacity-55">
+            <p className="mb-[0.5em] flex items-center justify-between gap-2 text-[0.82em] uppercase tracking-[0.14em] opacity-70">
               <span className="truncate">prize_pool.img</span>
               <span className="shrink-0">
                 {mounted.length}/{PRIZES.length} ok
@@ -131,7 +132,7 @@ export default function CrtScreen({
                 const reading = active?.id === p.id && stage === "reading";
                 return (
                   <div key={p.id} className="flex min-w-0 items-center gap-[0.55em]">
-                    <span className="w-[2.9em] shrink-0 text-[0.86em] uppercase tracking-[0.1em] opacity-60">{p.short}</span>
+                    <span className="w-[2.9em] shrink-0 text-[0.86em] uppercase tracking-[0.1em] opacity-75">{p.short}</span>
                     {reading ? (
                       <>
                         {/* the progress bar is the scroll bar: each cell lights as the page moves */}
@@ -181,19 +182,24 @@ export default function CrtScreen({
         )}
 
         {/* prompt line */}
-        <div className="mt-[0.4em] min-h-[2.6em] shrink-0">
+        <div className="mt-[0.4em] min-h-[4.1em] shrink-0">
           <AnimatePresence mode="wait">
             {stage === "reading" && active ? (
-              <motion.p
+              <motion.div
                 key={`read-${active.id}`}
                 initial={reduce ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                className="truncate text-[0.86em] uppercase tracking-[0.12em]"
+                className="min-w-0"
                 style={{ color: active.hue }}
               >
-                &gt; {active.file} · <Scramble text="key 0x9C04 ok" locked={Math.round(t * 13)} />
-              </motion.p>
+                <span className="block truncate text-[0.82em] uppercase tracking-[0.14em] opacity-80">
+                  &gt; {active.file} · <Scramble text="key 0x9C04 ok" locked={Math.round(t * 13)} />
+                </span>
+                <span className="phosphor display-wide block text-[2.9em] leading-none tabular-nums @max-[240px]:text-[2.3em]">
+                  <Scramble text={inr(active.amount)} locked={Math.round(t * inr(active.amount).length)} />
+                </span>
+              </motion.div>
             ) : done ? (
               <motion.div
                 key="done"
@@ -232,7 +238,17 @@ export default function CrtScreen({
           transition={{ duration: 0.8, times: [0, 0.35, 0.6, 1], ease: "easeOut" }}
         />
       )}
-      <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-70" />
+      {!reduce && mounted.length > 0 && (
+        <motion.span
+          key={mounted.length}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[#fff1d6] mix-blend-overlay"
+          initial={{ opacity: 0.85 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+      )}
+      <span aria-hidden className="scanlines pointer-events-none absolute inset-0 opacity-60" />
       <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_48%,rgba(0,0,0,0.72))]" />
       <span aria-hidden className="pointer-events-none absolute -left-1/4 -top-1/3 h-2/3 w-2/3 rotate-[-20deg] bg-[radial-gradient(closest-side,rgba(255,255,255,0.08),transparent)]" />
     </div>

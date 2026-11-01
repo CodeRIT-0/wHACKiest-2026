@@ -81,7 +81,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.8, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
-            className="group/panel relative min-h-[60px] min-w-0 cursor-pointer overflow-hidden rounded-[18px] border outline-none transition-[flex-grow,border-color,box-shadow] duration-[800ms] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] motion-reduce:transition-none lg:min-w-[76px] lg:rounded-[22px]"
+            className="group/panel relative min-h-[60px] min-w-0 cursor-pointer overflow-hidden rounded-[18px] border outline-none transition-[flex-grow,border-color,box-shadow] duration-[800ms] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-reduce:transition-none lg:min-w-[76px] lg:rounded-[22px]"
             style={{
               flexGrow: on ? 5.2 : 1,
               flexBasis: 0,
@@ -130,6 +130,19 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
               </span>
               <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#fff9ec]/70">{pad(i + 1)}</span>
             </div>
+
+            {/* ---- folded, wide screens: how many statements wait inside, so a spine reads as something to open ---- */}
+            <span
+              aria-hidden
+              className={`absolute left-5 top-[68px] hidden font-mono text-[10px] uppercase leading-snug tracking-[0.14em] transition-opacity duration-300 lg:block ${
+                on ? "opacity-0" : "opacity-100 delay-200"
+              }`}
+              style={{ color: t.hue }}
+            >
+              {pad(t.problems.length)}
+              <br />
+              PS
+            </span>
 
             {/* ---- folded: the title runs up the spine (across, on phones) ---- */}
             <div

@@ -24,17 +24,38 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
   const t = tracks[active] ?? tracks[0];
 
   return (
-    <div id="track-problems" role="tabpanel" aria-labelledby={`track-tab-${t.id}`} className="mt-10 lg:mt-12">
+    <div id="track-problems" role="tabpanel" aria-labelledby={`track-tab-${t.id}`} className="mt-14 lg:mt-16">
+      {/* step 2 names the open track in its own colour, so the cards below clearly belong to it */}
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3 border-t border-ink/15 pt-5">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em]">
+            <span className="text-accent">Step 2</span> <span className="text-muted">/</span> Choose a problem statement
+          </p>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.h3
+              key={t.id}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="display-wide mt-3 text-2xl leading-tight text-ink sm:text-[32px]"
+            >
+              <span style={{ color: `color-mix(in oklab, ${t.hue} 62%, #050505)` }}>{t.title}</span>
+              <span className="text-ink/40"> · {String(t.problems.length).padStart(2, "0")} problem statements</span>
+            </motion.h3>
+          </AnimatePresence>
+        </div>
       {/* the prompt, retyped for each track */}
-      <p className="flex flex-wrap items-center gap-x-1 font-mono text-[12px] text-[#fff9ec]/55 sm:text-[13px]">
-        <span className="text-[#3ccf6e]">hacker@whackiest</span>
+      <p className="flex flex-wrap items-center gap-x-1 font-mono text-[12px] text-muted sm:text-[13px]">
+        <span className="text-[#1f8a45]">hacker@whackiest</span>
         <span>:</span>
-        <span className="text-[#7aa7ff]">~</span>
+        <span className="text-trace">~</span>
         <span>$&nbsp;</span>
-        <TypeLine key={t.id} text={`ls ./tracks/${t.dir}/problems`} speed={22} caret className="text-[#fff9ec]/85" />
+        <TypeLine key={t.id} text={`ls ./tracks/${t.dir}/problems`} speed={22} caret className="text-ink" />
       </p>
+      </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.82fr)] lg:gap-5">
+      <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.82fr)] lg:gap-5">
         <AnimatePresence mode="popLayout" initial={false}>
           {t.problems.map((p, i) => (
             <motion.article
@@ -47,7 +68,7 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
               transition={{ duration: 0.55, delay: 0.08 + i * 0.09, ease: [0.16, 1, 0.3, 1] }}
               data-touch
               className="group/card relative overflow-hidden rounded-[18px] p-px"
-              style={{ background: "rgba(255,249,236,0.1)" }}
+              style={{ background: "rgba(5,5,5,0.85)" }}
             >
               {/* the lit border: a glow behind the card that only shows through its 1px edge */}
               <span
@@ -55,7 +76,7 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
                 className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/card:opacity-100 group-data-[active]/card:opacity-100"
                 style={{ background: `radial-gradient(320px circle at var(--sx, 50%) var(--sy, 50%), ${t.hue}, transparent 65%)` }}
               />
-              <div className="relative flex h-full flex-col rounded-[17px] bg-[#0c0b09] p-5 sm:p-6">
+              <div className="relative flex h-full flex-col rounded-[17px] bg-[#141210] p-5 sm:p-6">
                 {/* and a fainter wash on the face */}
                 <span
                   aria-hidden
@@ -91,7 +112,7 @@ export default function ProblemDeck({ tracks }: { tracks: Track[] }) {
         </AnimatePresence>
 
         {/* what the judges want: the same for every track, so it holds still while the cards change */}
-        <aside className="relative overflow-hidden rounded-[18px] border border-[#fff9ec]/12 bg-[#fff9ec] p-5 text-[#050505] sm:p-6">
+        <aside className="relative overflow-hidden rounded-[18px] border-2 border-[#050505] bg-panel p-5 text-[#050505] shadow-[5px_5px_0_#050505] sm:p-6">
           <span aria-hidden className="bg-grid pointer-events-none absolute inset-0 opacity-60 [--fg:#050505]" />
           <p className="relative font-mono text-[10px] uppercase tracking-[0.16em] text-[#5e5a52]">What we look for</p>
           <ul className="relative mt-4 space-y-3">

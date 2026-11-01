@@ -11,17 +11,17 @@ import PrizeWindow from "./PrizeWindow";
 import { inr, masked, PRIZES, TOTAL, type Prize } from "./prize-data";
 
 // The prize reveal, driven entirely by scroll. The section is a tall stretch with a pinned stage:
-// the machine boots as it arrives, reports the pool as encrypted, and then each further screen of
-// scrolling decrypts one place — the progress bar on the tube *is* the scroll bar, and the figure
+// the machine boots as it arrives, reports the pool as encrypted, and then each further half
+// screen or so of scrolling decrypts one place — the progress bar on the tube *is* the scroll bar, and the figure
 // resolves out of random glyphs as the page moves. Scrolling back up re-encrypts it.
 
 /** [start, end] of each place's decrypt, as fractions of the pinned stretch */
 const BEATS: [number, number][] = [
-  [0.13, 0.31],
-  [0.39, 0.57],
-  [0.65, 0.83],
+  [0.08, 0.28],
+  [0.34, 0.54],
+  [0.6, 0.8],
 ];
-const BOOT_END = 0.1;
+const BOOT_END = 0.06;
 const STEP = 1 / 24; // the scroll position is quantised to this, so React re-renders stay cheap
 
 type View = { stage: Stage; index: number; t: number };
@@ -70,31 +70,31 @@ export default function PrizeMachine() {
   const ids = revealed.map((p) => p.id);
 
   return (
-    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[240vh] lg:h-[320vh]"}`}>
+    <section ref={ref} id="prizes" className={`relative overflow-x-clip ${reduce ? "" : "h-[190vh] lg:h-[210vh]"}`}>
       {/* the room warms up as the pool comes out */}
       <motion.div
         aria-hidden
         initial={false}
-        animate={{ opacity: done ? 1 : 0.25 }}
+        animate={{ opacity: done ? 1 : stage === "off" ? 0.2 : 0.55 }}
         transition={{ duration: 1 }}
-        className="pointer-events-none absolute left-1/2 top-1/3 h-[70vh] w-[70vh] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(253,156,54,0.2),transparent)] blur-2xl"
+        className="pointer-events-none absolute left-1/2 top-1/3 h-[80vh] w-[80vh] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(253,156,54,0.28),transparent)] blur-2xl lg:left-[30%]"
       />
 
       <div className={reduce ? "relative" : "sticky top-0 h-screen overflow-hidden"}>
-        <div className="relative z-10 mx-auto flex h-full max-w-[1240px] flex-col px-6 pb-5 pt-20 lg:pb-3">
+        <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col px-6 pb-5 pt-20 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:pb-6 lg:pt-24 xl:gap-x-16">
           {/* ---------------- heading ---------------- */}
-          <div className="grid shrink-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end lg:gap-10">
+          <div className="grid shrink-0 gap-4 lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
             <SectionHeader index="05" label="Prizes" title="Big ideas. Bigger rewards." />
-            <p className="hidden max-w-[44ch] text-muted sm:block">
+            <p className="hidden max-w-[44ch] text-muted sm:block lg:text-lg">
               The pool ships encrypted. Keep scrolling and the machine decrypts it one place at a time — {inr(TOTAL)} across the
               top three, plus special awards.
             </p>
           </div>
 
           {/* ---------------- the stage ---------------- */}
-          <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-10 lg:pt-3">
+          <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:contents">
             {/* the machine */}
-            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_330px))] min-w-0 sm:w-[min(100%,calc(100svh_-_470px))] lg:w-[min(100%,calc(100vh_-_268px))]">
+            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_330px))] min-w-0 sm:w-[min(100%,calc(100svh_-_470px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
               {/* On phones the frame crops in on the tube, so the screen stays readable; from lg up the
                   whole machine is in shot and sized to whatever height the pinned stage has. */}
               <div className="relative aspect-square w-full overflow-hidden">
@@ -103,10 +103,18 @@ export default function PrizeMachine() {
                     src="/assets/prizes/retro-computer.webp"
                     alt=""
                     fill
-                    sizes="(min-width: 1024px) 640px, 92vw"
+                    sizes="(min-width: 1024px) 780px, 92vw"
                     className="pointer-events-none select-none object-contain"
                   />
 
+                  {/* the tube's glow spilling onto the bezel once it's on (opacity only, so it's cheap) */}
+                  <span
+                    aria-hidden
+                    className={`absolute rounded-[12%] bg-[radial-gradient(closest-side,rgba(255,179,92,0.4),transparent)] blur-xl transition-opacity duration-700 ${
+                      stage === "off" ? "opacity-0" : active ? "opacity-100" : "opacity-60"
+                    }`}
+                    style={{ left: "19%", top: "4%", width: "61%", height: "50%" }}
+                  />
                   {/* the live tube, sat inside the bezel (percentages measured off the photo) */}
                   <div
                     className="absolute overflow-hidden rounded-[7%/9%] bg-[#060f0c] shadow-[inset_0_0_70px_rgba(0,0,0,0.95)]"
@@ -140,8 +148,8 @@ export default function PrizeMachine() {
             </div>
 
             {/* the desktop: a window lands as each place comes out of the payload */}
-            <div className="min-w-0">
-              <div className="mb-3 flex items-center justify-between gap-3 border-b border-ink/15 pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+            <div className="min-w-0 lg:col-start-2 lg:row-start-2 lg:self-start">
+              <div className="mb-3 flex items-center justify-between gap-3 border-b border-ink/15 pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted lg:text-[11px]">
                 <span className="flex items-center gap-2">
                   <SquaresFour size={13} weight="bold" className="text-accent" />
                   My prizes
@@ -151,7 +159,7 @@ export default function PrizeMachine() {
                 </span>
               </div>
 
-              <div className="hidden gap-3 lg:grid">
+              <div className="hidden gap-3 lg:grid lg:grid-cols-3 xl:gap-4">
                 {PRIZES.map((p, i) => (
                   <PrizeWindow key={p.id} prize={p} slot={i + 1} open={ids.includes(p.id)} reduce={reduce} />
                 ))}

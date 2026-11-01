@@ -51,7 +51,7 @@ export default function Faqs() {
   }, []);
 
   return (
-    <section id="faqs" data-panel className="faq-section theme-dark dark-panel" ref={sectionRef} aria-labelledby="faq-title">
+    <section id="faqs" className="faq-section" ref={sectionRef} aria-labelledby="faq-title">
       <ComputingBackdrop variant="faq" />
       <div className="faq-layout">
         <header className="faq-heading faq-reveal">

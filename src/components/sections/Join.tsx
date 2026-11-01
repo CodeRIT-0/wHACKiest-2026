@@ -9,7 +9,7 @@ import JoinMachine from "./join/JoinMachine";
 // Socials and the venue close out the page (registration steps have their own section).
 export default function Join() {
   return (
-    <section id="join" data-panel className="theme-dark dark-panel relative mb-4 overflow-x-clip">
+    <section id="join" className="relative overflow-x-clip">
       <div className="relative z-10 mx-auto max-w-[1100px] px-6 pb-16 pt-28 text-center">
         <div data-trace>
           <JoinMachine />

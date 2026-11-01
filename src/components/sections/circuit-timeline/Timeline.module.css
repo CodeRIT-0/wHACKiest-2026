@@ -1,5 +1,5 @@
 .timeline {
-  --paper: #050505;
+  --paper: #0c0b0a;
   --cream: #111111;
   --ink: #f4f1eb;
   --orange: #fd9c36;
@@ -8,7 +8,7 @@
   --line: #38332d;
   position: relative;
   color: var(--ink);
-  background: var(--paper);
+  background: transparent;
   border-bottom: 1px solid var(--line);
 }
 .timeline[data-enhanced="true"] {
@@ -22,7 +22,7 @@
 }
 .pinnedScene {
   position: relative;
-  background: var(--paper);
+  background: transparent;
 }
 .timeline[data-enhanced="true"] .pinnedScene {
   position: sticky;
@@ -110,7 +110,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   isolation: isolate;
-  background: var(--paper);
+  background: transparent;
 }
 .timeline[data-enhanced="true"] .viewport {
   min-height: 0;

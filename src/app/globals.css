@@ -10,26 +10,59 @@
   --line: #e4dccb;
   --trace: #0357d6;
   --accent: #fd9c36;
+  /* the dark sections: a warm near-black, the same family as the ivory paper */
+  --night: #0c0b0a;
 }
 
-/* black sections: everything inside reads the flipped variables. Blue lifts for contrast on black */
+/* dark sections: everything inside reads the flipped variables. Blue lifts for contrast on dark */
 .theme-dark {
-  --bg: #050505;
+  --bg: #0c0b0a;
   --fg: #fff9ec;
-  --muted: #a9a397;
-  --panel: #12110f;
-  --line: #2b2924;
+  --muted: #aaa397;
+  --panel: #171512;
+  --line: #2b2823;
   --trace: #4c8dff;
   background-color: var(--bg);
   color: var(--fg);
 }
-/* a black panel sits on the paper as a big rounded card (ScrollMotion opens it out on arrival) */
-.dark-panel {
-  clip-path: inset(0px 16px 0px 16px round 32px);
+
+/* Light and dark sections alternate as a stack of sheets (SheetStack): each new section is a sheet
+   with rounded top corners laid over the one before. Both are opaque (the section beneath can still
+   be held behind), and both carry the page's grid: its lines are drawn in the text colour, so they
+   come out ink on the paper and cream on the night. */
+.sheet {
+  position: relative;
+  z-index: 1;
+  margin-top: -44px;
+  border-radius: 44px 44px 0 0;
+  overflow: clip;
+  box-shadow: 0 -28px 60px -24px rgb(12 11 10 / 0.45);
+}
+.sheet-light {
+  --grid-major: 8%;
+  --grid-minor: 3.5%;
+  background-color: var(--bg);
+}
+/* light lines on the dark read fainter than dark lines on the paper, so they are drawn stronger
+   to look the same */
+.sheet-dark {
+  --grid-major: 14%;
+  --grid-minor: 6%;
+}
+.sheet-light,
+.sheet-dark {
+  /* the same two-weight grid as the page behind (BackgroundMotion) */
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--fg) var(--grid-major), transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--fg) var(--grid-major), transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in srgb, var(--fg) var(--grid-minor), transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--fg) var(--grid-minor), transparent) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
 @media (max-width: 639px) {
-  .dark-panel {
-    clip-path: inset(0px 8px 0px 8px round 22px);
+  .sheet {
+    margin-top: -28px;
+    border-radius: 28px 28px 0 0;
   }
 }
 

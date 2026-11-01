@@ -1,7 +1,7 @@
 /* The phone timeline (TimelineMobile.tsx). Same palette and retro-window language as the wide
    circuit (Timeline.module.css), laid out down the page. Only transforms and opacity animate. */
 .root {
-  --paper: #050505;
+  --paper: #0c0b0a;
   --ink: #f4f1eb;
   --orange: #fd9c36;
   --blue: #6c97f1;
@@ -9,9 +9,8 @@
   position: relative;
   padding: 0 16px 64px;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 1px 1px, #ffffff0d 1px, transparent 1.4px) 0 0 / 22px 22px,
-    var(--paper);
+  /* the dark sheet behind it carries the page grid */
+  background: transparent;
   border-bottom: 1px solid var(--line);
 }
 

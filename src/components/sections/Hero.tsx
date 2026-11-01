@@ -255,7 +255,7 @@ export default function Hero() {
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             onUpdate: () => draw(),
-            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: "+=170%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
+            scrollTrigger: { id: HERO_TRIGGER_ID, trigger: root.current, start: "top top", end: "+=115%", pin: true, scrub: true, invalidateOnRefresh: true, refreshPriority: 1 },
           });
 
           // 1. travel right -> left, turning as it goes; the copy, board and dial clear out of its way

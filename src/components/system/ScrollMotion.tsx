@@ -13,7 +13,6 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 //   [data-parallax="n"]  drifts at n x scroll speed while it passes through the viewport
 //   [data-era-year]      the giant outlined year in an era divider, slid sideways by scroll
 //   [data-era-rule]      the divider's ruled line, drawn across by scroll
-//   [data-panel]         a black panel that opens out from a narrow rounded card as it arrives
 // Nothing is hidden before this runs, and none of it runs with reduced motion.
 const SHAPES = "path, line, polyline, polygon, circle, ellipse, rect";
 
@@ -89,20 +88,6 @@ export default function ScrollMotion() {
         el,
         { xPercent: -12 * dir },
         { xPercent: 12 * dir, ease: "none", scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true } },
-      );
-    }));
-
-    // clip-path rather than scale, so layout (and everything measured from it) never moves
-    gsap.utils.toArray<HTMLElement>("[data-panel]").forEach((el) => later(() => {
-      gsap.fromTo(
-        el,
-        { clipPath: "inset(0px 9% 0px 9% round 72px)" },
-        {
-          // matches .dark-panel's resting shape in globals.css
-          clipPath: () => (window.innerWidth < 640 ? "inset(0px 8px 0px 8px round 22px)" : "inset(0px 16px 0px 16px round 32px)"),
-          ease: "none",
-          scrollTrigger: { trigger: el, start: "top bottom", end: "top 25%", scrub: true, invalidateOnRefresh: true },
-        },
       );
     }));
 

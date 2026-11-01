@@ -1,7 +1,7 @@
 /* All FAQ styles are prefixed to coexist with adjacent homepage sections. */
 .faq-section {
   position: relative;
-  background: #000000;
+  background: transparent;
   color: #fff9ec;
   padding: 100px 24px 110px;
   border-bottom: 0;
@@ -35,7 +35,7 @@
 }
 .faq-subtitle { font-size: 16px; line-height: 1.7; color: #c8c3b7; }
 .faq-window {
-  background: #000000;
+  background: var(--night);
   border-top: 1px solid #fff9ec40;
   border-bottom: 1px solid #fff9ec40;
 }
@@ -124,7 +124,7 @@
 .faq-answer p {
   margin: 0 24px 24px 63px;
   padding: 18px 20px;
-  background: #000000;
+  background: var(--night);
   border: 1px solid #05050512;
   border-radius: 4px;
   font-size: 14px;
@@ -344,7 +344,7 @@
 @keyframes faq-node-light { 30% {fill:#fd9c36;} }
 
 /* Local reading hierarchy, using only fonts already loaded by the root layout. */
-.faq-section { background:#000000; font-family:var(--font-space-grotesk),sans-serif; }
+.faq-section { background:transparent; font-family:var(--font-space-grotesk),sans-serif; }
 .faq-subtitle { font-size:clamp(1.25rem,1.5vw,1.375rem); line-height:1.65; color:#d5d0c5; }
 .faq-item h3 > button { font-family:var(--font-space-grotesk),sans-serif; font-size:clamp(1.3125rem,1.6vw,1.5rem); font-weight:600; line-height:1.5; letter-spacing:0; padding-top:1.5rem; padding-bottom:1.5rem; }
 .faq-answer p { font-size:clamp(1.125rem,1.4vw,1.25rem); line-height:1.7; color:#e2ddd3; }
@@ -352,7 +352,7 @@
 .faq-contact-link { max-width:100%; overflow-wrap:break-word; }
 .faq-eyebrow,.faq-number { font-family:var(--font-jetbrains-mono),monospace; font-size:.8125rem; }
 .faq-filters { display:flex; flex-wrap:wrap; gap:.625rem; margin:0 0 .875rem; }
-.faq-filters button { min-height:2.75rem; max-width:100%; padding:.625rem .875rem; border:1px solid #fff9ec66; background:#000000; color:#fff9ec; font:500 clamp(1rem,1.2vw,1.125rem)/1.4 var(--font-space-grotesk),sans-serif; text-align:left; cursor:pointer; overflow-wrap:break-word; transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease; }
+.faq-filters button { min-height:2.75rem; max-width:100%; padding:.625rem .875rem; border:1px solid #fff9ec66; background:transparent; color:#fff9ec; font:500 clamp(1rem,1.2vw,1.125rem)/1.4 var(--font-space-grotesk),sans-serif; text-align:left; cursor:pointer; overflow-wrap:break-word; transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease; }
 .faq-filters button:hover { border-color:#fff9ec; }
 .faq-filters button[aria-pressed=true] { background:#fd9c36; border-color:#fd9c36; color:#000000; }
 .faq-filters button:focus-visible { outline:3px solid #fd9c36; outline-offset:4px; }

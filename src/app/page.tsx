@@ -11,6 +11,7 @@ import Join from "@/components/sections/Join";
 import CircuitSpine from "@/components/system/CircuitSpine";
 import ScrollMotion from "@/components/system/ScrollMotion";
 import EraDivider from "@/components/EraDivider";
+import SheetStack from "@/components/system/SheetStack";
 
 // One scroll through computing history: 1946 (Hero) to 2026 (Join). Order matters: each section
 // is a stop in src/lib/eras.ts, which sets its colours and the era rail's year.
@@ -29,41 +30,64 @@ export default function Home() {
       <Hero />
       {/* the circuit spine starts where the hero's shards land */}
       <div data-trace aria-hidden className="relative mx-auto h-px w-px" />
-      {/* pulled up into the screen the hero leaves empty after its shatter, so the next era's year
-          rises in under the falling gears (only when the hero is pinned, i.e. not with reduced motion) */}
-      {/* (the pull only applies once the hero has pinned and made its scroll room; applied from the
-          first paint, it put the year on screen and then shoved it down = a big layout shift) */}
-      <div className="relative z-10 [[data-hero-pinned]_&]:-mt-[55svh]">
-        <EraDivider era="timeline" />
-      </div>
-      {/* the circuit timeline (from the pranav-timeLine branch), straight before tracks */}
-      <Lazy>
-        <Timeline />
-      </Lazy>
-      <EraDivider era="tracks" direction="left" />
-      <Lazy>
-        <TrackLab />
-      </Lazy>
-      <Lazy>
-        <Prizes />
-      </Lazy>
-      <Lazy>
-        <Sponsors />
-      </Lazy>
-      {/* how to register + FAQs (from the roopinwork branch) */}
-      <Lazy>
-        <Procedure />
-      </Lazy>
-      <Lazy>
-        <Faqs />
-      </Lazy>
-      <Lazy>
-        <Team />
-      </Lazy>
-      <EraDivider era="join" direction="left" />
-      <Lazy>
-        <Join />
-      </Lazy>
+      {/* Light and dark alternate from here, as a stack of sheets: each dark section slides up over
+          the light one before it (which holds, sinks back and dims), and each light one rises over
+          the dark one with rounded paper corners. See SheetStack. */}
+      {/* The first stack is pulled up into the screen the hero leaves empty after its shatter, so the
+          next era's year rises in under the falling gears (only when the hero is pinned, i.e. not
+          with reduced motion; applied from the first paint, it put the year on screen and then
+          shoved it down = a big layout shift) */}
+      {/* (the divider here is see-through, for the gears, so it holds but does not sink) */}
+      <SheetStack sink={false} className="z-10 [[data-hero-pinned]_&]:-mt-[35svh]" under={<EraDivider era="timeline" />}>
+        <Lazy>
+          <Timeline />
+        </Lazy>
+      </SheetStack>
+      <SheetStack
+        under={
+          <div className="sheet sheet-light">
+            <EraDivider era="tracks" direction="left" />
+            <Lazy>
+              <TrackLab />
+            </Lazy>
+          </div>
+        }
+      >
+        <Lazy>
+          <Prizes />
+        </Lazy>
+      </SheetStack>
+      <SheetStack
+        under={
+          <div className="sheet sheet-light">
+            <Lazy>
+              <Sponsors />
+            </Lazy>
+            {/* how to register (from the roopinwork branch) */}
+            <Lazy>
+              <Procedure />
+            </Lazy>
+          </div>
+        }
+      >
+        <Lazy>
+          <Faqs />
+        </Lazy>
+      </SheetStack>
+      <SheetStack
+        under={
+          <div className="sheet sheet-light">
+            <Lazy>
+              <Team />
+            </Lazy>
+            <EraDivider era="join" direction="left" />
+          </div>
+        }
+      >
+        <Lazy>
+          <Join />
+        </Lazy>
+      </SheetStack>
     </>
   );
 }
