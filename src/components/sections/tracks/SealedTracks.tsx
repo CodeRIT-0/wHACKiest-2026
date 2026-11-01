@@ -47,7 +47,7 @@ function Word({ delay }: { delay: number }) {
   }, [delay]);
 
   return (
-    <span ref={ref} aria-hidden className="block overflow-hidden whitespace-nowrap font-mono text-[15px] font-bold tracking-[0.1em] text-[#fff9ec] sm:text-lg lg:text-[19px]">
+    <span ref={ref} aria-hidden className="block overflow-hidden whitespace-nowrap font-mono text-[clamp(12px,3.9vw,15px)] font-bold tracking-[0.06em] text-[#fff9ec] sm:text-lg sm:tracking-[0.1em] lg:text-[19px]">
       {WORD}
     </span>
   );
@@ -70,8 +70,8 @@ export default function SealedTracks() {
           <span aria-hidden className="absolute inset-x-0 top-0 -z-10 h-1/3 bg-[linear-gradient(to_bottom,transparent,rgba(255,249,236,0.12),transparent)] motion-safe:animate-[seal-scan_3.6s_linear_infinite]" style={{ animationDelay: `${i * -0.9}s` }} />
 
           <span className="flex items-center justify-between">
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#fff9ec]/70">Track {String(i + 1).padStart(2, "0")}</span>
-            <span aria-hidden className="grid h-9 w-9 place-items-center rounded-full border bg-[#050505]/50" style={{ borderColor: hue, color: hue }}>
+            <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.1em] text-[#fff9ec]/70 sm:text-[11px] sm:tracking-[0.18em]">Track {String(i + 1).padStart(2, "0")}</span>
+            <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full border bg-[#050505]/50 sm:h-9 sm:w-9" style={{ borderColor: hue, color: hue }}>
               <LockSimple size={17} weight="duotone" />
             </span>
           </span>
@@ -83,7 +83,7 @@ export default function SealedTracks() {
           <span className="block min-w-0">
             <Word delay={i * 7} />
             <span className="sr-only">Track {i + 1}: to be announced.</span>
-            <span aria-hidden className="mt-2 block font-mono text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: hue }}>
+            <span aria-hidden className="mt-2 block whitespace-nowrap font-mono text-[clamp(9px,2.8vw,10px)] font-bold uppercase tracking-[0.06em] sm:tracking-[0.14em]" style={{ color: hue }}>
               To be announced
             </span>
           </span>

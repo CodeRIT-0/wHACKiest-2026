@@ -63,10 +63,10 @@ export default function PrizeMachine() {
         className="pointer-events-none absolute left-1/2 top-1/3 h-[80vh] w-[80vh] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(253,156,54,0.28),transparent)] blur-2xl lg:left-[30%]"
       />
 
-      <div className={reduce ? "relative" : "sticky top-0 h-screen overflow-hidden"}>
-        <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col px-6 pb-5 pt-20 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:pb-6 lg:pt-24 xl:gap-x-16">
+      <div className={reduce ? "relative" : "sticky top-0 h-[100svh] overflow-hidden lg:h-screen"}>
+        <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col px-6 pb-4 pt-20 sm:pb-5 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:pb-6 lg:pt-24 xl:gap-x-16">
           {/* ---------------- heading ---------------- */}
-          <div className="grid shrink-0 gap-4 lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
+          <div className="grid shrink-0 gap-4 max-lg:[&_h2]:mt-2 max-lg:[&_h2]:max-w-none max-lg:[&_h2]:text-[min(8.4vw,36px)] lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
             <SectionHeader index="05" label="Prizes" title="Big ideas. Bigger rewards." />
             <p className="hidden max-w-[44ch] text-muted sm:block lg:text-lg">
               The pool is out. Who takes home what is still locked on this machine, and it stays locked until the reveal.
@@ -76,7 +76,7 @@ export default function PrizeMachine() {
           {/* ---------------- the stage ---------------- */}
           <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:contents">
             {/* the machine */}
-            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_450px))] min-w-0 sm:w-[min(100%,calc(100svh_-_500px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
+            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_316px))] min-w-0 sm:w-[min(100%,calc(100svh_-_500px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
               <div className="relative aspect-square w-full overflow-hidden">
                 <div className="absolute inset-0">
                   <Image src="/assets/prizes/retro-computer.webp" alt="" fill sizes="(min-width: 1024px) 780px, 92vw" className="pointer-events-none select-none object-contain" />
@@ -114,17 +114,17 @@ export default function PrizeMachine() {
             </div>
 
             {/* the desktop: the pool's window, and the sealed one with the stamp on it */}
-            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
+            <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
               <article className="border-2 border-ink bg-panel shadow-[5px_5px_0_var(--fg)]">
                 <div className="flex items-center gap-2 border-b-2 border-ink bg-[linear-gradient(90deg,var(--color-trace),color-mix(in_srgb,var(--color-trace)_55%,var(--bg)))] px-2 py-1">
-                  <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#fff9ec]">PRIZE_POOL.DAT</span>
+                  <span className="whitespace-nowrap font-mono text-[9px] font-bold uppercase tracking-[0.04em] text-[#fff9ec] sm:text-[10px] sm:tracking-[0.1em]">PRIZE_POOL.DAT</span>
                   <span aria-hidden className="ml-auto grid h-3.5 w-3.5 shrink-0 place-items-center border border-ink bg-panel text-ink">
                     <X size={7} weight="bold" />
                   </span>
                 </div>
                 <div className="px-3 py-2.5 lg:py-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Total prize pool</p>
-                  <p className="display-wide mt-1 text-[clamp(28px,3vw,46px)] leading-none tabular-nums text-accent">
+                  <p className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.06em] text-muted sm:text-[10px] sm:tracking-[0.16em]">Total prize pool</p>
+                  <p className="display-wide mt-1 whitespace-nowrap text-[clamp(20px,6.4vw,30px)] leading-none lg:text-[clamp(28px,3vw,46px)] tabular-nums text-accent">
                     <Scramble text={total} locked={done || !live ? total.length : reading ? Math.round(view.t * total.length) : 0} />
                     <span className="sr-only">{total}</span>
                   </p>
@@ -132,7 +132,7 @@ export default function PrizeMachine() {
               </article>
 
               <article className="relative flex flex-col justify-center overflow-hidden border-2 border-dashed border-ink/30 bg-panel/40 px-3 py-2.5 lg:py-4">
-                <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                <p className="flex items-center gap-1.5 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.06em] text-muted sm:gap-2 sm:text-[10px] sm:tracking-[0.16em]">
                   <LockSimple size={13} weight="duotone" className="shrink-0 text-accent" />
                   Who wins what
                 </p>
@@ -141,12 +141,12 @@ export default function PrizeMachine() {
                   <span className="h-2 w-[85%] bg-ink/25" />
                   <span className="h-2 w-[60%] bg-ink/25" />
                 </span>
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">Split + special awards</p>
+                <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.06em] text-muted sm:text-[10px] sm:tracking-[0.1em]">Split + awards</p>
                 <motion.p
                   initial={false}
                   animate={done ? { opacity: 1, scale: 1, rotate: -5 } : { opacity: 0, scale: reduce ? 1 : 1.9, rotate: reduce ? -5 : -14 }}
                   transition={{ type: "spring", stiffness: 420, damping: 18 }}
-                  className="pointer-events-none absolute inset-0 m-auto h-fit w-fit whitespace-nowrap border-[3px] border-accent bg-bg/90 px-2.5 py-1 text-center font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-accent shadow-[0_0_24px_rgba(253,156,54,0.45)] sm:text-[13px]"
+                  className="pointer-events-none absolute inset-0 m-auto h-fit w-fit whitespace-nowrap border-[3px] border-accent bg-bg/90 px-1.5 py-1 text-center font-mono text-[clamp(9px,2.9vw,12px)] font-bold uppercase tracking-[0.06em] text-accent shadow-[0_0_24px_rgba(253,156,54,0.45)] sm:px-2.5 sm:text-[13px] sm:tracking-[0.12em]"
                 >
                   To be announced
                 </motion.p>

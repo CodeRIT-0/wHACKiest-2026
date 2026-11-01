@@ -459,10 +459,10 @@ export default function Hero() {
           <div data-copy className="min-w-0 lg:self-end">
             <p
               data-intro-fade
-              className="inline-flex max-w-full items-center gap-2.5 rounded-full border border-ink/15 bg-panel/80 p-1 pr-3.5 font-mono text-[10px] uppercase tracking-[0.14em] backdrop-blur max-lg:backdrop-blur-none sm:text-[11px]"
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-ink/15 bg-panel/80 p-1 pr-2.5 font-mono text-[9px] uppercase tracking-[0.07em] min-[400px]:gap-2.5 min-[400px]:pr-3.5 min-[400px]:text-[10px] min-[400px]:tracking-[0.14em] backdrop-blur max-lg:backdrop-blur-none sm:text-[11px]"
             >
               <StatusChip />
-              <span className="truncate text-muted">
+              <span className="whitespace-nowrap text-muted">
                 <span className="hidden min-[440px]:inline">
                   National hackathon <span className="text-accent">/</span>{" "}
                 </span>
@@ -593,7 +593,7 @@ export default function Hero() {
               <Link
                 href="/register"
                 data-magnetic
-                className="group/cta relative inline-flex items-center justify-center gap-2.5 overflow-hidden border-2 border-ink bg-accent px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] text-[#050505] shadow-[4px_4px_0_var(--fg)] transition-[translate,box-shadow] duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--fg)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0_var(--fg)] sm:px-6 sm:py-3.5 sm:text-sm"
+                className="group/cta relative inline-flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border-2 border-ink bg-accent px-2 py-3 text-[12px] min-[360px]:gap-2.5 min-[360px]:px-4 min-[360px]:text-[13px] font-bold uppercase tracking-[0.04em] text-[#050505] shadow-[4px_4px_0_var(--fg)] transition-[translate,box-shadow] duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--fg)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0_var(--fg)] sm:px-6 sm:py-3.5 sm:text-sm"
               >
                 {/* a sheen that crosses the button on hover */}
                 <span

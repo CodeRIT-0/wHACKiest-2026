@@ -57,7 +57,7 @@ function Noise({ live }: { live: boolean }) {
     return () => clearInterval(id);
   }, [live]);
   return (
-    <span aria-hidden className="min-w-0 flex-1 truncate opacity-60">
+    <span aria-hidden className="min-w-0 flex-1 overflow-hidden whitespace-pre opacity-60">
       {out}
     </span>
   );
@@ -105,12 +105,17 @@ export default function CrtScreen({
         </div>
 
         <p className="phosphor shrink-0 truncate">
-          <TypeLine text="C:\WHACKIEST> prizes.exe" start={on} />
+          <span className="@max-[140px]:hidden">
+            <TypeLine text="C:\WHACKIEST> prizes.exe" start={on} />
+          </span>
+          <span className="hidden @max-[140px]:inline">
+            <TypeLine text="> prizes.exe" start={on} />
+          </span>
         </p>
 
         {/* the file: the pool is the only part of it that opens (too tight to read on the smallest tubes,
             which show just the pool; the cards beside the machine carry the rest) */}
-        <div className="mt-auto shrink-0 border px-[0.7em] py-[0.55em] @max-[140px]:hidden" style={{ borderColor: `${AMBER}44`, backgroundColor: "rgba(255,179,92,0.05)" }}>
+        <div className="mt-auto shrink-0 border px-[0.7em] py-[0.55em] [@container_(max-height:118px)]:hidden" style={{ borderColor: `${AMBER}44`, backgroundColor: "rgba(255,179,92,0.05)" }}>
           <p className="mb-[0.5em] flex items-center justify-between gap-2 text-[0.82em] uppercase tracking-[0.14em] opacity-70">
             <span className="truncate">prize_pool.img</span>
             <span className="shrink-0">{done ? "1/3 open" : reading ? `${Math.round(t * 100)}%` : "0/3 open"}</span>
@@ -148,7 +153,7 @@ export default function CrtScreen({
         </div>
 
         {/* the pool, big */}
-        <div className="mt-[0.4em] min-h-[4.1em] shrink-0 @max-[140px]:mt-auto">
+        <div className="mt-[0.4em] min-h-[4.1em] shrink-0 [@container_(max-height:118px)]:mt-auto">
           <AnimatePresence mode="wait" initial={false}>
             {on && stage === "boot" ? (
               <motion.p key="boot" exit={{ opacity: 0, transition: { duration: 0.12 } }} className="phosphor truncate uppercase tracking-[0.12em]">

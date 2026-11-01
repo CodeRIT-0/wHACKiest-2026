@@ -111,7 +111,7 @@ export default function FlipBoard() {
           <div
             role="timer"
             aria-label={board ? `${cur[0]} days, ${cur[1]} hours, ${cur[2]} minutes. ${board.label}` : "Countdown to kick-off"}
-            className="mt-3 flex items-start gap-1.5 text-[28px] min-[400px]:text-[32px] sm:gap-2.5 sm:text-[42px] lg:text-[min(46px,5.6vh)]"
+            className="mt-3 flex items-start gap-1 text-[min(7.4vw,28px)] min-[400px]:gap-1.5 min-[400px]:text-[32px] sm:gap-2.5 sm:text-[42px] lg:text-[min(46px,5.6vh)]"
           >
             {UNITS.map((unit, g) => (
               <Fragment key={unit}>
@@ -128,7 +128,7 @@ export default function FlipBoard() {
                       <Flap key={i} value={ch} prev={prev[g][i] ?? ch} reduce={reduce} />
                     ))}
                   </span>
-                  <span aria-hidden className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.22em] text-muted sm:text-[10px]">
+                  <span aria-hidden className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-muted min-[400px]:tracking-[0.22em] sm:text-[10px]">
                     {unit}
                   </span>
                 </span>
@@ -138,11 +138,11 @@ export default function FlipBoard() {
         </div>
 
         {/* the numbers that matter, on the same board */}
-        <dl className="grid shrink-0 grid-cols-3 divide-x divide-line border-t border-line pt-3 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0">
+        <dl className="grid shrink-0 grid-cols-3 max-[479px]:grid-cols-[auto_auto_minmax(0,1fr)] divide-x divide-line border-t border-line pt-3 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0">
           {STATS.map(([n, unit, label]) => (
-            <div key={label} className="flex flex-col-reverse px-3 first:pl-0 lg:px-5 lg:first:pl-0">
+            <div key={label} className="flex flex-col-reverse px-2 first:pl-0 min-[400px]:px-3 lg:px-5 lg:first:pl-0">
               <dt className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted">{label}</dt>
-              <dd className="display-wide text-2xl leading-none sm:text-[28px]">
+              <dd className="display-wide whitespace-nowrap text-[min(5.4vw,24px)] leading-none sm:text-[28px]">
                 {n}
                 {unit && <span className="ml-1 font-mono text-[11px] font-normal tracking-normal text-accent">{unit}</span>}
               </dd>

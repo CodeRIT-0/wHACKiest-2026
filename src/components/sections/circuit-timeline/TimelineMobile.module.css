@@ -530,3 +530,27 @@
     animation: none;
   }
 }
+
+/* the smallest phones: a smaller date and art, so the card stays inside the screen */
+@media (max-width: 359px) {
+  .item,
+  .card {
+    min-width: 0;
+  }
+  .body {
+    padding-inline: 12px;
+  }
+  .dateRow {
+    padding-right: 52px;
+  }
+  .art {
+    width: 62px;
+    height: 62px;
+  }
+  .date {
+    gap: 8px;
+  }
+  .date > strong {
+    min-width: 44px;
+  }
+}

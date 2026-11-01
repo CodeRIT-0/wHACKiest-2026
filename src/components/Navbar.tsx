@@ -141,7 +141,7 @@ export default function Navbar() {
             aria-expanded={menuOpen}
             aria-controls="site-links site-menu"
             onClick={() => setMenuOpen((v) => !v)}
-            className="ml-3 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-ink/30 px-4 py-3 text-xs font-semibold uppercase transition-colors hover:border-ink"
+            className="ml-2 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-ink/30 px-3 py-3 min-[360px]:ml-3 min-[360px]:px-4 text-xs font-semibold uppercase transition-colors hover:border-ink"
           >
             Menu
             {/* plus that turns into a minus as the menu opens */}
@@ -154,7 +154,7 @@ export default function Navbar() {
       </div>
       <Link
         href="/register"
-        className="ml-2 whitespace-nowrap rounded-full bg-ink px-5 py-3 text-xs font-semibold uppercase text-bg transition-transform active:scale-[0.97]"
+        className="ml-1.5 whitespace-nowrap rounded-full bg-ink px-3.5 py-3 min-[360px]:ml-2 min-[360px]:px-5 text-xs font-semibold uppercase text-bg transition-transform active:scale-[0.97]"
       >
         Register
       </Link>
