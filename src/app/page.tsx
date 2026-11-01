@@ -10,6 +10,7 @@ import Team from "@/components/sections/Team";
 import Join from "@/components/sections/Join";
 import CircuitSpine from "@/components/system/CircuitSpine";
 import ScrollMotion from "@/components/system/ScrollMotion";
+import HydrationMark from "@/components/system/HydrationMark";
 import EraDivider from "@/components/EraDivider";
 import SheetStack from "@/components/system/SheetStack";
 
@@ -20,7 +21,13 @@ import SheetStack from "@/components/system/SheetStack";
 // all in the static HTML); the boundaries are there so React hydrates the page a section at a time,
 // handing the main thread back in between, instead of in one long block that freezes a phone for
 // a second or two after load (and lets the hero, the only thing on screen, come alive first).
-const Lazy = ({ children }: { children: React.ReactNode }) => <Suspense fallback={null}>{children}</Suspense>;
+// HydrationMark tells ScrollMotion when a boundary has hydrated, so it never styles server HTML early.
+const Lazy = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>
+    <HydrationMark />
+    {children}
+  </Suspense>
+);
 
 export default function Home() {
   return (
@@ -38,7 +45,7 @@ export default function Home() {
           with reduced motion; applied from the first paint, it put the year on screen and then
           shoved it down = a big layout shift) */}
       {/* (the divider here is see-through, for the gears, so it holds but does not sink) */}
-      <SheetStack sink={false} className="z-10 [[data-hero-pinned]_&]:-mt-[35svh]" under={<EraDivider era="timeline" />}>
+      <SheetStack sink={false} plain className="z-10 [[data-hero-pinned]_&]:-mt-[35svh]" under={<EraDivider era="timeline" />}>
         <Lazy>
           <Timeline />
         </Lazy>

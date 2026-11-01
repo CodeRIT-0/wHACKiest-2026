@@ -18,9 +18,12 @@ export default function SheetStack({
   under,
   tone = "dark",
   sink = true,
+  plain = false,
   className = "",
   children,
 }: {
+  /** leave the grid off the sliding sheet */
+  plain?: boolean;
   under: React.ReactNode;
   /** the sheet that slides over: dark (night) or light (paper) */
   tone?: "dark" | "light";
@@ -67,7 +70,7 @@ export default function SheetStack({
         {under}
         {sink && <span ref={dim} aria-hidden className="pointer-events-none absolute inset-0 z-50 bg-[#0c0b0a] opacity-0" />}
       </div>
-      <div ref={sheet} className={tone === "dark" ? "sheet sheet-dark theme-dark" : "sheet sheet-light"}>
+      <div ref={sheet} className={`${tone === "dark" ? "sheet sheet-dark theme-dark" : "sheet sheet-light"} ${plain ? "sheet-plain" : ""}`}>
         {children}
       </div>
     </div>

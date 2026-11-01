@@ -331,20 +331,7 @@ export function TimelineCircuit({
           <stop stopColor="#FF8A24" stopOpacity=".4" />
           <stop offset="1" stopColor="#FF8A24" stopOpacity="0" />
         </radialGradient>
-        <pattern
-          id={`${id}-grid`}
-          width="25"
-          height="25"
-          patternUnits="userSpaceOnUse"
-        >
-          <circle cx="1" cy="1" r=".7" fill="#FF8A24" opacity=".08" />
-        </pattern>
       </defs>
-      <rect
-        width={CIRCUIT_WIDTH}
-        height={designHeight}
-        fill={`url(#${id}-grid)`}
-      />
       <path
         d={`M40 ${axis}H${CIRCUIT_WIDTH - 40}`}
         className={styles.axisBase}

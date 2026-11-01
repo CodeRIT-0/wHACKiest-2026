@@ -3,6 +3,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { HYDRATED_EVENT, PENDING_SELECTOR } from "./HydrationMark";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -36,6 +37,16 @@ export default function ScrollMotion() {
       while (jobs.length && performance.now() < until);
       if (jobs.length) schedule();
     };
+    // The sections below the hero hydrate later, one Suspense boundary at a time. Touching their
+    // server HTML before then (the inline styles below) makes React report a hydration mismatch, so
+    // nothing is collected until every boundary's HydrationMark has gone
+    const start = () => {
+      if (document.querySelector(PENDING_SELECTOR)) return;
+      window.removeEventListener(HYDRATED_EVENT, start);
+      collect();
+      schedule();
+    };
+    const collect = () => {
     gsap.utils.toArray<HTMLElement>("[data-words]").forEach((el) => later(() => {
       gsap.from(el.querySelectorAll(".word-inner"), {
         yPercent: 110,
@@ -94,8 +105,11 @@ export default function ScrollMotion() {
     gsap.utils.toArray<HTMLElement>("[data-era-rule]").forEach((el) => later(() => {
       gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: el, start: "top 90%", end: "top 45%", scrub: true } });
     }));
-    schedule();
+    };
+    window.addEventListener(HYDRATED_EVENT, start);
+    start();
     return () => {
+      window.removeEventListener(HYDRATED_EVENT, start);
       if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(id);
       window.clearTimeout(id);
     };

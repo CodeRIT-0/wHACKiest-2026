@@ -59,6 +59,10 @@
     linear-gradient(to bottom, color-mix(in srgb, var(--fg) var(--grid-minor), transparent) 1px, transparent 1px);
   background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
+/* a sheet without the grid (the timeline) */
+.sheet.sheet-plain {
+  background-image: none;
+}
 @media (max-width: 639px) {
   .sheet {
     margin-top: -28px;
