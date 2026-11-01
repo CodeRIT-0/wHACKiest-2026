@@ -14,11 +14,6 @@ type FaqItem = { id: string; category: FaqCategory; signalCategory: FaqSignalCat
 
 // answers follow the wHACKiest 2026 brochure; registration runs on Devfolio
 export const faqItems: FaqItem[] = [
-  { id: "about-registration", category: "registration", signalCategory: "registration", question: "What is wHACKiest 2026?", answer: [
-    { text: "wHACKiest 2026 is CodeRIT’s hackathon. Start by registering your team, choose a problem statement, and submit your idea PPT following the submission guidelines. " },
-    { text: "Register Your Team", href: "/register" },
-    { text: ": apply through Devfolio with your team and complete the required profile, team and application details." },
-  ] },
   { id: "event-level", category: "event", signalCategory: "selection", question: "At which level is this hackathon conducted?", answer: [{ text: "It’s a national-level, 24-hour offline hackathon hosted by CodeRIT at Ramaiah Institute of Technology, Bengaluru, open to undergraduate students from across India." }] },
   { id: "team-size", category: "eligibility", signalCategory: "registration", question: "How many members can participate in a team?", answer: [{ text: "Two to four members. Solo entries aren’t accepted, so find a crew early, and no one can be part of more than one team." }] },
   { id: "what-to-build", category: "submissions", signalCategory: "submission", question: "What can we build?", answer: [{ text: "Anything that fits one of the four tracks: AI & Beyond, Web & Product, Social Impact or Open Innovation. If nothing fits, pitch it under Open Innovation." }] },

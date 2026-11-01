@@ -1,111 +1,61 @@
-"use client";
+import { DiscordLogo, InstagramLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
 
-import { motion } from "motion/react";
-import { ArrowUpRight, DiscordLogo, EnvelopeSimple, Globe, InstagramLogo, LinkedinLogo, TelegramLogo } from "@phosphor-icons/react";
-import type { Icon } from "@phosphor-icons/react";
-
-type Social = { label: string; note: string; href: string; icon: Icon; brand: string; bg: string };
-
-// From the wHACKiest 2026 brochure (Connect with us)
-const SOCIALS: Social[] = [
-  {
-    label: "Instagram",
-    note: "@code_rit",
-    href: "https://www.instagram.com/code_rit",
-    icon: InstagramLogo,
-    brand: "#e1306c",
-    bg: "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%)",
-  },
-  {
-    label: "LinkedIn",
-    note: "CodeRIT Club",
-    href: "https://www.linkedin.com/company/coderitclub/",
-    icon: LinkedinLogo,
-    brand: "#0a66c2",
-    bg: "#0a66c2",
-  },
-  { label: "Discord", note: "bit.ly/CodeRIT_Discord", href: "https://bit.ly/CodeRIT_Discord", icon: DiscordLogo, brand: "#5865f2", bg: "#5865f2" },
-  {
-    label: "Telegram",
-    note: "bit.ly/CodeRIT_Telegram",
-    href: "https://bit.ly/CodeRIT_Telegram",
-    icon: TelegramLogo,
-    brand: "#229ed9",
-    bg: "linear-gradient(135deg,#2aabee,#229ed9)",
-  },
-  {
-    label: "Email",
-    note: "coderit@msrit.edu",
-    href: "mailto:coderit@msrit.edu",
-    icon: EnvelopeSimple,
-    brand: "#ea4335",
-    bg: "linear-gradient(135deg,#ea4335,#fbbc05)",
-  },
-  {
-    label: "Website",
-    note: "coderit.netlify.app",
-    href: "https://coderit.netlify.app",
-    icon: Globe,
-    brand: "#fd9c36",
-    bg: "linear-gradient(135deg,#fd9c36,#e86a17)",
-  },
+// Official social destinations from the wHACKiest 2026 brochure.
+const SOCIALS = [
+  { label: "Instagram", href: "https://www.instagram.com/code_rit", icon: InstagramLogo, color: "url(#coderit-instagram-gradient)", weight: "regular" as const },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/coderitclub/", icon: LinkedinLogo, color: "#0A66C2", weight: "fill" as const },
+  { label: "Discord", href: "https://bit.ly/CodeRIT_Discord", icon: DiscordLogo, color: "#5865F2", weight: "fill" as const },
 ];
 
-// Socials as six brand-coloured tiles. They rise in one after another as the section arrives;
-// on hover the tile lifts on a shadow in its own brand colour, the icon chip tilts and grows,
-// and a wash of the brand colour floods up from the bottom.
+// Utility destinations keep their original URLs without borrowing a platform's brand mark.
+const CONTACT_LINKS = [
+  { label: "Email", href: "mailto:coderit@msrit.edu" },
+  { label: "Website", href: "https://coderit.netlify.app" },
+];
+
 export default function SocialTiles() {
   return (
-    <ul className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-      {SOCIALS.map(({ label, note, href, icon: SocialIcon, brand, bg }, i) => {
-        const external = href.startsWith("http");
-        return (
-          <motion.li
-            key={label}
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.7, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+    <ul aria-label="CodeRIT social and contact links" className="flex flex-wrap items-center gap-x-6 gap-y-4 sm:gap-x-8">
+      {SOCIALS.map(({ label, href, icon: SocialIcon, color, weight }) => (
+        <li key={label}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center transition-[transform,translate,scale] duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-safe:hover:-translate-y-[3px] motion-safe:hover:scale-[1.06] motion-safe:focus-visible:-translate-y-[3px] motion-safe:focus-visible:scale-[1.06] motion-reduce:transition-none"
           >
-            <a
-              href={href}
-              target={external ? "_blank" : undefined}
-              rel={external ? "noopener noreferrer" : undefined}
-              aria-label={`${label}: ${note}`}
-              data-touch
-              className="group/s relative flex h-full items-center gap-3 overflow-hidden rounded-[16px] border border-line bg-panel p-3.5 transition-[translate,box-shadow,border-color] duration-300 hover:-translate-y-1 active:scale-[0.98] data-[active]:-translate-y-1 sm:p-4"
-              style={{ ["--brand" as string]: brand }}
-            >
-              {/* brand wash rising from the bottom */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-20 transition-[height] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/s:h-full group-data-[active]/s:h-full"
-                style={{ background: bg }}
-              />
-              <span
-                className="relative grid h-11 w-11 shrink-0 place-items-center rounded-[12px] text-white shadow-[0_6px_14px_-6px_var(--brand)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/s:-rotate-6 group-data-[active]/s:-rotate-6 group-hover/s:scale-110 group-data-[active]/s:scale-110 sm:h-12 sm:w-12"
-                style={{ background: bg }}
-              >
-                <SocialIcon size={24} weight="fill" />
-              </span>
-              <span className="relative min-w-0 flex-1">
-                <span className="block text-sm font-semibold sm:text-base">{label}</span>
-                <span className="block truncate font-mono text-[10px] uppercase tracking-[0.1em] text-muted">{note}</span>
-              </span>
-              <ArrowUpRight
-                size={15}
-                weight="bold"
-                className="relative shrink-0 text-muted transition-[translate,color] duration-300 group-hover/s:-translate-y-0.5 group-data-[active]/s:-translate-y-0.5 group-hover/s:translate-x-0.5 group-data-[active]/s:translate-x-0.5 group-hover/s:text-[var(--brand)] group-data-[active]/s:text-[var(--brand)]"
-              />
-              {/* border and shadow pick up the brand colour */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-[16px] border-2 border-[var(--brand)] opacity-0 shadow-[0_18px_36px_-18px_var(--brand)] transition-opacity duration-300 group-hover/s:opacity-100 group-data-[active]/s:opacity-100"
-              />
-            </a>
-          </motion.li>
-        );
-      })}
+            <SocialIcon size={36} viewBox={label === "Discord" ? "0 0 256 256" : "24 24 208 208"} weight={weight} color={color} aria-hidden="true" focusable="false">
+              {label === "Instagram" && (
+                <defs>
+                  <radialGradient id="coderit-instagram-gradient" cx="25%" cy="100%" r="120%">
+                    <stop offset="0%" stopColor="#FEDA75" />
+                    <stop offset="30%" stopColor="#FA7E1E" />
+                    <stop offset="58%" stopColor="#D62976" />
+                    <stop offset="80%" stopColor="#962FBF" />
+                    <stop offset="100%" stopColor="#4F5BD5" />
+                  </radialGradient>
+                </defs>
+              )}
+              {/* White shows through the brand glyph's cutouts, including its “in” detail. */}
+              {label === "LinkedIn" && <rect x="32" y="32" width="192" height="192" fill="#FFFFFF" />}
+            </SocialIcon>
+          </a>
+        </li>
+      ))}
+      {CONTACT_LINKS.map(({ label, href }) => (
+        <li key={label}>
+          <a
+            href={href}
+            target={href.startsWith("https:") ? "_blank" : undefined}
+            rel={href.startsWith("https:") ? "noopener noreferrer" : undefined}
+            aria-label={label}
+            className="inline-flex min-h-11 items-center px-1 font-semibold text-ink underline decoration-current underline-offset-4 transition-colors duration-200 hover:text-accent focus-visible:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transition-none"
+          >
+            {label}
+          </a>
+        </li>
+      ))}
     </ul>
   );
 }

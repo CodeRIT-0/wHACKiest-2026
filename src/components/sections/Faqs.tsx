@@ -22,6 +22,36 @@ export default function Faqs() {
     if (activeQuestion && category !== "all" && activeQuestion.category !== category) setOpen(null);
   };
   const sectionRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const scrollShellRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    const shell = scrollShellRef.current;
+    if (!list || !shell) return;
+    // Only this region resets. Measure its content as accordion rows expand/collapse.
+    list.scrollTop = 0;
+    let frame = 0, disposed = false;
+    const measure = () => {
+      frame = 0;
+      shell.dataset.overflowTop = String(list.scrollTop > 1);
+      shell.dataset.overflowBottom = String(list.scrollHeight - list.clientHeight - list.scrollTop > 1);
+    };
+    const schedule = () => { if (!disposed && !frame) frame = requestAnimationFrame(measure); };
+    const resize = new ResizeObserver(schedule);
+    resize.observe(list);
+    const content = list.querySelector(".faq-list-content");
+    if (content) resize.observe(content);
+    list.addEventListener("scroll", schedule, { passive: true });
+    document.fonts.ready.then(schedule);
+    measure();
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      resize.disconnect();
+      list.removeEventListener("scroll", schedule);
+    };
+  }, [filter]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -73,33 +103,49 @@ export default function Faqs() {
         </div>
         <div className="faq-right faq-reveal">
           <div className="faq-window">
-            <div className="faq-titlebar">HELP CENTER</div>
-            <div className="faq-results" key={filter}>
-              {visibleItems.map((item, index) => {
-                const expanded = !hydrated || open === item.id;
-                const answerId = `faq-answer-${item.id}`;
-                const questionId = `faq-question-${item.id}`;
-                return (
-                  <div className="faq-item" key={item.id} data-open={expanded}>
-                    <h3>
-                      <button type="button" id={questionId} aria-expanded={expanded} aria-controls={answerId} onClick={() => setOpen(current => current === item.id ? null : item.id)}>
-                        <span className="faq-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                        <span>{item.question}</span>
-                        <span className="faq-toggle" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" fill="none" focusable="false">
-                            <path d="m7 10 5 5 5-5" />
-                          </svg>
-                        </span>
-                      </button>
-                    </h3>
-                    <div id={answerId} className="faq-answer" role="region" aria-labelledby={questionId} aria-hidden={!expanded} inert={!expanded}>
-                      <div className="faq-answer-inner">
-                        <p>{item.answer.map((part, partIndex) => part.href ? <Link key={partIndex} href={part.href}>{part.text}</Link> : <span key={partIndex}>{part.text}</span>)}</p>
+            <div className="faq-terminal-header">
+              <p className="faq-terminal-strip">wH / KNOWLEDGE BASE</p>
+              <div className="faq-terminal-heading">
+                <div id="faq-help-center-title" className="faq-titlebar"><span aria-hidden="true">&gt;</span> HELP CENTER</div>
+                <span className="faq-active-category">{filter === "all" ? "All" : categories.find(category => category.id === filter)?.label}</span>
+              </div>
+            </div>
+            <div className="faq-list-shell" ref={scrollShellRef}>
+              <div
+                className="faq-results"
+                key={filter}
+                ref={listRef}
+                role="region"
+                aria-labelledby="faq-help-center-title"
+                tabIndex={0}
+                data-lenis-prevent
+              >
+                <div className="faq-list-content">
+                  {visibleItems.map((item, index) => {
+                    const expanded = !hydrated || open === item.id;
+                    const answerId = `faq-answer-${item.id}`;
+                    const questionId = `faq-question-${item.id}`;
+                    return (
+                      <div className="faq-item" key={item.id} data-open={expanded}>
+                        <h3>
+                          <button type="button" id={questionId} aria-expanded={expanded} aria-controls={answerId} onClick={() => setOpen(current => current === item.id ? null : item.id)}>
+                            <span className="faq-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                            <span className="faq-question-text">{item.question}</span>
+                            <span className="faq-toggle" aria-hidden="true">
+                              {expanded ? "−" : "+"}
+                            </span>
+                          </button>
+                        </h3>
+                        <div id={answerId} className="faq-answer" role="region" aria-labelledby={questionId} aria-hidden={!expanded} inert={!expanded}>
+                          <div className="faq-answer-inner">
+                            <p>{item.answer.map((part, partIndex) => part.href ? <Link key={partIndex} href={part.href}>{part.text}</Link> : <span key={partIndex}>{part.text}</span>)}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
           <div className="faq-contact">
