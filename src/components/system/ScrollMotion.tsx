@@ -39,10 +39,17 @@ export default function ScrollMotion() {
     };
     // The sections below the hero hydrate later, one Suspense boundary at a time. Touching their
     // server HTML before then (the inline styles below) makes React report a hydration mismatch, so
-    // nothing is collected until every boundary's HydrationMark has gone
+    // nothing is collected until every boundary's HydrationMark has gone.
+    // We also re-measure all ScrollTriggers here: the hero's pin height and the sheet stack's
+    // negative-margin pull-up were measured before the lazy sections had their real heights, which
+    // caused the giant era-year dividers (1960, 2026 …) to flash on screen without the content
+    // beneath them (clicking a rail link fixed it because it forced a reflow/re-measure).
     const start = () => {
       if (document.querySelector(PENDING_SELECTOR)) return;
       window.removeEventListener(HYDRATED_EVENT, start);
+      // Re-measure now that every lazy boundary has its real height. This corrects the hero pin
+      // and sheet-stack offsets that were computed against a partially-rendered page.
+      ScrollTrigger.refresh();
       collect();
       schedule();
     };
