@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform, type Variants } from "motion/react";
-import CheckpointCountdown from "./CheckpointCountdown";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
 import { timelineStations } from "./timeline-layout";
 import styles from "./TimelineMobile.module.css";
@@ -88,7 +87,7 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
           EVERY MILESTONE <span>MATTERS.</span>
         </h2>
         <p className={styles.era}>
-          <span>1950s—1960s</span> THE TRANSISTOR AGE <small>EVENT SCHEDULE / IST</small>
+          <span>1950s—1960s</span> THE TRANSISTOR AGE <small>DATES TO BE ANNOUNCED</small>
         </p>
       </header>
 
@@ -116,7 +115,6 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
 
         {checkpoints.map((event, i) => {
           const state = i === active ? "active" : i < active ? "complete" : "upcoming";
-          const [day, ...rest] = event.date.split(" ");
           const asset = timelineStations[i].asset;
           return (
             <motion.li
@@ -154,16 +152,13 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
                   <img className={styles.art} src={`/images/circuit/retro-${asset}.webp`} alt="" loading="lazy" decoding="async" data-asset={asset} />
 
                   <motion.div variants={PART} className={styles.dateRow}>
-                    <time dateTime={event.dateTime} className={styles.date}>
-                      <strong>{day}</strong>
+                    <div className={styles.date}>
+                      <strong aria-hidden="true">?</strong>
                       <span>
-                        {rest.join(" ")}
-                        <small>{event.time} IST</small>
+                        <small>Date &amp; time</small>
+                        To be announced
                       </span>
-                    </time>
-                  </motion.div>
-                  <motion.div variants={PART} className={styles.count}>
-                    <CheckpointCountdown dateTime={event.dateTime} />
+                    </div>
                   </motion.div>
                   <motion.h3 variants={PART}>{event.title}</motion.h3>
                   <motion.p variants={PART}>{event.description}</motion.p>

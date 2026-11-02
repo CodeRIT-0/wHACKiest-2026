@@ -8,7 +8,6 @@ import {
   type MotionValue,
 } from "motion/react";
 import { TimelineCircuit } from "./TimelineCircuit";
-import CheckpointCountdown from "./CheckpointCountdown";
 import TimelineMobile from "./TimelineMobile";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
 import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
@@ -159,7 +158,7 @@ function CircuitTimeline({
             <small>
               {datesAreTentative
                 ? "PLANNING DATES / NOT CONFIRMED"
-                : "EVENT SCHEDULE / IST"}
+                : "DATES TO BE ANNOUNCED"}
             </small>
           </div>
         </header>
@@ -190,7 +189,6 @@ function CircuitTimeline({
                     : index < readout.activeIndex
                       ? "complete"
                       : "upcoming";
-                const [day, ...rest] = event.date.split(" ");
                 return (
                   <li
                     key={event.id}
@@ -227,17 +225,13 @@ function CircuitTimeline({
                       hydrated={hydrated}
                     >
                       <div className={styles.dateRow}>
-                        <time
-                          dateTime={event.dateTime}
-                          className={styles.dateStamp}
-                        >
-                          <strong>{day}</strong>
+                        <div className={styles.dateStamp}>
+                          <strong aria-hidden="true">?</strong>
                           <span>
-                            {rest.join(" ")}
-                            <small>{event.time} IST</small>
+                            <small>Date &amp; time</small>
+                            To be announced
                           </span>
-                        </time>
-                        <CheckpointCountdown dateTime={event.dateTime} />
+                        </div>
                       </div>
                       <h3>{event.title}</h3>
                       <p>{event.description}</p>

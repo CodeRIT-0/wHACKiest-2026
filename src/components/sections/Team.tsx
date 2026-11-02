@@ -4,7 +4,7 @@ import SectionHeader from "../SectionHeader";
 import SplitSection from "../SplitSection";
 import { NodeField } from "../decor/Decor";
 
-const TEAM_PHOTO: string | null = "/assets/team/coderit-team.jpg";
+const TEAM_PHOTO: string | null = "/assets/team/coderit-team-2026.jpg";
 
 const LINKS = [
   { label: "Instagram", handle: "@code_rit", href: "https://www.instagram.com/code_rit", icon: InstagramLogo },

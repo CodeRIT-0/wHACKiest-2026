@@ -193,7 +193,7 @@
   position: relative;
   isolation: isolate; /* keeps the glow layer (::after, z-index -1) above the section background */
   padding-left: 52px;
-  /* a card changing state (live, passed, its countdown ticking) lays out only itself */
+  /* a card changing state (live or passed) lays out only itself */
   contain: layout style;
 }
 
@@ -406,15 +406,6 @@
   letter-spacing: 0.05em;
 }
 
-/* the live card's countdown glows like the wide timeline's */
-.item[data-state="active"] .count > span:not([data-passed]) {
-  color: var(--orange);
-  border-color: var(--orange);
-  box-shadow: 0 0 10px #fd9c3640;
-}
-.count {
-  margin-top: 12px;
-}
 .card h3 {
   margin: 14px 0 8px;
   color: var(--ink);

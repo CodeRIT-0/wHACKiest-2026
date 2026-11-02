@@ -1,18 +1,13 @@
 import { HACK_END, HACK_START } from "@/lib/event";
-import { timelineCheckpoints } from "../sections/circuit-timeline/timeline-data";
 
 // Where we are in the event, worked out from the clock, so the hero never says something stale.
-// Registration dates come from the timeline (the same dates the timeline section shows); the
-// kick-off is HACK_START, the same moment the About section's Nixie clock counts down to.
+// The kick-off is HACK_START, the same moment the About section's Nixie clock counts down to.
 
-const at = (id: string) => {
-  const checkpoint = timelineCheckpoints.find((c) => c.id === id);
-  if (!checkpoint) throw new Error(`timeline checkpoint "${id}" is missing`);
-  return Math.floor(new Date(checkpoint.dateTime).getTime() / 1000);
-};
+const at = (dateTime: string) => Math.floor(new Date(dateTime).getTime() / 1000);
 
-const REG_OPEN = at("registration-opens");
-const REG_CLOSE = at("registration-closes");
+// used only to work out the status below; the timeline section shows its dates as to be announced
+const REG_OPEN = at("2026-11-01T10:00:00+05:30");
+const REG_CLOSE = at("2026-11-15T23:59:00+05:30");
 const START = Math.floor(HACK_START / 1000);
 const END = Math.floor(HACK_END / 1000);
 

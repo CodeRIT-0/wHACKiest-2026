@@ -21,31 +21,22 @@ const filters: Category[] = ["All", "General", "Deadline", "Results", "Venue", "
 
 const fallbackAnnouncements: Announcement[] = [
   {
-    category: "General",
-    date: "29 October 2026 · 10:00 AM",
-    title: "Registrations for wHACKiest 2026 are now open",
-    copy: "Bring your sharpest idea. Team registrations are open for the 24-hour national hackathon.",
-    action: "Register your team",
-    href: "/register",
-    featured: true,
-  },
-  {
     category: "Deadline",
-    date: "15 November 2026 · 11:59 PM",
-    title: "Registration closes on 15 November",
+    date: "TBA",
+    title: "Registration deadline to be announced",
     copy: "Complete your registration before the deadline to be considered for shortlisting.",
     action: "Register now",
     href: "/register",
   },
   {
     category: "Results",
-    date: "22 November 2026 · 6:00 PM",
+    date: "TBA",
     title: "Shortlisted teams will be announced here",
     copy: "Keep an eye on this page and our social channels for the final shortlist.",
   },
   {
     category: "Venue",
-    date: "01 December 2026 · 8:00 AM",
+    date: "TBA",
     title: "wHACKiest 2026 takes over Ramaiah Institute of Technology, Bengaluru",
     copy: "Report to the Ramaiah Institute of Technology campus for check-in and the opening briefing.",
     action: "Event details",
@@ -108,13 +99,12 @@ export default function Announcements({
   );
 
   return (
-    <section className="relative overflow-hidden border-b border-line px-6 py-12 md:py-16">
+    <section className="relative overflow-hidden border-b border-line px-6 pb-12 pt-28 md:pb-16">
       <div className="pointer-events-none absolute -right-28 top-0 h-72 w-72 rounded-full border-[32px] border-accent/10 md:h-96 md:w-96" />
       <p aria-hidden="true" className="pointer-events-none absolute left-1/2 top-14 hidden -translate-x-1/2 whitespace-nowrap text-[11vw] font-black uppercase leading-none tracking-[-0.1em] text-ink/[0.035] lg:block">Dispatch</p>
       <div className="relative mx-auto max-w-[1100px]">
         <div className="border-b border-line pb-8">
-          <p className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.16em] text-muted"><span className="h-px w-8 bg-accent" /> Dispatch / 2026</p>
-          <h1 className="mt-2 text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-6xl">
+          <h1 className="text-4xl font-black uppercase leading-[0.9] tracking-[-0.06em] md:text-6xl">
             The latest <span className="text-accent">word.</span>
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-6 text-muted md:text-base">
@@ -123,7 +113,7 @@ export default function Announcements({
         </div>
 
         <div className="mt-6 flex gap-2 overflow-x-auto border-y border-line py-3 [scrollbar-width:none]">
-          {filters.map((filter) => (
+          {filters.filter((f) => f === "All" || list.some((item) => item.category === f)).map((filter) => (
             <button
               key={filter}
               type="button"
@@ -138,14 +128,6 @@ export default function Announcements({
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border border-ink bg-ink px-4 py-3 text-bg md:px-5">
-          <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.1em]">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent" aria-hidden="true" />
-            <span>Live now</span>
-            <span className="font-normal text-bg/60">Registration is open</span>
-          </div>
-          <span className="text-xs font-bold uppercase tracking-[0.1em] text-accent">Next · shortlist / 22 November</span>
-        </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_330px]">
           <div className="relative space-y-4" aria-live="polite">
@@ -180,23 +162,7 @@ export default function Announcements({
               <Fact label="Entry fee" value="Free" />
               <Fact label="Format" value="24 Hours / Offline" />
             </InfoCard>
-            <InfoCard title="Key dates" mark="02">
-              <ol className="relative ml-1 border-l border-ink/40 pl-5">
-                {[
-                  ["29 October", "Registration opens", true],
-                  ["15 November", "Registration closes", false],
-                  ["22 November", "Shortlist announced", false],
-                  ["01–02 December", "wHACKiest 2026", false],
-                ].map(([date, label, current]) => (
-                  <li key={label as string} className="relative pb-5 last:pb-0">
-                    <span className={`absolute -left-[1.66rem] top-1 h-3 w-3 rounded-full border border-ink ${current ? "bg-accent" : "bg-bg"}`} />
-                    <p className={`text-xs font-bold ${current ? "text-accent" : "text-muted"}`}>{date}</p>
-                    <p className="mt-0.5 text-sm font-medium">{label}</p>
-                  </li>
-                ))}
-              </ol>
-            </InfoCard>
-            <InfoCard title="Stay in the loop" mark="03">
+            <InfoCard title="Stay in the loop" mark="02">
               <p className="text-sm leading-6 text-muted">Follow CodeRIT for reminders, behind-the-scenes, and important announcements.</p>
               <div className="mt-4 flex gap-2">
                 <a href="https://www.instagram.com/code_rit" target="_blank" rel="noreferrer" className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.08em] hover:bg-accent">Instagram</a>
@@ -231,5 +197,5 @@ function Fact({ label, value }: { label: string; value: string }) {
 
 function DateStamp({ date, dark }: { date: string; dark?: boolean }) {
   const [day, ...rest] = date.split(" ");
-  return <div className={`w-[5.5rem] shrink-0 border-r pr-4 md:w-24 ${dark ? "border-bg/25" : "border-line"}`}><p className={`text-2xl font-black leading-none tracking-[-0.08em] md:text-3xl ${dark ? "text-accent" : ""}`}>{day}</p><p className={`mt-1 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.08em] ${dark ? "text-bg/60" : "text-muted"}`}>{rest.join(" ") || "Soon"}</p><span aria-hidden="true" className={`mt-3 block h-1 w-5 ${dark ? "bg-accent" : "bg-ink"}`} /></div>;
+  return <div className={`w-[5.5rem] shrink-0 border-r pr-4 md:w-24 ${dark ? "border-bg/25" : "border-line"}`}><p className={`text-2xl font-black leading-none tracking-[-0.08em] md:text-3xl ${dark ? "text-accent" : ""}`}>{day}</p><p className={`mt-1 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.08em] ${dark ? "text-bg/60" : "text-muted"}`}>{rest.join(" ") || (day === "TBA" ? "To be announced" : "Soon")}</p><span aria-hidden="true" className={`mt-3 block h-1 w-5 ${dark ? "bg-accent" : "bg-ink"}`} /></div>;
 }

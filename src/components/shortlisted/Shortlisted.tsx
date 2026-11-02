@@ -82,7 +82,7 @@ export default function Shortlisted() {
 
         {load === "ready" && teams.length === 0 && (
           <Notice
-            title="The shortlist goes live on 22 November"
+            title="The shortlist date is to be announced"
             text="Shortlisted teams will be listed here once results are out. Watch the announcements page and our socials for the news."
             action={{ label: "Announcements", href: "/announcements" }}
           />

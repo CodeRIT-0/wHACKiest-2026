@@ -5,19 +5,9 @@ import { isAuthorized } from "@/lib/auth";
 
 const initialAnnouncements = [
   {
-    category: "General",
-    date: "29 October 2026 · 10:00 AM",
-    title: "Registrations for wHACKiest 2026 are now open",
-    copy: "Bring your sharpest idea. Team registrations are open for the 24-hour national hackathon.",
-    action: "Register your team",
-    href: "/register",
-    featured: true,
-    closed: false,
-  },
-  {
     category: "Deadline",
-    date: "15 November 2026 · 11:59 PM",
-    title: "Registration closes on 15 November",
+    date: "TBA",
+    title: "Registration deadline to be announced",
     copy: "Complete your registration before the deadline to be considered for shortlisting.",
     action: "Register now",
     href: "/register",
@@ -26,7 +16,7 @@ const initialAnnouncements = [
   },
   {
     category: "Results",
-    date: "22 November 2026 · 6:00 PM",
+    date: "TBA",
     title: "Shortlisted teams will be announced here",
     copy: "Keep an eye on this page and our social channels for the final shortlist.",
     featured: false,
@@ -34,7 +24,7 @@ const initialAnnouncements = [
   },
   {
     category: "Venue",
-    date: "01 December 2026 · 8:00 AM",
+    date: "TBA",
     title: "wHACKiest 2026 takes over Ramaiah Institute of Technology, Bengaluru",
     copy: "Report to the Ramaiah Institute of Technology campus for check-in and the opening briefing.",
     action: "Event details",
