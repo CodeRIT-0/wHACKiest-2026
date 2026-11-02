@@ -64,9 +64,9 @@ export default function PrizeMachine() {
       />
 
       <div className={reduce ? "relative" : "sticky top-0 h-[100svh] overflow-hidden lg:h-screen"}>
-        <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col px-6 pb-4 pt-20 sm:pb-5 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:pb-6 lg:pt-24 xl:gap-x-16">
+        <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col px-6 pb-4 pt-20 sm:pb-5 short:grid short:grid-cols-[auto_minmax(0,1fr)] short:grid-rows-[minmax(0,1fr)_auto] short:gap-x-6 short:pb-3 short:pt-14 lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:pb-6 lg:pt-24 xl:gap-x-16">
           {/* ---------------- heading ---------------- */}
-          <div className="grid shrink-0 gap-4 max-lg:[&_h2]:mt-2 max-lg:[&_h2]:max-w-none max-lg:[&_h2]:text-[min(8.4vw,36px)] lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
+          <div className="grid shrink-0 gap-4 max-lg:[&_h2]:mt-2 max-lg:[&_h2]:max-w-none max-lg:[&_h2]:text-[min(8.4vw,36px)] short:col-start-2 short:row-start-1 short:self-end short:[&_h2]:text-[min(4.4vw,28px)] short:[&_p]:hidden short:[&_p:first-child]:flex lg:col-start-2 lg:row-start-1 lg:self-end lg:pb-8">
             <SectionHeader index="05" label="Prizes" title="Big ideas. Bigger rewards." />
             <p className="hidden max-w-[44ch] text-muted sm:block lg:text-lg">
               The pool is out. Who takes home what is still locked on this machine, and it stays locked until the reveal.
@@ -74,9 +74,9 @@ export default function PrizeMachine() {
           </div>
 
           {/* ---------------- the stage ---------------- */}
-          <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 lg:contents">
+          <div className="grid min-h-0 flex-1 items-center gap-4 pt-4 short:contents lg:contents">
             {/* the machine */}
-            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_316px))] min-w-0 sm:w-[min(100%,calc(100svh_-_500px))] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
+            <div data-trace className="relative mx-auto w-[min(100%,calc(100svh_-_316px))] min-w-0 sm:w-[min(100%,calc(100svh_-_500px))] short:col-start-1 short:row-span-2 short:row-start-1 short:w-[calc(100svh_-_72px)] short:self-center lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:w-[min(calc(100vh_-_130px),48vw)] lg:self-center">
               <div className="relative aspect-square w-full overflow-hidden">
                 <div className="absolute inset-0">
                   <Image src="/assets/prizes/retro-computer.webp" alt="" fill sizes="(min-width: 1024px) 780px, 92vw" className="pointer-events-none select-none object-contain" />
@@ -114,7 +114,7 @@ export default function PrizeMachine() {
             </div>
 
             {/* the desktop: the pool's window, and the sealed one with the stamp on it */}
-            <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
+            <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] short:col-start-2 short:row-start-2 short:mt-2 lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
               <article className="border-2 border-ink bg-panel shadow-[5px_5px_0_var(--fg)]">
                 <div className="flex items-center gap-2 border-b-2 border-ink bg-[linear-gradient(90deg,var(--color-trace),color-mix(in_srgb,var(--color-trace)_55%,var(--bg)))] px-2 py-1">
                   <span className="whitespace-nowrap font-mono text-[9px] font-bold uppercase tracking-[0.04em] text-[#fff9ec] sm:text-[10px] sm:tracking-[0.1em]">PRIZE_POOL.DAT</span>

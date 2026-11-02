@@ -13,6 +13,7 @@ import HydrationMark from "@/components/system/HydrationMark";
 import EraDivider from "@/components/EraDivider";
 import SheetStack from "@/components/system/SheetStack";
 import OffscreenPause from "@/components/system/OffscreenPause";
+import ScrollLanding from "@/components/system/ScrollLanding";
 
 // One scroll through computing history: 1946 (Hero) to 2026 (Join). Order matters: each section
 // is a stop in src/lib/eras.ts, which sets its colours and the era rail's year.
@@ -39,6 +40,7 @@ export default function Home() {
       <CircuitSpine />
       <ScrollMotion />
       <OffscreenPause />
+      <ScrollLanding />
       <Hero />
       {/* the circuit spine starts where the hero's shards land */}
       <div data-trace aria-hidden className="relative mx-auto h-px w-px" />

@@ -3,6 +3,9 @@
 /* Page colours are variables (ColourJourney in src/components/system can blend them per era).
    Palette: ivory paper, cream surfaces, near-black ink, orange highlights, blue circuitry. */
 :root {
+  /* one designed look, light paper and our own dark sections. "only" also tells browsers with an
+     automatic dark mode (Chrome on Android, Samsung Internet) not to invert it */
+  color-scheme: only light;
   --bg: #fff9ec;
   --fg: #050505;
   --muted: #5e5a52;
@@ -69,6 +72,9 @@
     border-radius: 28px 28px 0 0;
   }
 }
+
+/* phones in landscape: too short to stack the prize stage, so it sits side by side */
+@custom-variant short (@media (max-height: 560px) and (min-width: 560px) and (max-width: 1023px));
 
 @theme inline {
   --color-bg: var(--bg);

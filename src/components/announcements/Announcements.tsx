@@ -199,8 +199,8 @@ export default function Announcements({
             <InfoCard title="Stay in the loop" mark="03">
               <p className="text-sm leading-6 text-muted">Follow CodeRIT for reminders, behind-the-scenes, and important announcements.</p>
               <div className="mt-4 flex gap-2">
-                <a href="https://www.instagram.com/coderit.msr" target="_blank" rel="noreferrer" className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.08em] hover:bg-accent">Instagram</a>
-                <a href="https://www.linkedin.com/company/coderit" target="_blank" rel="noreferrer" className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.08em] hover:bg-accent">LinkedIn</a>
+                <a href="https://www.instagram.com/code_rit" target="_blank" rel="noreferrer" className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.08em] hover:bg-accent">Instagram</a>
+                <a href="https://www.linkedin.com/company/coderitclub/" target="_blank" rel="noreferrer" className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.08em] hover:bg-accent">LinkedIn</a>
               </div>
             </InfoCard>
           </aside>

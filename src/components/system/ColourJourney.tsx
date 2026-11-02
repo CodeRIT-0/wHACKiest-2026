@@ -12,11 +12,8 @@ gsap.registerPlugin(ScrollTrigger);
 // Blends the page's paper/ink/line colours between era stops as you scroll, by writing CSS
 // variables on <html>. Every colour on the page reads those variables, so the whole site shifts
 // together: warm cream (past) -> cool blue-tinted cream (present) -> deep navy (future).
-// With reduced motion each section simply wears its own palette (static CSS, no scripting).
-
-const REDUCED_CSS = `@media (prefers-reduced-motion: reduce){${ERAS.map(
-  (e) => `:where(#${e.id}){${PALETTE_KEYS.map((k) => `--${k}:${e.palette[k]};`).join("")}background-color:var(--bg)}`,
-).join("")}}`;
+// With reduced motion it jumps between stops instead of blending. It only ever sets the page's
+// variables: a section's own colours come from .theme-dark, which this must never override.
 
 // what each variable was last set to: a variable on <html> is inherited by every element, so even
 // re-setting it to the same value can send the browser restyling the whole page, on every scroll
@@ -96,6 +93,5 @@ export default function ColourJourney() {
     return () => trigger.kill();
   }, [pathname]);
 
-  // reduced motion: sections carry their own palette, so content is right even mid-viewport
-  return pathname === "/" ? <style>{REDUCED_CSS}</style> : null;
+  return null;
 }
