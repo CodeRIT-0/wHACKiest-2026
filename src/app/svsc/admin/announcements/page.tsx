@@ -70,7 +70,6 @@ export default function AdminAnnouncementsPage() {
 
     const res = await verifyKey(adminKey.trim());
     if (res.success) {
-      localStorage.setItem("whackiest_admin_key", adminKey.trim());
       setIsUnlocked(true);
       fetchAnnouncements();
     } else {
@@ -80,7 +79,12 @@ export default function AdminAnnouncementsPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("whackiest_admin_key");
+    try {
+      localStorage.removeItem("whackiest_admin_key");
+      sessionStorage.removeItem("whackiest_admin_key");
+    } catch {
+      // ignore
+    }
     setAdminKey("");
     setIsUnlocked(false);
     setAuthError(null);
@@ -103,22 +107,14 @@ export default function AdminAnnouncementsPage() {
     }
   };
 
-  // Verify saved admin key on page load
+  // Clear any previously cached credentials so password entry is required every time
   useEffect(() => {
-    const saved = localStorage.getItem("whackiest_admin_key");
-    if (saved) {
-      verifyKey(saved).then((res) => {
-        if (res.success) {
-          setAdminKey(saved);
-          setIsUnlocked(true);
-          fetchAnnouncements();
-        } else {
-          localStorage.removeItem("whackiest_admin_key");
-        }
-      });
+    try {
+      localStorage.removeItem("whackiest_admin_key");
+      sessionStorage.removeItem("whackiest_admin_key");
+    } catch {
+      // ignore
     }
-    // runs once on mount; fetchAnnouncements only reads stable setters
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resetForm = () => {
@@ -283,7 +279,7 @@ export default function AdminAnnouncementsPage() {
               {authError}
             </div>
           )}
-          <form onSubmit={handleUnlock} className="mt-6 space-y-4">
+          <form onSubmit={handleUnlock} className="mt-6 space-y-4" autoComplete="off">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-muted">Admin Passcode</label>
               <input
@@ -294,6 +290,7 @@ export default function AdminAnnouncementsPage() {
                   if (authError) setAuthError(null);
                 }}
                 placeholder="Enter ADMIN_SECRET_KEY..."
+                autoComplete="new-password"
                 className="mt-2 w-full border border-ink bg-white/70 px-4 py-2.5 font-mono text-sm outline-none focus:bg-white focus:ring-2 focus:ring-accent"
                 required
               />

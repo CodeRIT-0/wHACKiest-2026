@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight, DownloadSimple } from "@phosphor-icons/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -603,17 +603,15 @@ export default function Hero() {
                 Register now
                 <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/cta:translate-x-1" />
               </Link>
-              <Link
-                href={`/${STORY_HASH}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!scrollToStory()) document.getElementById("timeline")?.scrollIntoView();
-                }}
-                className="group/ex inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur max-lg:backdrop-blur-none transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
+              <a
+                href="https://drive.google.com/file/d/1gYxs4mlzZJtFpesADyOXY2ac9OwqPMGA/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/brochure inline-flex items-center justify-center gap-2 border-2 border-ink bg-bg/70 px-4 py-3 text-[13px] font-bold uppercase tracking-[0.04em] backdrop-blur max-lg:backdrop-blur-none transition-colors duration-200 hover:bg-ink hover:text-bg sm:px-6 sm:py-3.5 sm:text-sm"
               >
-                Explore<span className="-ml-1 hidden sm:inline">the hackathon</span>
-                <ArrowDown size={15} weight="bold" className="transition-transform duration-300 group-hover/ex:translate-y-0.5" />
-              </Link>
+                Brochure
+                <DownloadSimple size={15} weight="bold" className="transition-transform duration-300 group-hover/brochure:translate-y-0.5" />
+              </a>
             </div>
           </div>
         </div>
