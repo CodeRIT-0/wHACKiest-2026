@@ -4,8 +4,8 @@ import RegistrationForm from "@/components/register/RegistrationForm";
 export const metadata = { title: "Register | wHACKiest 2026" };
 
 // The deployed Google Apps Script web app URL (see apps-script/registration/README.md).
-// Set NEXT_PUBLIC_REGISTRATION_ENDPOINT in .env and in the hosting provider's env settings.
-const ENDPOINT = process.env.NEXT_PUBLIC_REGISTRATION_ENDPOINT;
+// Set REGISTRATION_ENDPOINT in .env and in the hosting provider's env settings.
+const ENDPOINT = process.env.REGISTRATION_ENDPOINT;
 
 export default function Page() {
   return (

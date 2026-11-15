@@ -27,7 +27,7 @@ Two pages on the site post to this one script:
    Copy the web app URL (ends in `/exec`).
 6. **Website**: add it to `.env` (and to the hosting provider's environment variables):
    ```
-   NEXT_PUBLIC_REGISTRATION_ENDPOINT=https://script.google.com/macros/s/.../exec
+   REGISTRATION_ENDPOINT=https://script.google.com/macros/s/.../exec
    ```
    Restart `npm run dev` / redeploy so Next.js picks it up.
 

@@ -6,7 +6,7 @@ import SubmissionForm from "@/components/register/SubmissionForm";
 // out of search: share the URL with teams (WhatsApp community / email) when submissions open.
 export const metadata: Metadata = { title: "Uplink | wHACKiest 2026", robots: { index: false, follow: false } };
 
-const ENDPOINT = process.env.NEXT_PUBLIC_REGISTRATION_ENDPOINT;
+const ENDPOINT = process.env.REGISTRATION_ENDPOINT;
 
 export default function Page() {
   return (
