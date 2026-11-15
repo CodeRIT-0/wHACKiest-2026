@@ -12,7 +12,7 @@ export type FaqSignalCategory = "registration" | "submission" | "selection" | "p
 type AnswerPart = { text: string; href?: string };
 type FaqItem = { id: string; category: FaqCategory; signalCategory: FaqSignalCategory; question: string; answer: AnswerPart[] };
 
-// answers follow the wHACKiest 2026 brochure; registration runs on Devfolio
+// answers follow the wHACKiest 2026 brochure; registration runs on the form at /register (Apps Script backend)
 export const faqItems: FaqItem[] = [
   { id: "event-level", category: "event", signalCategory: "selection", question: "At which level is this hackathon conducted?", answer: [{ text: "It’s a national-level, 24-hour offline hackathon hosted by CodeRIT at Ramaiah Institute of Technology, Bengaluru, open to undergraduate students from across India." }] },
   { id: "team-size", category: "eligibility", signalCategory: "registration", question: "How many members can participate in a team?", answer: [{ text: "Two to four members. Solo entries aren’t accepted, so find a crew early, and no one can be part of more than one team." }] },

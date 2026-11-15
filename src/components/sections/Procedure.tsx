@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import Link from "next/link";
 import { participation } from "@/content/participation";
 import ProcedureArtwork from "./ProcedureArtwork";
 import { useProcedureJourney } from "./procedureStory";
@@ -13,14 +14,10 @@ function RegistrationGuide() {
   const [open, setOpen] = useState(false);
   const guideId = useId();
   const instructions = [
-    { title: "Open Devfolio", text: <>Open the wHACKiest 2026 event application when the official link is published. <span className="registration-guide-pending" role="link" aria-disabled="true">Devfolio link coming soon</span></> },
-    { title: "Sign In or Create an Account", text: <>Sign in to your Devfolio account, or create an account if this is your first application.</> },
-    { title: "Complete Your Profile", text: <>Fill in the required profile, personal and contact details.</> },
-    { title: "Choose Team Participation", text: <>Select team participation in the event application.</> },
-    { title: "Create Your Team", text: <>The team leader creates the team and shares the generated team code with teammates.</> },
-    { title: "Join Your Team", text: <>Other members join the existing team using the code shared by the team leader.</> },
-    { title: "Check Your Team", text: <>Verify that every member has joined. Teams must contain 2–4 undergraduate students from the same college. Different branches and years are allowed; each student can join only one team.</> },
-    { title: "Review and Submit", text: <>Check your application, team and contact details carefully, then submit your application through Devfolio.</> },
+    { title: "Open the Registration Page", text: <>Go to the <Link href="/register" className="underline underline-offset-4">registration page</Link>. One form per team, filled in by the team leader.</> },
+    { title: "Team Details", text: <>Enter your team name, and the team leader&apos;s name, USN, email and contact number.</> },
+    { title: "Add Your Members", text: <>Choose your team size (2–4) and enter the name and USN of every other member. Teams must be undergraduate students from the same college; different branches and years are allowed, and each student can join only one team.</> },
+    { title: "Review and Submit", text: <>Check every name, USN and contact detail carefully, then submit. Save the team ID you get: you&apos;ll need it to choose your track and upload your idea PPT later.</> },
   ];
 
   return <div className="registration-guide" data-open={open}>
@@ -30,7 +27,7 @@ function RegistrationGuide() {
     <div id={guideId} className="registration-guide-disclosure" aria-hidden={!open} inert={!open}>
       <div className="registration-guide-clip">
         <div className="registration-guide-content">
-          <p className="registration-guide-note">The official Devfolio link is coming soon. Follow these steps once applications are available: the team leader creates the team, and other members join with the shared team code.</p>
+          <p className="registration-guide-note">The team leader registers the whole team through a single form on the registration page. Keep every member&apos;s name and USN ready before you start.</p>
           <ol className="registration-guide-steps">
             {instructions.map((step, index) => <li key={step.title}>
               <span className="registration-guide-number" aria-hidden="true">{index + 1}.</span>
