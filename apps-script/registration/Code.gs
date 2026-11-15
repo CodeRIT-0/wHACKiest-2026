@@ -33,8 +33,8 @@ const MEMBER_USN_COLS = [COL["Member 2 USN"], COL["Member 3 USN"], COL["Member 4
 
 // no 0/O, 1/I/L: IDs get read out over the phone and typed by hand
 const ID_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
-// 1MS24·····, 1MS25····· or 1MS26·····-T; usnOf() writes a 2026 USN with "-T" however it was spaced
-const USN = /^(?:1MS2[45][A-Z0-9]{5}|1MS26[A-Z0-9]{5}-T)$/;
+// 1 + college code + 24/25 + 5 chars, or 1 + college code + 26 + 5 chars + -T (any college); usnOf() writes a 2026 USN with "-T" however it was spaced
+const USN = /^(?:1[A-Z]{2}2[45][A-Z0-9]{5}|1[A-Z]{2}26[A-Z0-9]{5}-T)$/;
 const PHONE = /^[6-9]\d{9}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TEAM_ID = /^WH26-[A-Z0-9]{6}$/;
@@ -179,7 +179,7 @@ function userError(message, field) {
 const text = v => String(v == null ? "" : v).trim();
 const usnOf = v => {
   const s = text(v).toUpperCase().replace(/\s+/g, "");
-  const tagged = /^(1MS26[A-Z0-9]{5})-?T$/.exec(s);
+  const tagged = /^(1[A-Z]{2}26[A-Z0-9]{5})-?T$/.exec(s);
   return tagged ? `${tagged[1]}-T` : s;
 };
 const phoneOf = v => text(v).replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
@@ -192,8 +192,8 @@ function name(value, label, field) {
 
 function usn(value, field) {
   const v = usnOf(value);
-  if (/^1MS26[A-Z0-9]{5}$/.test(v)) throw userError("2026 USNs end in -T, like 1MS26CS001-T.", field);
-  if (!USN.test(v)) throw userError("Enter a USN like 1MS24CS001, 1MS25CS001 or 1MS26CS001-T.", field);
+  if (/^1[A-Z]{2}26[A-Z0-9]{5}$/.test(v)) throw userError("2026 USNs end in -T, like 1MS26CS001-T.", field);
+  if (!USN.test(v)) throw userError("Enter a USN like 1MS24CS001, 1RV25IS042 or 1MS26CS001-T.", field);
   return v;
 }
 

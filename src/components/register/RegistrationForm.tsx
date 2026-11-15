@@ -301,6 +301,14 @@ export default function RegistrationForm({ endpoint }: { endpoint: string }) {
           <p className="text-sm text-muted">Everyone must be an undergraduate at the same college. Different branches and years are fine; nobody can be in two teams.</p>
         </Step>
 
+        {/* phones: the pass sits here as a last look before submitting (wide screens have it alongside) */}
+        <div className="border-t-2 border-ink pt-6 lg:hidden">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-trace">Check your pass</p>
+          <div className="mt-5 pr-2">
+            <TeamTicket draft={draft} />
+          </div>
+        </div>
+
         <div className="border-t-2 border-ink pt-8">
           {status.kind === "error" && (
             <p role="alert" className="mb-6 border-2 border-[#b42318] bg-[#b42318]/10 px-4 py-3 text-sm">

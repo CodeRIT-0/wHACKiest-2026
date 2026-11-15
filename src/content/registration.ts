@@ -34,19 +34,20 @@ export type RegistrationDraft = {
 export type FieldErrors = Partial<Record<string, string>>;
 
 /**
- * USNs are 1MS24·····, 1MS25····· or 1MS26·····-T (five letters/digits after the year).
+ * USNs are 1 + a two-letter college code + 24, 25 or 26 + five letters/digits, any college
+ * (1MS24CS001, 1RV25IS042). 2026 USNs end in -T: 1MS26CS001-T.
  * Spaces anywhere are dropped and a 2026 USN is written with "-T" whether or not the hyphen was
  * typed, so "1ms26cs001  -T", "1MS26CS001 T" and "1MS26CS001-T" are all the same USN.
  */
 export const normaliseUsn = (value: string) => {
   const v = value.toUpperCase().replace(/\s+/g, "");
-  const tagged = /^(1MS26[A-Z0-9]{5})-?T$/.exec(v);
+  const tagged = /^(1[A-Z]{2}26[A-Z0-9]{5})-?T$/.exec(v);
   return tagged ? `${tagged[1]}-T` : v;
 };
 /** keeps the last 10 digits of an Indian number typed as +91…, 0… or with spaces */
 export const normalisePhone = (value: string) => value.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
 
-const USN = /^(?:1MS2[45][A-Z0-9]{5}|1MS26[A-Z0-9]{5}-T)$/;
+const USN = /^(?:1[A-Z]{2}2[45][A-Z0-9]{5}|1[A-Z]{2}26[A-Z0-9]{5}-T)$/;
 const PHONE = /^[6-9]\d{9}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -62,8 +63,8 @@ function checkUsn(value: string) {
   const v = normaliseUsn(value);
   if (!v) return "Enter the USN.";
   if (USN.test(v)) return;
-  if (/^1MS26[A-Z0-9]{5}$/.test(v)) return "2026 USNs end in -T, like 1MS26CS001-T.";
-  return "Enter a USN like 1MS24CS001, 1MS25CS001 or 1MS26CS001-T.";
+  if (/^1[A-Z]{2}26[A-Z0-9]{5}$/.test(v)) return "2026 USNs end in -T, like 1MS26CS001-T.";
+  return "Enter a USN like 1MS24CS001, 1RV25IS042 or 1MS26CS001-T.";
 }
 
 export function validateRegistration(draft: RegistrationDraft): FieldErrors {
