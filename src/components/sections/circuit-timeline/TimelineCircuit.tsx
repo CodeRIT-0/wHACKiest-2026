@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef } from "react";
 import { motion, useTransform, type MotionValue } from "motion/react";
-import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
+import { CIRCUIT_WIDTH, LAST_STATION, timelineStations } from "./timeline-layout";
 import { clamp } from "./useCircuitProgress";
 import { circuitHardwareGeometry } from "./timeline-geometry";
 import styles from "./Timeline.module.css";
@@ -142,6 +142,7 @@ function CircuitCluster({
     "GERMANIUM / 5V IN",
     "CARBON FILM / 220 OHM",
     "LOGIC ARRAY / REV. 26",
+    "NPN / PASS OR HOLD",
     "100uF / ENERGY STORE",
     "OUTPUT / 5V STABLE",
   ][index];
@@ -224,7 +225,7 @@ function CircuitCluster({
             className={styles.chipScreen}
           />
           <g className={styles.chipWords} textAnchor="middle">
-            {(index === 4
+            {(index === LAST_STATION
               ? ["MISSION", "COMPLETE", "5V / OUT"]
               : ["EVERY", "SECOND", "COUNTS."]
             ).map((line, i) => (
@@ -277,7 +278,7 @@ export function TimelineCircuit({
   const id = useId().replace(/:/g, "");
   const axis = designHeight / 2;
   const first = timelineStations[0].x;
-  const last = timelineStations[4].x;
+  const last = timelineStations[LAST_STATION].x;
   const draw = useTransform(signalX, (x) =>
     clamp((x - first) / (last - first)),
   );
@@ -319,7 +320,7 @@ export function TimelineCircuit({
       role="img"
       aria-labelledby={`${id}-title ${id}-desc`}
     >
-      <title id={`${id}-title`}>Five connected retro circuit stations</title>
+      <title id={`${id}-title`}>Six connected retro circuit stations</title>
       <desc id={`${id}-desc`}>
         The entire circuit landscape travels horizontally as you scroll,
         following an electrical signal from registration through the final
@@ -342,7 +343,7 @@ export function TimelineCircuit({
         style={{ pathLength: draw }}
         data-current-path
       />
-      {[0, 1, 2, 3].map((index) => (
+      {timelineStations.slice(1).map((_, index) => (
         <CircuitInterconnect
           key={index}
           index={index}

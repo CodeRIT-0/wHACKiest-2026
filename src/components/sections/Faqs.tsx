@@ -85,7 +85,7 @@ export default function Faqs() {
       <ComputingBackdrop variant="faq" />
       <div className="faq-layout">
         <header className="faq-heading faq-reveal">
-          <div id="faq-title"><SectionHeader index="07" label="FAQs" title="Got questions?" /></div>
+          <div id="faq-title"><SectionHeader index="08" label="FAQs" title="Got questions?" /></div>
           <p className="faq-subtitle">{faqContent.subtitle}</p>
         </header>
         <div className="faq-tools">
@@ -138,7 +138,14 @@ export default function Faqs() {
                         </h3>
                         <div id={answerId} className="faq-answer" role="region" aria-labelledby={questionId} aria-hidden={!expanded} inert={!expanded}>
                           <div className="faq-answer-inner">
-                            <p>{item.answer.map((part, partIndex) => part.href ? <Link key={partIndex} href={part.href}>{part.text}</Link> : <span key={partIndex}>{part.text}</span>)}</p>
+                            <p>{item.answer.map((part, partIndex) => {
+                              const text = part.strong ? <strong>{part.text}</strong> : part.text;
+                              // site pages go through the router; mail, phone and other sites are plain links
+                              const link = !part.href ? text
+                                : part.href.startsWith("/") ? <Link href={part.href}>{text}</Link>
+                                : <a href={part.href} {...(/^https?:/.test(part.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{text}</a>;
+                              return <span key={partIndex}>{part.breakBefore && <br />}{link}</span>;
+                            })}</p>
                           </div>
                         </div>
                       </div>
@@ -151,7 +158,7 @@ export default function Faqs() {
           <div className="faq-contact">
             <p>Still have a question?</p>
             {faqContent.contactHref ? (
-              <Link className="faq-contact-link" href={faqContent.contactHref}>CONTACT THE ORGANIZERS <span aria-hidden="true">↗</span></Link>
+              <a className="faq-contact-link" href={faqContent.contactHref}>CONTACT THE ORGANIZERS <span aria-hidden="true">↗</span></a>
             ) : (
               <>
                 <button className="faq-contact-link" type="button" disabled>CONTACT THE ORGANIZERS <span aria-hidden="true">↗</span></button>

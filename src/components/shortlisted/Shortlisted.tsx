@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { contactMailto } from "@/lib/contact";
 
 type Team = {
   _id: string;
@@ -82,7 +83,7 @@ export default function Shortlisted() {
 
         {load === "ready" && teams.length === 0 && (
           <Notice
-            title="The shortlist date is to be announced"
+            title="The shortlist is out on 28 November"
             text="Shortlisted teams will be listed here once results are out. Watch the announcements page and our socials for the news."
             action={{ label: "Announcements", href: "/announcements" }}
           />
@@ -143,9 +144,9 @@ export default function Shortlisted() {
 
             <p className="mt-10 max-w-2xl text-sm leading-6 text-muted">
               Made the list? Check your email for confirmation steps. Questions?{" "}
-              <Link href="/#contact" className="font-semibold text-ink underline decoration-accent underline-offset-4 hover:text-accent">
+              <a href={contactMailto("wHACKiest 2026 shortlist query")} className="font-semibold text-ink underline decoration-accent underline-offset-4 hover:text-accent">
                 Get in touch
-              </Link>
+              </a>
               .
             </p>
           </>

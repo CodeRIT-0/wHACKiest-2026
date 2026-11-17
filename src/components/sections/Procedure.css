@@ -164,6 +164,8 @@
 .registration-guide-number { color:#c15d00; font:600 10px/20px var(--font-jetbrains-mono), monospace; }
 .registration-guide-steps h4 { margin:0 0 4px; font-size:15px; font-weight:600; line-height:1.5; }
 .registration-guide-steps p { margin:0; font-size:14px; line-height:1.7; color:#514e46; }
+.registration-guide-steps ul { margin:8px 0 10px; padding-left:18px; list-style:disc; }
+.registration-guide-steps ul li { padding-left:3px; margin:0 0 6px; font-size:14px; line-height:1.65; color:#514e46; }
 .registration-guide-steps > li:not(:last-child) > div { padding-bottom:14px; border-bottom:1px solid #0357d61c; }
 .registration-guide a { text-decoration:underline; text-decoration-color:#0357d680; text-underline-offset:3px; }
 .registration-guide a:hover { color:#0357d6; }
@@ -178,12 +180,14 @@
 @keyframes registration-instruction-in { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 @media (max-width:760px) { .registration-guide { margin-top:18px; } .registration-guide-steps > li { column-gap:8px; } }
 
-.registration-guide-pending { display:inline; padding:2px 5px; background:#fd9c36; color:#050505; text-decoration:underline; text-underline-offset:3px; cursor:not-allowed; box-decoration-break:clone; }
+.registration-guide-pending { display:inline; padding:2px 5px; background:#fd9c36; color:#050505; text-decoration:underline; text-underline-offset:3px; box-decoration-break:clone; white-space:nowrap; font-weight:600; }
+.registration-guide-pending:hover { background:#050505; color:#fff9ec; }
 
 /* tighter steps on desktop: each one is as tall as its artwork, and copy and art hug the centre line */
 @media (min-width: 761px) {
   .journey-stage { min-height: 0; padding: 0; grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); }
-  .journey-stage + .journey-stage { margin-top: -24px; }
+  .journey-stages { display:grid; row-gap:clamp(48px,6vh,76px); }
+  .journey-stage + .journey-stage { margin-top: 0; }
   .journey-copy { justify-self: end; max-width: 400px; padding-right: 20px; }
   .journey-stage:nth-child(even) .journey-copy { justify-self: start; padding: 0 0 0 20px; }
   .journey-artwork { justify-self: start; width: min(100%, 470px); }

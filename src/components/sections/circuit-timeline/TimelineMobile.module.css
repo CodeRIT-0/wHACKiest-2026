@@ -382,6 +382,9 @@
   place-items: center;
   min-width: 52px;
   height: 52px;
+  padding: 0 7px; /* a range like 26–27 is wider than the square */
+  white-space: nowrap;
+  flex-shrink: 0;
   border: 1px solid #4c4436;
   background: #16130f;
   font: 700 30px/1 var(--font-archivo);
@@ -406,6 +409,15 @@
   letter-spacing: 0.05em;
 }
 
+/* the live card's countdown glows like the wide timeline's */
+.item[data-state="active"] .count > span:not([data-passed]) {
+  color: var(--orange);
+  border-color: var(--orange);
+  box-shadow: 0 0 10px #fd9c3640;
+}
+.count {
+  margin-top: 12px;
+}
 .card h3 {
   margin: 14px 0 8px;
   color: var(--ink);

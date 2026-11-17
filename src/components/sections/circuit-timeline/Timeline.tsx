@@ -8,9 +8,10 @@ import {
   type MotionValue,
 } from "motion/react";
 import { TimelineCircuit } from "./TimelineCircuit";
+import CheckpointCountdown from "./CheckpointCountdown";
 import TimelineMobile from "./TimelineMobile";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
-import { CIRCUIT_WIDTH, timelineStations } from "./timeline-layout";
+import { CIRCUIT_WIDTH, LAST_STATION, timelineStations } from "./timeline-layout";
 import {
   useCircuitProgress,
   useTimelineHydrated,
@@ -103,7 +104,7 @@ function CircuitTimeline({
     worldSize,
     goToStep,
   } = useCircuitProgress(reducedMotion);
-  // React state only changes at a checkpoint (5 times) and at the end; the running percentage is
+  // React state only changes at a checkpoint (once per station) and at the end; the running percentage is
   // written straight to the DOM. Re-rendering the whole section on every 1% made scrolling it janky
   const [readout, setReadout] = useState({ complete: false, activeIndex: 0 });
   const meterRef = useRef<HTMLDivElement>(null);
@@ -158,7 +159,7 @@ function CircuitTimeline({
             <small>
               {datesAreTentative
                 ? "PLANNING DATES / NOT CONFIRMED"
-                : "DATES TO BE ANNOUNCED"}
+                : "EVENT SCHEDULE / IST"}
             </small>
           </div>
         </header>
@@ -225,13 +226,14 @@ function CircuitTimeline({
                       hydrated={hydrated}
                     >
                       <div className={styles.dateRow}>
-                        <div className={styles.dateStamp}>
-                          <strong aria-hidden="true">?</strong>
+                        <time dateTime={event.dateTime} className={styles.dateStamp}>
+                          <strong>{event.day}</strong>
                           <span>
-                            <small>Date &amp; time</small>
-                            To be announced
+                            <small>{event.detail}</small>
+                            {event.month}
                           </span>
-                        </div>
+                        </time>
+                        <CheckpointCountdown dateTime={event.dateTime} />
                       </div>
                       <h3>{event.title}</h3>
                       <p>{event.description}</p>
@@ -302,7 +304,7 @@ function CircuitTimeline({
               type="button"
               onClick={() => goToStep(readout.activeIndex + 1)}
               aria-label={
-                readout.activeIndex === 4
+                readout.activeIndex === LAST_STATION
                   ? "Continue to the next section"
                   : "Next timeline checkpoint"
               }
@@ -312,7 +314,7 @@ function CircuitTimeline({
           </nav>
           <div className={styles.stageCount}>
             <strong>0{readout.activeIndex + 1}</strong>
-            <span> / 05 CHECKPOINTS</span>
+            <span> / 0{checkpoints.length} CHECKPOINTS</span>
           </div>
         </footer>
         <div className={styles.exit} data-timeline-exit aria-hidden="true">

@@ -54,7 +54,7 @@ export function useCircuitProgress(reducedMotion: boolean) {
   const journey = useTransform(progress, JOURNEY_INPUT, JOURNEY_OUTPUT);
   const signalX = useTransform(
     journey,
-    [0, 1, 2, 3, 4],
+    timelineStations.map((_, i) => i),
     timelineStations.map((station): number => station.x),
   );
   const cameraX = useTransform(
@@ -100,7 +100,7 @@ export function useCircuitProgress(reducedMotion: boolean) {
     const start = top - TIMELINE_PIN_TOP;
     const end = top + section.offsetHeight - window.innerHeight;
     const target =
-      index < 5
+      index < timelineStations.length
         ? start + timelineStations[Math.max(0, index)].stop * (end - start)
         : top + section.offsetHeight - TIMELINE_PIN_TOP;
     scrollToPosition(target, reducedMotion);

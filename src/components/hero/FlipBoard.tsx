@@ -15,7 +15,7 @@ const UNITS = ["Days", "Hours", "Minutes", "Seconds"];
 const STATS = [
   ["24", "hours", "On the clock"],
   ["2–4", "", "Per team"],
-  ["₹50,000", "", "Prize pool"],
+  ["₹1,50,000", "", "Prize pool"],
 ] as const;
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -98,8 +98,8 @@ export default function FlipBoard() {
       <span aria-hidden className="bg-grid pointer-events-none absolute inset-0 opacity-50" />
       <span aria-hidden className="pointer-events-none absolute -left-16 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(closest-side,rgba(253,156,54,0.18),transparent)]" />
 
-      <div className="relative flex flex-col gap-3 p-3.5 sm:gap-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-7 lg:py-4">
-        <div className="min-w-0">
+      <div className="relative flex flex-col gap-3 p-3.5 sm:gap-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-5 lg:px-6 lg:py-4 xl:gap-6 xl:px-7">
+        <div className="min-w-0 lg:shrink-0">
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.18em]">
             <span className="flex items-center gap-2 text-accent">
               <span className={`h-1.5 w-1.5 rounded-full bg-accent transition-opacity duration-300 ${tick ? "opacity-100" : "opacity-30"}`} />
@@ -138,11 +138,14 @@ export default function FlipBoard() {
         </div>
 
         {/* the numbers that matter, on the same board */}
-        <dl className="grid shrink-0 grid-cols-3 max-[479px]:grid-cols-[auto_auto_minmax(0,1fr)] divide-x divide-line border-t border-line pt-3 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0">
+        {/* from lg up the countdown and these share one row of a board at most 1100px wide, so they
+            are sized off the viewport and capped well below the countdown; shrink-0 on both keeps
+            them from sliding under each other */}
+        <dl className="grid shrink-0 grid-cols-3 max-[479px]:grid-cols-[auto_auto_minmax(0,1fr)] divide-x divide-line border-t border-line pt-3 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0 xl:pl-6">
           {STATS.map(([n, unit, label]) => (
-            <div key={label} className="flex flex-col-reverse px-2 first:pl-0 min-[400px]:px-3 lg:px-5 lg:first:pl-0">
-              <dt className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted">{label}</dt>
-              <dd className="display-wide whitespace-nowrap text-[min(5.4vw,24px)] leading-none sm:text-[28px]">
+            <div key={label} className="flex flex-col-reverse px-2 first:pl-0 min-[400px]:px-3 lg:px-3 lg:first:pl-0 xl:px-4">
+              <dt className="mt-1.5 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.16em] text-muted">{label}</dt>
+              <dd className="display-wide whitespace-nowrap text-[min(5.4vw,24px)] leading-none sm:text-[28px] lg:text-[min(26px,1.85vw)]">
                 {n}
                 {unit && <span className="ml-1 font-mono text-[11px] font-normal tracking-normal text-accent">{unit}</span>}
               </dd>

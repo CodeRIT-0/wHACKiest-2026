@@ -28,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const DESCRIPTION = "wHACKiest 2026: CodeRIT's national 24-hour offline hackathon at Ramaiah Institute of Technology, Bengaluru. 01-02 December 2026, with a ₹50,000 prize pool.";
+const DESCRIPTION = "wHACKiest 2026: CodeRIT's national 24-hour offline hackathon at Ramaiah Institute of Technology, Bengaluru. 01-02 December 2026, with a ₹1,50,000 prize pool.";
 const HOST = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
 export const metadata: Metadata = {

@@ -114,8 +114,9 @@ export default function PrizeMachine() {
             </div>
 
             {/* the desktop: the pool's window, and the sealed one with the stamp on it */}
-            <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] short:col-start-2 short:row-start-2 short:mt-2 lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
-              <article className="border-2 border-ink bg-panel shadow-[5px_5px_0_var(--fg)]">
+            <div className="grid min-w-0 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-3 short:col-start-2 short:row-start-2 short:mt-2 lg:col-start-2 lg:row-start-2 lg:self-start xl:gap-4">
+              {/* a container, so the amount is sized from the card's own width and never spills out of it */}
+              <article className="@container min-w-0 border-2 border-ink bg-panel shadow-[5px_5px_0_var(--fg)]">
                 <div className="flex items-center gap-2 border-b-2 border-ink bg-[linear-gradient(90deg,var(--color-trace),color-mix(in_srgb,var(--color-trace)_55%,var(--bg)))] px-2 py-1">
                   <span className="whitespace-nowrap font-mono text-[9px] font-bold uppercase tracking-[0.04em] text-[#fff9ec] sm:text-[10px] sm:tracking-[0.1em]">PRIZE_POOL.DAT</span>
                   <span aria-hidden className="ml-auto grid h-3.5 w-3.5 shrink-0 place-items-center border border-ink bg-panel text-ink">
@@ -124,7 +125,7 @@ export default function PrizeMachine() {
                 </div>
                 <div className="px-3 py-2.5 lg:py-4">
                   <p className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.06em] text-muted sm:text-[10px] sm:tracking-[0.16em]">Total prize pool</p>
-                  <p className="display-wide mt-1 whitespace-nowrap text-[clamp(20px,6.4vw,30px)] leading-none lg:text-[clamp(28px,3vw,46px)] tabular-nums text-accent">
+                  <p className="display-wide mt-1 whitespace-nowrap text-[min(44px,calc((100cqw_-_24px)/6.2))] leading-none tabular-nums text-accent">
                     <Scramble text={total} locked={done || !live ? total.length : reading ? Math.round(view.t * total.length) : 0} />
                     <span className="sr-only">{total}</span>
                   </p>

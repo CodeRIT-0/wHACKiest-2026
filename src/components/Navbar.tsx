@@ -7,6 +7,7 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { scrollToStory, STORY_HASH } from "./hero/story-scroll";
 import { scrollToPosition } from "./system/SmoothScroll";
+import { participation } from "@/content/participation";
 
 // every homepage section in page order, then the announcements page
 const links = [
@@ -14,6 +15,7 @@ const links = [
   { href: "/#timeline", label: "Timeline" },
   { href: "/#tracks", label: "Tracks" },
   { href: "/#prizes", label: "Prizes" },
+  { href: "/#sponsors", label: "Sponsors" },
   { href: "/#how-to-register", label: "How to join" },
   { href: "/#faqs", label: "FAQs" },
   { href: "/#team", label: "Team" },
@@ -152,12 +154,14 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      <Link
-        href="/register"
+      <a
+        href={participation.registrationHref}
+        target="_blank"
+        rel="noopener noreferrer"
         className="ml-1.5 whitespace-nowrap rounded-full bg-ink px-3.5 py-3 min-[360px]:ml-2 min-[360px]:px-5 text-xs font-semibold uppercase text-bg transition-transform active:scale-[0.97]"
       >
         Register
-      </Link>
+      </a>
 
       {/* collapsible menu: the grid row eases between 0fr and 1fr, so it unfolds to its real height */}
       <div

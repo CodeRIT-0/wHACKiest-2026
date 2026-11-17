@@ -2,11 +2,12 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform, type Variants } from "motion/react";
+import CheckpointCountdown from "./CheckpointCountdown";
 import { timelineCheckpoints, type TimelineCheckpoints } from "./timeline-data";
 import { timelineStations } from "./timeline-layout";
 import styles from "./TimelineMobile.module.css";
 
-// The timeline on phones: the same five checkpoints and the same circuit language as the wide
+// The timeline on phones: the same six checkpoints and the same circuit language as the wide
 // version, but laid out down the page and driven by ordinary scrolling (no pin, no sideways
 // camera). A copper rail fills as you read, each checkpoint's pad lights and its branch draws out
 // to the card, the card nearest the middle of the screen becomes the live one, and a small HUD
@@ -87,7 +88,7 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
           EVERY MILESTONE <span>MATTERS.</span>
         </h2>
         <p className={styles.era}>
-          <span>1950s—1960s</span> THE TRANSISTOR AGE <small>DATES TO BE ANNOUNCED</small>
+          <span>1950s—1960s</span> THE TRANSISTOR AGE <small>EVENT SCHEDULE / IST</small>
         </p>
       </header>
 
@@ -99,7 +100,7 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
           <span className={styles.hudTitle}>{current.title}</span>
           <strong>
             0{active + 1}
-            <small>/05</small>
+            <small>/0{checkpoints.length}</small>
           </strong>
         </div>
         <motion.div className={styles.hudBar} style={{ scaleX: hudBar }} />
@@ -152,13 +153,16 @@ export default function TimelineMobile({ id = "timeline", checkpoints = timeline
                   <img className={styles.art} src={`/images/circuit/retro-${asset}.webp`} alt="" loading="lazy" decoding="async" data-asset={asset} />
 
                   <motion.div variants={PART} className={styles.dateRow}>
-                    <div className={styles.date}>
-                      <strong aria-hidden="true">?</strong>
+                    <time dateTime={event.dateTime} className={styles.date}>
+                      <strong>{event.day}</strong>
                       <span>
-                        <small>Date &amp; time</small>
-                        To be announced
+                        <small>{event.detail}</small>
+                        {event.month}
                       </span>
-                    </div>
+                    </time>
+                  </motion.div>
+                  <motion.div variants={PART} className={styles.count}>
+                    <CheckpointCountdown dateTime={event.dateTime} />
                   </motion.div>
                   <motion.h3 variants={PART}>{event.title}</motion.h3>
                   <motion.p variants={PART}>{event.description}</motion.p>

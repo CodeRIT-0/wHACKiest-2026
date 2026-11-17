@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { participation } from "@/content/participation";
 import Reveal from "../motion/Reveal";
 import Words from "../motion/Words";
 import FindUs from "./join/FindUs";
@@ -22,13 +22,15 @@ export default function Join() {
             <Words text="The next era starts with you" tail={<span className="text-accent">.</span>} />
           </h2>
           <p className="mx-auto mt-6 max-w-[42ch] text-muted">24 hours. Teams of two to four. One question: what will you build when every second counts?</p>
-          <Link
-            href="/register"
+          <a
+            href={participation.registrationHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 bg-accent px-7 py-4 text-sm font-semibold uppercase text-[#1a1a1a] transition-transform active:scale-[0.98]"
           >
             Register your team
             <ArrowRight size={14} weight="bold" />
-          </Link>
+          </a>
         </Reveal>
       </div>
 

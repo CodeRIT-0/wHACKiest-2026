@@ -22,16 +22,16 @@ const filters: Category[] = ["All", "General", "Deadline", "Results", "Venue", "
 const fallbackAnnouncements: Announcement[] = [
   {
     category: "Deadline",
-    date: "TBA",
-    title: "Registration deadline to be announced",
-    copy: "Complete your registration before the deadline to be considered for shortlisting.",
-    action: "Register now",
-    href: "/register",
+    date: "24 Nov",
+    title: "Registration closes 24 November, 11:59 PM IST",
+    copy: "Register on Devnovate and attach your idea PPT before the deadline to be considered for the online presentation round.",
+    action: "Register on Devnovate",
+    href: "https://devnovate.co/event/whackiest",
   },
   {
     category: "Results",
-    date: "TBA",
-    title: "Shortlisted teams will be announced here",
+    date: "28 Nov",
+    title: "Shortlisted teams will be announced here on 28 November",
     copy: "Keep an eye on this page and our social channels for the final shortlist.",
   },
   {
@@ -145,7 +145,7 @@ export default function Announcements({
                     <h2 className={`mt-5 max-w-2xl text-xl font-bold leading-tight tracking-[-0.035em] md:text-2xl ${item.featured ? "text-bg" : ""}`}>{item.title}</h2>
                     <p className={`mt-3 max-w-2xl text-sm leading-6 ${item.featured ? "text-bg/65" : "text-muted"}`}>{item.copy}</p>
                     {item.action && item.href && (
-                      <Link href={item.href} className={`mt-5 inline-flex items-center gap-3 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-colors ${item.featured ? "border-bg text-bg hover:bg-accent hover:text-ink" : "border-ink hover:bg-accent"}`}>
+                      <Link href={item.href} {...(/^https?:/.test(item.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`mt-5 inline-flex items-center gap-3 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-colors ${item.featured ? "border-bg text-bg hover:bg-accent hover:text-ink" : "border-ink hover:bg-accent"}`}>
                         {item.action} <Arrow />
                       </Link>
                     )}
@@ -157,7 +157,7 @@ export default function Announcements({
 
           <aside className="space-y-4 lg:sticky lg:top-28 lg:self-start">
             <InfoCard title="Quick facts" mark="01">
-              <Fact label="Prize pool" value="₹50,000" />
+              <Fact label="Prize pool" value="₹1,50,000" />
               <Fact label="Team size" value="2–4 people" />
               <Fact label="Entry fee" value="Free" />
               <Fact label="Format" value="24 Hours / Offline" />

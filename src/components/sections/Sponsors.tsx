@@ -1,22 +1,22 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Plus } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import SectionHeader from "../SectionHeader";
 import SplitSection from "../SplitSection";
 
-// TODO: real sponsors. Fill `name` (and later a logo) per slot; empty slots read as "open".
-type Slot = { name?: string };
-// tiers and notes from the wHACKiest 2026 brochure (Sponsorship structure)
-const TIERS: { id: string; label: string; note: string; slots: Slot[]; size: "title" | "gold" | "silver" | "community" }[] = [
-  { id: "title", label: "Title sponsor", note: "Maximum brand visibility, stage recognition, mentor or judge teams", slots: [{}], size: "title" },
-  { id: "platinum", label: "Platinum sponsor", note: "Prominent placement and participant engagement", slots: [{}, {}], size: "gold" },
-  { id: "gold", label: "Gold sponsor", note: "Visibility through event materials and acknowledgements", slots: [{}, {}, {}], size: "silver" },
+// `fit` sizes each mark by eye: a wide wordmark needs less height than a compact badge to weigh the same
+type Partner = { name: string; logo: string; width: number; height: number; role?: string; fit?: string };
+
+// Row 1: hosting partner, then title sponsor. Row 2: powered by.
+const HEADLINE: Partner[] = [
+  { name: "Devnovate", logo: "/assets/sponsors/devnovate.png", width: 724, height: 147, role: "Hosting partner" },
+  { name: "tryb", logo: "/assets/sponsors/tryb.png", width: 673, height: 240, role: "Title sponsor" },
 ];
-
-// running slot number where each tier starts (SLOT-01, SLOT-02, …)
-const OFFSETS = TIERS.map((_, t) => TIERS.slice(0, t).reduce((sum, tier) => sum + tier.slots.length, 0));
-
-const GRID = { title: "grid-cols-1", gold: "sm:grid-cols-2", silver: "grid-cols-2 sm:grid-cols-3", community: "grid-cols-2 sm:grid-cols-4" };
-const HEIGHT = { title: "h-40 sm:h-48", gold: "h-32 sm:h-36", silver: "h-24 sm:h-28", community: "h-20" };
+const POWERED_BY: Partner[] = [
+  { name: "ElevenLabs", logo: "/assets/sponsors/elevenlabs.png", width: 434, height: 83, fit: "max-h-6 sm:max-h-8" },
+  { name: "AWS", logo: "/assets/sponsors/aws.png", width: 318, height: 212, fit: "max-h-14 sm:max-h-16" },
+  { name: ".xyz", logo: "/assets/sponsors/xyz.png", width: 251, height: 146, fit: "max-h-11 sm:max-h-14" },
+];
 
 // the legacy of wHACKiest, across previous editions (from the brochure)
 const FACTS = [
@@ -25,32 +25,45 @@ const FACTS = [
   ["20+", "", "industry partners"],
 ];
 
-// One sponsor socket: a blueprint frame with corner brackets, a slot code and an "open" light
-function SlotCard({ slot, code, size }: { slot: Slot; code: string; size: keyof typeof HEIGHT }) {
-  const open = !slot.name;
+// One sponsor socket: a blueprint frame with corner brackets, a role label and a "live" light
+function PartnerCard({ partner, big }: { partner: Partner; big?: boolean }) {
   return (
-    <div className={`group relative ${HEIGHT[size]} border border-ink/70 bg-panel transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_var(--accent)]`}>
-      {/* corner brackets */}
+    <div className={`group relative ${big ? "h-40 sm:h-48" : "h-28 sm:h-32"} border border-ink/70 bg-panel transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_var(--accent)]`}>
       {["left-1.5 top-1.5 border-l border-t", "right-1.5 top-1.5 border-r border-t", "bottom-1.5 left-1.5 border-b border-l", "bottom-1.5 right-1.5 border-b border-r"].map((c) => (
         <span key={c} aria-hidden className={`absolute h-2.5 w-2.5 border-accent ${c}`} />
       ))}
       <div className="absolute inset-x-3 top-2.5 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
-        <span>{code}</span>
+        <span>{partner.role ?? partner.name}</span>
         <span className="flex items-center gap-1.5">
-          <span className={`h-1.5 w-1.5 rounded-full ${open ? "bg-accent motion-safe:animate-pulse" : "bg-trace"}`} />
-          {open ? "Open" : "Live"}
+          <span className="h-1.5 w-1.5 rounded-full bg-trace" />
+          Live
         </span>
       </div>
-      <div className="grid h-full place-items-center px-4 pt-4 text-center">
-        {open ? (
-          <span className={`flex items-center gap-2 font-display font-extrabold uppercase tracking-[-0.01em] text-ink/25 transition-colors group-hover:text-accent ${size === "title" ? "text-2xl sm:text-4xl" : size === "community" ? "text-xs" : "text-sm sm:text-base"}`}>
-            <Plus size={size === "title" ? 26 : 14} weight="bold" />
-            Your logo
-          </span>
-        ) : (
-          <span className="font-display text-lg font-extrabold">{slot.name}</span>
-        )}
+      <div className={`grid h-full place-items-center pt-5 ${big ? "px-8 sm:px-12" : "px-6 sm:px-8"}`}>
+        <Image
+          src={partner.logo}
+          alt={partner.name}
+          width={partner.width}
+          height={partner.height}
+          sizes={big ? "(min-width: 640px) 360px, 70vw" : "(min-width: 640px) 220px, 60vw"}
+          className={`h-auto w-auto max-w-full object-contain ${partner.fit ?? (big ? "max-h-16 sm:max-h-20" : "max-h-10 sm:max-h-12")}`}
+        />
       </div>
+    </div>
+  );
+}
+
+function Tier({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      {/* branch from the bus into this tier */}
+      <span aria-hidden className="absolute -left-6 top-3 h-px w-5 bg-trace/50 sm:-left-10 sm:w-9" />
+      <span aria-hidden className="absolute -left-[27px] top-[9px] h-2 w-2 rounded-full border border-trace bg-bg sm:-left-[43px]" />
+      <div className="mb-3 flex items-baseline gap-3">
+        <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.16em]">{label}</h3>
+        {note && <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">{note}</span>}
+      </div>
+      {children}
     </div>
   );
 }
@@ -60,9 +73,7 @@ export default function Sponsors() {
     <SplitSection id="sponsors" wide>
       <div className="grid items-end gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)]">
         <SectionHeader index="06" label="Sponsors" title="Powered by collaboration" />
-        <p className="max-w-[42ch] text-muted">
-          The teams and companies wiring up wHACKiest 2026. Every slot on this board is a socket waiting for the right partner.
-        </p>
+        <p className="max-w-[42ch] text-muted">The teams and companies wiring up wHACKiest 2026.</p>
       </div>
 
       {/* tier board: a bus line runs down the left and branches into each tier */}
@@ -71,33 +82,31 @@ export default function Sponsors() {
           <path d="M8 0V100" className="stroke-trace/50" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
         </svg>
         <div data-stagger className="space-y-8">
-          {TIERS.map((tier, t) => (
-            <div key={tier.id} className="relative">
-              {/* branch from the bus into this tier */}
-              <span aria-hidden className="absolute -left-6 top-3 h-px w-5 bg-trace/50 sm:-left-10 sm:w-9" />
-              <span aria-hidden className="absolute -left-[27px] top-[9px] h-2 w-2 rounded-full border border-trace bg-bg sm:-left-[43px]" />
-              <div className="mb-3 flex items-baseline gap-3">
-                <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.16em]">{tier.label}</h3>
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">{tier.note}</span>
-              </div>
-              <div className={`grid gap-3 sm:gap-4 ${GRID[tier.size]}`}>
-                {tier.slots.map((slot, i) => (
-                  <SlotCard key={i} slot={slot} size={tier.size} code={`SLOT-${String(OFFSETS[t] + i + 1).padStart(2, "0")}`} />
-                ))}
-              </div>
+          <Tier label="Hosting partner & title sponsor">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+              {HEADLINE.map((p) => (
+                <PartnerCard key={p.name} partner={p} big />
+              ))}
             </div>
-          ))}
+          </Tier>
+          <Tier label="Powered by">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+              {POWERED_BY.map((p) => (
+                <PartnerCard key={p.name} partner={p} />
+              ))}
+            </div>
+          </Tier>
         </div>
       </div>
 
-      {/* rolling strip of open slots */}
+      {/* rolling strip of partner names */}
       <div aria-hidden className="relative mt-12 overflow-hidden border-y border-ink/20 py-3 [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
         <div className="flex w-max animate-[marquee_30s_linear_infinite] gap-10 font-mono text-xs uppercase tracking-[0.2em] text-muted motion-reduce:animate-none">
           {Array.from({ length: 2 }, (_, k) =>
-            ["Your logo", "Track partner", "Your logo", "Mentor partner", "Your logo", "Swag partner", "Your logo", "Cloud credits"].map((t, i) => (
+            [...HEADLINE, ...POWERED_BY, ...HEADLINE, ...POWERED_BY].map((p, i) => (
               <span key={`${k}-${i}`} className="flex items-center gap-10">
-                {t}
-                <span className="text-accent">◆</span>
+                {p.name}
+                <span className="text-accent">â—†</span>
               </span>
             )),
           )}

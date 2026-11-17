@@ -15,6 +15,7 @@ import FlipBoard from "../hero/FlipBoard";
 import SecondsDial from "../hero/SecondsDial";
 import MobileAbout from "../hero/MobileAbout";
 import { AboutBlurb, POLAROIDS, STATS } from "../hero/about-content";
+import { participation } from "@/content/participation";
 import { phaseAt, STATUS } from "../hero/hero-status";
 import { HERO_TRIGGER_ID, scrollToStory, STORY_HASH } from "../hero/story-scroll";
 
@@ -590,8 +591,10 @@ export default function Hero() {
               Real problems. Bigger possibilities. <span className="font-semibold text-ink">24 hours</span> to build what matters.
             </p>
             <div data-intro-fade className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4 lg:mt-7">
-              <Link
-                href="/register"
+              <a
+                href={participation.registrationHref}
+                target="_blank"
+                rel="noopener noreferrer"
                 data-magnetic
                 className="group/cta relative inline-flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border-2 border-ink bg-accent px-2 py-3 text-[12px] min-[360px]:gap-2.5 min-[360px]:px-4 min-[360px]:text-[13px] font-bold uppercase tracking-[0.04em] text-[#050505] shadow-[4px_4px_0_var(--fg)] transition-[translate,box-shadow] duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--fg)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[1px_1px_0_var(--fg)] sm:px-6 sm:py-3.5 sm:text-sm"
               >
@@ -602,7 +605,7 @@ export default function Hero() {
                 />
                 Register now
                 <ArrowRight size={15} weight="bold" className="transition-transform duration-300 group-hover/cta:translate-x-1" />
-              </Link>
+              </a>
               <a
                 href="https://drive.google.com/file/d/1gYxs4mlzZJtFpesADyOXY2ac9OwqPMGA/view?usp=sharing"
                 target="_blank"
@@ -612,6 +615,22 @@ export default function Hero() {
                 Brochure
                 <DownloadSimple size={15} weight="bold" className="transition-transform duration-300 group-hover/brochure:translate-y-0.5" />
               </a>
+              {/* the headline partners, beside the buttons so the first screen grows no taller */}
+              <Link
+                href="/#sponsors"
+                aria-label="Hosted on Devnovate. Title sponsor tryb."
+                className="col-span-2 flex items-center justify-between gap-3 pt-1 sm:justify-start sm:gap-4 sm:pl-1 sm:pt-0 lg:flex-col lg:items-start lg:justify-center lg:gap-1.5 xl:flex-row xl:items-center xl:gap-4"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.1em] text-muted sm:tracking-[0.14em]">Hosted on</span>
+                  <Image src="/assets/sponsors/devnovate.png" alt="" width={724} height={147} sizes="120px" priority className="h-[18px] w-auto sm:h-5" />
+                </span>
+                <span aria-hidden className="h-5 w-px bg-ink/20 lg:hidden xl:block" />
+                <span className="flex items-center gap-2">
+                  <span className="whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.1em] text-muted sm:tracking-[0.14em]">Title sponsor</span>
+                  <Image src="/assets/sponsors/tryb.png" alt="" width={673} height={240} sizes="90px" priority className="h-6 w-auto sm:h-7" />
+                </span>
+              </Link>
             </div>
           </div>
         </div>

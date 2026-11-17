@@ -5,9 +5,10 @@ import { HACK_END, HACK_START } from "@/lib/event";
 
 const at = (dateTime: string) => Math.floor(new Date(dateTime).getTime() / 1000);
 
-// used only to work out the status below; the timeline section shows its dates as to be announced
+// used only to work out the status below; keep REG_CLOSE in step with the timeline's
+// "Registration Closes" checkpoint (timeline-data.ts)
 const REG_OPEN = at("2026-11-01T10:00:00+05:30");
-const REG_CLOSE = at("2026-11-15T23:59:00+05:30");
+const REG_CLOSE = at("2026-11-24T23:59:00+05:30");
 const START = Math.floor(HACK_START / 1000);
 const END = Math.floor(HACK_END / 1000);
 
