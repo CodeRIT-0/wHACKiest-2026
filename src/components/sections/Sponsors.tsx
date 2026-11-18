@@ -4,17 +4,17 @@ import SectionHeader from "../SectionHeader";
 import SplitSection from "../SplitSection";
 
 // `fit` sizes each mark by eye: a wide wordmark needs less height than a compact badge to weigh the same
-type Partner = { name: string; logo: string; width: number; height: number; role?: string; fit?: string };
+type Partner = { name: string; logo: string; width: number; height: number; href?: string; role?: string; fit?: string; pad?: string };
 
 // Row 1: hosting partner, then title sponsor. Row 2: powered by.
 const HEADLINE: Partner[] = [
-  { name: "Devnovate", logo: "/assets/sponsors/devnovate.png", width: 724, height: 147, role: "Hosting partner" },
-  { name: "tryb", logo: "/assets/sponsors/tryb.png", width: 673, height: 240, role: "Title sponsor" },
+  { name: "Devnovate", logo: "/assets/sponsors/devnovate.png", width: 724, height: 147, href: "https://devnovate.co", role: "Hosting partner" },
+  { name: "tryb", logo: "/assets/sponsors/tryb.png", width: 673, height: 240, href: "https://betryb.com/", role: "Title sponsor" },
 ];
 const POWERED_BY: Partner[] = [
-  { name: "ElevenLabs", logo: "/assets/sponsors/elevenlabs.png", width: 434, height: 83, fit: "max-h-6 sm:max-h-8" },
-  { name: "AWS", logo: "/assets/sponsors/aws.png", width: 318, height: 212, fit: "max-h-14 sm:max-h-16" },
-  { name: ".xyz", logo: "/assets/sponsors/xyz.png", width: 251, height: 146, fit: "max-h-11 sm:max-h-14" },
+  { name: "ElevenLabs", logo: "/assets/sponsors/elevenlabs.png", width: 434, height: 83, href: "https://elevenlabs.io", fit: "max-h-6 sm:max-h-8" },
+  { name: "AWS Student Builder Group", logo: "/assets/sponsors/aws-sbg.png", width: 912, height: 213, href: "https://builder.aws.com/community/student-builder-groups", fit: "max-h-16 sm:max-h-20", pad: "px-2 sm:px-3" },
+  { name: ".xyz", logo: "/assets/sponsors/xyz.png", width: 251, height: 146, href: "https://gen.xyz", fit: "max-h-11 sm:max-h-14" },
 ];
 
 // the legacy of wHACKiest, across previous editions (from the brochure)
@@ -26,7 +26,7 @@ const FACTS = [
 
 // One sponsor socket: a blueprint frame with corner brackets, a role label and a "live" light
 function PartnerCard({ partner, big }: { partner: Partner; big?: boolean }) {
-  return (
+  const card = (
     <div className={`group relative ${big ? "h-40 sm:h-48" : "h-28 sm:h-32"} border border-ink/70 bg-panel transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_var(--accent)]`}>
       {["left-1.5 top-1.5 border-l border-t", "right-1.5 top-1.5 border-r border-t", "bottom-1.5 left-1.5 border-b border-l", "bottom-1.5 right-1.5 border-b border-r"].map((c) => (
         <span key={c} aria-hidden className={`absolute h-2.5 w-2.5 border-accent ${c}`} />
@@ -38,7 +38,7 @@ function PartnerCard({ partner, big }: { partner: Partner; big?: boolean }) {
           Live
         </span>
       </div>
-      <div className={`grid h-full place-items-center pt-5 ${big ? "px-8 sm:px-12" : "px-6 sm:px-8"}`}>
+      <div className={`grid h-full place-items-center pt-5 ${partner.pad ?? (big ? "px-8 sm:px-12" : "px-6 sm:px-8")}`}>
         <Image
           src={partner.logo}
           alt={partner.name}
@@ -49,6 +49,12 @@ function PartnerCard({ partner, big }: { partner: Partner; big?: boolean }) {
         />
       </div>
     </div>
+  );
+  if (!partner.href) return card;
+  return (
+    <a href={partner.href} target="_blank" rel="noopener noreferrer" aria-label={`${partner.name} (opens in a new tab)`} className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+      {card}
+    </a>
   );
 }
 
