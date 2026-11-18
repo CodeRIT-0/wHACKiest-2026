@@ -78,7 +78,7 @@ export default function Shortlisted() {
         {load === "loading" && <p className="py-16 text-center text-sm text-muted">Loading the shortlist…</p>}
 
         {load === "error" && (
-          <Notice title="Couldn't load the shortlist" text="Something went wrong on our side. Refresh the page, or check back in a few minutes." />
+          <Notice title="Still brewing" text="Our judges are making the final cuts. Shortlisted teams will be announced here soon. Stay tuned." />
         )}
 
         {load === "ready" && teams.length === 0 && (
