@@ -4,7 +4,7 @@ import SectionHeader from "../SectionHeader";
 import SplitSection from "../SplitSection";
 
 // `fit` sizes each mark by eye: a wide wordmark needs less height than a compact badge to weigh the same
-type Partner = { name: string; logo: string; width: number; height: number; href?: string; role?: string; fit?: string; pad?: string };
+type Partner = { name: string; logo: string; width: number; height: number; href?: string; role?: string; fit?: string; pad?: string; span?: string };
 
 // Row 1: hosting partner, then title sponsor. Row 2: powered by.
 const HEADLINE: Partner[] = [
@@ -13,8 +13,8 @@ const HEADLINE: Partner[] = [
 ];
 const POWERED_BY: Partner[] = [
   { name: "ElevenLabs", logo: "/assets/sponsors/elevenlabs.png", width: 434, height: 83, href: "https://elevenlabs.io", fit: "max-h-6 sm:max-h-8" },
-  { name: "AWS Student Builder Group", logo: "/assets/sponsors/aws-sbg.png", width: 912, height: 213, href: "https://builder.aws.com/community/student-builder-groups", fit: "max-h-16 sm:max-h-20", pad: "px-2 sm:px-3" },
   { name: ".xyz", logo: "/assets/sponsors/xyz.png", width: 251, height: 146, href: "https://gen.xyz", fit: "max-h-11 sm:max-h-14" },
+  { name: "AWS Student Builder Group", logo: "/assets/sponsors/aws-sbg.png", width: 912, height: 213, href: "https://builder.aws.com/community/student-builder-groups", role: "AWS SBG", fit: "max-h-16 sm:max-h-20", pad: "px-6 sm:px-3", span: "col-span-2 sm:col-span-1" },
 ];
 
 // the legacy of wHACKiest, across previous editions (from the brochure)
@@ -32,7 +32,7 @@ function PartnerCard({ partner, big }: { partner: Partner; big?: boolean }) {
         <span key={c} aria-hidden className={`absolute h-2.5 w-2.5 border-accent ${c}`} />
       ))}
       <div className="absolute inset-x-3 top-2.5 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
-        <span>{partner.role ?? partner.name}</span>
+        <span className="min-w-0 truncate">{partner.role ?? partner.name}</span>
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-trace" />
           Live
@@ -97,7 +97,9 @@ export default function Sponsors() {
           <Tier label="Powered by">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
               {POWERED_BY.map((p) => (
-                <PartnerCard key={p.name} partner={p} />
+                <div key={p.name} className={p.span}>
+                  <PartnerCard partner={p} />
+                </div>
               ))}
             </div>
           </Tier>
@@ -111,7 +113,7 @@ export default function Sponsors() {
             [...HEADLINE, ...POWERED_BY, ...HEADLINE, ...POWERED_BY].map((p, i) => (
               <span key={`${k}-${i}`} className="flex items-center gap-10">
                 {p.name}
-                <span className="text-accent">â—†</span>
+                <span className="text-accent">◆</span>
               </span>
             )),
           )}
