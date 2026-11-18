@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import SectionHeader from "../SectionHeader";
 import SplitSection from "../SplitSection";
@@ -126,13 +125,13 @@ export default function Sponsors() {
             Sponsors don&apos;t just support wHACKiest, they enable it.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link
+            <a
               href="mailto:coderit@msrit.edu?subject=wHACKiest%202026%20sponsorship"
               className="inline-flex items-center gap-2 bg-accent px-5 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-[#050505] transition-transform active:scale-[0.98]"
             >
               Become a sponsor
               <ArrowUpRight size={14} weight="bold" />
-            </Link>
+            </a>
           </div>
         </div>
         <dl className="relative grid grid-cols-3 divide-x divide-ink/15 border-y border-ink/15">

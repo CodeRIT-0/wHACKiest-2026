@@ -399,3 +399,11 @@ section[id] {
     transform: translateY(9svh) scale(0.86);
   }
 }
+
+/* the email popup (EmailPopup) rises in */
+@keyframes email-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
