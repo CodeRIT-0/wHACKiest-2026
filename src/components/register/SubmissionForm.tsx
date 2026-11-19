@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { TRACKS } from "@/components/sections/tracks/track-data";
+import { OPEN_TRACKS as TRACKS } from "@/components/sections/tracks/track-data";
 import { MAX_PPT_MB, PPT_EXTENSIONS, normaliseTeamId, validateSubmission, type FieldErrors, type SubmissionDraft } from "@/content/registration";
 import { Field, fieldId, inputClass } from "./form-ui";
 

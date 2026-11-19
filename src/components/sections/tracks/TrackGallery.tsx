@@ -3,19 +3,19 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { AppWindow, Brain, Cpu, GlobeHemisphereEast } from "@phosphor-icons/react";
+import { Browser, Heartbeat, PlugsConnected, Question } from "@phosphor-icons/react";
 import { useTrack } from "./TrackContext";
 import { useNear } from "@/hooks/useNear";
 import type { Track } from "./track-data";
 
-const ICONS = { brain: Brain, window: AppWindow, globe: GlobeHemisphereEast, cpu: Cpu };
+const ICONS = { plug: PlugsConnected, browser: Browser, heartbeat: Heartbeat, mystery: Question };
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// The four tracks as an expanding gallery: the selected panel opens wide to show its photo,
+// The tracks as an expanding gallery: the selected panel opens wide to show its photo,
 // blurb and tags, the others fold down to a slim spine with a vertical title (rows on phones).
 // Photos are printed in each track's colour: grayscale, multiplied by the hue, under a halftone
-// screen and a scrim, so four very different shots read as one set on the black panel.
+// screen and a scrim, so very different shots read as one set on the black panel.
 // Pick with a hover (fine pointers), a click or tap, or the arrow keys.
 export default function TrackGallery({ tracks }: { tracks: Track[] }) {
   const { track: active, setTrack: setActive } = useTrack();
@@ -57,7 +57,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
       role="tablist"
       aria-label="Tracks"
       onPointerLeave={() => clearTimeout(hoverTimer.current)}
-      className="flex h-[min(620px,calc(100svh-120px))] flex-col gap-2.5 lg:h-[min(540px,calc(100vh-200px))] lg:flex-row lg:gap-3"
+      className="flex h-[min(700px,calc(100svh-32px))] flex-col [--open-grow:14] lg:[--open-grow:5.2] gap-2.5 lg:h-[min(540px,calc(100vh-200px))] lg:flex-row lg:gap-3"
     >
       {tracks.map((t, i) => {
         const on = i === active;
@@ -82,7 +82,8 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             transition={{ duration: 0.8, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
             className="group/panel relative min-h-[60px] min-w-0 cursor-pointer overflow-hidden rounded-[18px] border outline-none transition-[flex-grow,border-color,box-shadow] duration-[800ms] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-reduce:transition-none lg:min-w-[76px] lg:rounded-[22px]"
             style={{
-              flexGrow: on ? 5.2 : 1,
+              // phones give the open row nearly all the height (the folded rows keep their 60px); wide screens share it
+              flexGrow: on ? "var(--open-grow)" : 1,
               flexBasis: 0,
               transitionTimingFunction: EASE,
               borderColor: on ? t.hue : "rgba(255,249,236,0.12)",
@@ -90,7 +91,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
             }}
           >
             {/* ---- the photo, printed in the track's colour ---- */}
-            {near && <Image
+            {near && t.image && <Image
               src={t.image.src}
               alt=""
               fill
@@ -103,6 +104,16 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
                 filter: `grayscale(1) contrast(1.15) brightness(${t.image.lift ?? 1})`,
               }}
             />}
+            {/* no photo for a sealed track: a giant question mark stands in for it */}
+            {!t.image && (
+              <span
+                aria-hidden
+                className={`display-wide absolute inset-0 grid select-none place-items-center bg-[#0b0907] pb-[12%] text-[260px] leading-none text-[#fff9ec]/70 transition-transform duration-[1400ms] motion-reduce:transition-none lg:text-[420px] ${on ? "scale-100" : "scale-[1.18]"}`}
+                style={{ transitionTimingFunction: EASE }}
+              >
+                ?
+              </span>
+            )}
             <span aria-hidden className="absolute inset-0 mix-blend-multiply" style={{ backgroundColor: t.hue }} />
             {/* halftone screen, like a print */}
             <span aria-hidden className="absolute inset-0 bg-[radial-gradient(rgba(5,5,5,0.7)_0.9px,transparent_1.3px)] bg-[length:5px_5px] opacity-40" />
@@ -147,7 +158,7 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
               }`}
               style={{ transitionTimingFunction: EASE }}
             >
-              <ul className="flex flex-wrap gap-1.5">
+              <ul className="flex flex-wrap gap-1.5 max-sm:hidden">
                 {t.tags.map((tag) => (
                   <li
                     key={tag}
@@ -162,8 +173,12 @@ export default function TrackGallery({ tracks }: { tracks: Track[] }) {
                 {t.title}
                 <span style={{ color: t.hue }}>.</span>
               </h3>
-              <p className="mt-3 max-w-[42ch] text-[#fff9ec]/75 sm:text-lg">{t.blurb}</p>
-            </div>          </motion.div>
+              <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] sm:text-xs" style={{ color: t.hue }}>
+                {t.tagline}
+              </p>
+              <p className="mt-3 max-w-[52ch] text-[14px] leading-relaxed text-[#fff9ec]/75 sm:text-base">{t.blurb}</p>
+            </div>
+          </motion.div>
         );
       })}
     </div>

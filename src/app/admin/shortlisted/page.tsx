@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { TRACKS } from "@/components/sections/tracks/track-data";
+import { OPEN_TRACKS as TRACKS } from "@/components/sections/tracks/track-data";
 
 type Status = "Shortlisted" | "Waitlisted";
 
