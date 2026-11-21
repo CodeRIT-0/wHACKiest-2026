@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "@/lib/mongodb";
 import Announcement from "@/models/Announcement";
 import { isAuthorized } from "@/lib/auth";
@@ -62,6 +63,9 @@ export async function POST(request: Request) {
     }
 
     const inserted = await Announcement.insertMany(initialAnnouncements);
+
+    revalidatePath("/announcements");
+    revalidatePath("/api/announcements");
 
     return NextResponse.json({
       success: true,
