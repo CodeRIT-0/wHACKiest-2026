@@ -159,7 +159,7 @@ export default function Announcements({
             <InfoCard title="Quick facts" mark="01">
               <Fact label="Prize pool" value="₹1,50,000" />
               <Fact label="Team size" value="2–4 people" />
-              <Fact label="Entry fee" value="Free" />
+              <Fact label="Registration fee" value="Free" />
               <Fact label="Format" value="24 Hours / Offline" />
             </InfoCard>
             <InfoCard title="Stay in the loop" mark="02">

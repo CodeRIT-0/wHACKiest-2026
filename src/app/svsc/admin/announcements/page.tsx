@@ -28,6 +28,14 @@ const categoryBadgeStyles: Record<Category, string> = {
   Sponsors: "bg-[#d8c1e8] text-ink",
 };
 
+const sortAnnouncements = (list: AnnouncementItem[]) =>
+  [...list].sort((a, b) => {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1;
+    const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return timeB - timeA;
+  });
+
 export default function AdminAnnouncementsPage() {
   const [adminKey, setAdminKey] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -90,10 +98,12 @@ export default function AdminAnnouncementsPage() {
     setAuthError(null);
   };
 
-  const fetchAnnouncements = async () => {
-    setLoading(true);
+  const fetchAnnouncements = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
-      const res = await fetch("/api/announcements");
+      const res = await fetch(`/api/announcements?t=${Date.now()}`, {
+        cache: "no-store",
+      });
       const json = await res.json();
       if (json.success) {
         setItems(json.data);
@@ -103,7 +113,7 @@ export default function AdminAnnouncementsPage() {
     } catch {
       setStatusMessage({ text: "Network error loading announcements", error: true });
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -178,11 +188,20 @@ export default function AdminAnnouncementsPage() {
 
         const json = await res.json();
         if (json.success) {
+          if (json.data) {
+            setItems((prev) =>
+              sortAnnouncements(
+                editingId
+                  ? prev.map((item) => (item._id === editingId ? json.data : item))
+                  : [json.data, ...prev]
+              )
+            );
+          }
           setStatusMessage({
             text: editingId ? "Announcement updated successfully!" : "Announcement published!",
           });
           resetForm();
-          fetchAnnouncements();
+          await fetchAnnouncements(true);
         } else {
           setStatusMessage({ text: json.error || "Operation failed", error: true });
         }
@@ -202,9 +221,15 @@ export default function AdminAnnouncementsPage() {
       });
       const json = await res.json();
       if (json.success) {
+        setItems((prev) => prev.filter((item) => item._id !== id));
+        if (editingId === id) resetForm();
         setStatusMessage({ text: "Announcement deleted." });
-        fetchAnnouncements();
+        await fetchAnnouncements(true);
       } else {
+        if (res.status === 404) {
+          setItems((prev) => prev.filter((item) => item._id !== id));
+          if (editingId === id) resetForm();
+        }
         setStatusMessage({ text: json.error || "Failed to delete", error: true });
       }
     } catch {
@@ -224,10 +249,17 @@ export default function AdminAnnouncementsPage() {
       });
       const json = await res.json();
       if (json.success) {
-        fetchAnnouncements();
+        if (json.data) {
+          setItems((prev) =>
+            sortAnnouncements(prev.map((curr) => (curr._id === item._id ? json.data : curr)))
+          );
+        }
+        await fetchAnnouncements(true);
+      } else {
+        setStatusMessage({ text: json.error || "Failed to update announcement", error: true });
       }
     } catch {
-      // silent
+      setStatusMessage({ text: "Network error updating announcement", error: true });
     }
   };
 
@@ -243,10 +275,17 @@ export default function AdminAnnouncementsPage() {
       });
       const json = await res.json();
       if (json.success) {
-        fetchAnnouncements();
+        if (json.data) {
+          setItems((prev) =>
+            sortAnnouncements(prev.map((curr) => (curr._id === item._id ? json.data : curr)))
+          );
+        }
+        await fetchAnnouncements(true);
+      } else {
+        setStatusMessage({ text: json.error || "Failed to update announcement", error: true });
       }
     } catch {
-      // silent
+      setStatusMessage({ text: "Network error updating announcement", error: true });
     }
   };
 
@@ -257,8 +296,11 @@ export default function AdminAnnouncementsPage() {
         headers: { "x-admin-key": adminKey.trim() },
       });
       const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setItems(sortAnnouncements(json.data));
+      }
       setStatusMessage({ text: json.message || "Seeding complete!", error: !json.success });
-      fetchAnnouncements();
+      await fetchAnnouncements(true);
     } catch {
       setStatusMessage({ text: "Error seeding announcements", error: true });
     }
