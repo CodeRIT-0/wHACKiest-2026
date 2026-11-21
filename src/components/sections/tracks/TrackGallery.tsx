@@ -3,12 +3,12 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { Browser, Heartbeat, PlugsConnected, Question } from "@phosphor-icons/react";
+import { Browser, GraduationCap, Heartbeat, PlugsConnected, Question } from "@phosphor-icons/react";
 import { useTrack } from "./TrackContext";
 import { useNear } from "@/hooks/useNear";
 import type { Track } from "./track-data";
 
-const ICONS = { plug: PlugsConnected, browser: Browser, heartbeat: Heartbeat, mystery: Question };
+const ICONS = { plug: PlugsConnected, browser: Browser, heartbeat: Heartbeat, graduation: GraduationCap, mystery: Question };
 const EASE = "cubic-bezier(0.16,1,0.3,1)";
 const pad = (n: number) => String(n).padStart(2, "0");
 

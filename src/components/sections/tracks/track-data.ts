@@ -12,7 +12,7 @@ export type Track = {
   blurb: string;
   tags: string[];
   /** which icon to draw (mapped to a Phosphor icon in TrackGallery, a client component) */
-  icon: "plug" | "browser" | "heartbeat" | "mystery";
+  icon: "plug" | "browser" | "heartbeat" | "graduation" | "mystery";
   /** each track glows in its own colour, picked from the site's palette */
   hue: string;
   /** `lift` brightens a dark photo before it is printed in the track colour, so they all match */
@@ -72,15 +72,22 @@ export const TRACKS: Track[] = [
       lift: 1.15,
     },
   },
+  // the mystery track, now revealed
   {
-    id: "mystery",
-    title: "Mystery Track",
-    tagline: "Classified. Revealed soon.",
-    blurb: "A fourth challenge is still sealed. It will be added here later, so keep an eye on Announcements and be ready when it drops.",
-    tags: ["Classified", "Coming soon"],
-    icon: "mystery",
-    hue: "#fd9c36",
-    mystery: true,
+    id: "unlocked",
+    title: "UnlockED",
+    tagline: "Unlocking educational potential, empowering futures.",
+    blurb:
+      "Quality education, skills and jobs are still out of reach for many, especially in underserved communities. Bridge the gap between learning and employment: make education more accessible and opportunities easier to find, so people can learn, showcase their abilities and connect with meaningful opportunities.",
+    tags: ["Mystery track", "EdTech", "Skills", "Employment"],
+    icon: "graduation",
+    hue: "#c08cff",
+    image: {
+      src: "/assets/tracks/learning.webp",
+      alt: "People working through notes and sticky notes around a table",
+      credit: "rawpixel (CC0)",
+      position: "40% 50%",
+    },
   },
 ];
 

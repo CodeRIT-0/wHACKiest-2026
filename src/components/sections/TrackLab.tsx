@@ -16,7 +16,7 @@ export default function TrackLab() {
           <div className="grid items-end gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14">
             <SectionHeader index="04" label="Tracks" title="Real problems. Bigger possibilities." />
             <Reveal delay={0.1}>
-              <p className="max-w-[44ch] text-muted">Four tracks, one still sealed. Pick the one that pulls you in.</p>
+              <p className="max-w-[44ch] text-muted">Four challenges, 24 hours. Pick the one that pulls you in.</p>
               <dl className="mt-6 flex gap-8 border-t border-ink/15 pt-4">
                 {[
                   [pad(TRACKS.length), "Tracks"],
